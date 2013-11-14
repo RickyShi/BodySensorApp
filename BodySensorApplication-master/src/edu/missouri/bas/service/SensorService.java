@@ -948,7 +948,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		if (checkDataConnectivity())
     	{
 
-        HttpPost request = new HttpPost("http://babbage.cs.missouri.edu/~rs79c/Android/Test/writeArrayToFile.php");
+        //HttpPost request = new HttpPost("http://babbage.cs.missouri.edu/~rs79c/Android/Test/writeArrayToFile.php");
+		//new test URL	
+		HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         //file_name 
         params.add(new BasicNameValuePair("file_name",FileName));
