@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="app_name" translatable="false">Body Sensor Application</string>
+    <string name="hello_world" translatable="false">Hello world!</string>
+    <string name="menu_settings" translatable="false">Settings</string>
+    <string name="title_activity_main" translatable="false">Body Sensor Application</string>
+    <string name="title_activity_device_list" translatable="false">DeviceListActivity</string>
+
+</resources>

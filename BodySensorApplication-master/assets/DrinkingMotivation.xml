@@ -1,0 +1,18 @@
+<root>
+    <category>
+		<description>Drinking Expectancy/Motivation Items</description>
+		<questionblock type="radio">
+		    <answer id="1">1 - Strongly Disagree</answer>
+		    <answer id="2">2 - Disagree</answer>
+		    <answer id="3">3 - Agree</answer>
+		    <answer id="4">4 - Strongly Agree</answer>
+		    <text id="1">I drank alcohol because it would make it easier to be around other people.</text>
+			<text id="2">I drank alcohol because it would make me feel more relaxed or calm.</text>
+			<text id="3">I drank alcohol because it would make me more courageous or daring.</text>
+			<text id="4">I drank alcohol because it would make me feel sensual or sexier.</text>
+			<text id="5">I drank alcohol because it would make it harder to think or perform a task.</text>
+			<text id="6">I drank alcohol because it would make me more aggressive and tough.</text>
+			<text id="7">I drank alcohol because it would make me feel guilty or depressed.</text>										    
+		</questionblock>
+	</category>  
+</root>

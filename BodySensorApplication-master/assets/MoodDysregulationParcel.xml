@@ -1,0 +1,49 @@
+<root>
+	<category>    
+		<description>MOOD change</description>
+		<question id="q311" type = "radio">
+			<text>How much did your mood change?</text>
+			<answer id = "1">1 - Very Slightly or Not At All</answer>
+			<answer id = "2">2 - A little</answer>
+			<answer id = "3">3 - Somewhat</answer>
+			<answer id = "4">4 - Quite a bit</answer>
+			<answer id = "5">5 - Extremely</answer>
+		</question>
+		<question id="q312" type = "radio">
+			<text>Are you in a better or worse mood now than before?</text>
+			<answer id="y">better</answer>
+			<answer id="n">worse</answer>
+		</question>
+		<question id= "q313" type = "check">
+			<text> if worse, WHAT TRIGGERED your mood change? (check all that apply)</text>
+			<answer id = "a131">lack of sleep</answer>
+			<answer id = "a132">argument or conflict</answer>
+			<answer id = "a133">alcohol or drug use</answer>
+			<answer id = "a134">prescribed medications</answer>
+			<answer id = "a135">problem at work or school</answer>
+			<answer id = "a136">stress</answer>
+			<answer id = "a137">received bad news</answer>
+			<answer id = "a138">upset/mad at self</answer>
+			<answer id = "a139">felt rejected by someone close to me</answer>
+			<answer id = "a1310">other</answer>
+			<answer id = "a1311" action="uncheck">THERE WERE NO TRIGGERS</answer>
+		</question>	
+	</category>
+	
+	<externalsource baseid="q32" filename="MoodSubset.xml"></externalsource>
+	
+	<category>
+	    <description>Alcohol Urge/Craving</description>
+		<questionblock type = "radio">
+			<answer id = "1">1 - Very Slightly or Not At All</answer>
+			<answer id = "2">2 - A little</answer>
+			<answer id = "3">3 - Somewhat</answer>
+			<answer id = "4">4 - Quite a bit</answer>
+			<answer id = "5">5 - Extremely</answer>
+			<text id="q331">Do you CRAVE A DRINK right now?</text>
+			<text id="q332">Do you CRAVE A CIGARETTE right now?</text>
+		</questionblock>
+	</category>
+	
+	<externalsource baseid="q34" filename="SituationAndSetting.xml"></externalsource>	
+</root>

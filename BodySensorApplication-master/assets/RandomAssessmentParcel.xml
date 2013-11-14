@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<root>    
+    <category>
+		<description>Recent Drinking</description>
+		<question id = "q511" type = "radio">
+			<text>Have you CONSUMED ALCOHOL since the last survey you answered?</text>
+			<answer id = "y" triggerFile="DrinkingFollowup.xml" triggerName="DRINKING_FOLLOWUP" triggerTimes="30 m, 60 m, 120 m">yes</answer>
+			<answer id = "n">no</answer>
+		</question>
+	</category>
+	<category>	
+		<description>Recent Smoking</description>
+		<question id= "q521" type = "radio">
+			<text>Have you SMOKED A CIGARETTE in the PAST 15 MINUTES?</text>
+			<answer id = "y">yes</answer>
+			<answer id = "n" skip="q551">no</answer>
+		</question>
+	</category>
+	
+	<externalsource baseid="q53" filename="SmokingMotivation.xml"></externalsource>
+	<externalsource baseid="q54" filename="SmokingEffects.xml"></externalsource>	
+	<externalsource baseid="q55" filename="MoodSubset.xml"></externalsource>
+
+	<category>
+	    <description>Life Events/Experiences</description>
+			<questionblock type = "check">			
+			<answer id = "1">boss/teacher</answer>
+			<answer id = "2">coworker</answer>
+			<answer id = "3">sibling</answer>
+			<answer id = "4">friend</answer>
+			<answer id = "5">parent</answer>
+			<answer id = "6">roommate</answer>
+			<answer id = "7">other family member</answer>			
+			<answer id = "8" action="uncheck">THERE WAS NO SUCH INCIDENT/FEELING</answer>
+			<text id="q560">Since the last prompt have you had a disagreement (if yes,with whom)?</text>
+			<text id="q561">Since the last prompt have you felt rejected (if yes,by whom)?</text>
+			<text id="q562">Since the last prompt have you felt complimented or praised (if yes,by whom)?</text>										    
+			<text id="q563">Since the last prompt have you felt "let down" by someone you depend on (if yes,by whom)?</text>
+		</questionblock>	
+	</category>
+	
+	<category>
+	<description>Life Events/Experiences</description>
+	    <questionblock type="radio">
+		    <description>Cigarette expectancy/motivation items</description>
+		    <answer id="y">Yes</answer>
+		    <answer id="n">No</answer>		    
+			<text id="q564">Since the last prompt have you experienced a loss?</text>
+			<text id="q565">Since the last prompt have you Received bad/good news?</text>
+			</questionblock>			
+	</category>	
+	 
+<category>
+	     <description>Life Events/Experiences</description>
+	  <question id = "q566" type = "radio">
+			<text> Since the last prompt have you slept ?</text>
+			<answer id = "y">yes</answer>
+			<answer id = "n" skip="q568">no</answer>
+		</question>		
+	 </category>
+	 
+   <category>
+	     <description>Life Events/Experiences</description>
+	     <question id = "q567" type = "hour">
+			<text> How many Hour(s)?</text>
+			<answer id = "a67">Integer</answer>			
+		</question>		
+	 </category>
+	 <category>
+	     <description>Life Events/Experiences</description>
+	  <question id = "q568" type = "radio">
+			<text> Since the last prompt have you used caffeine?</text>
+			<answer id = "y">yes</answer>
+			<answer id = "n" skip="q5610">no</answer>
+		</question>		
+	 </category>
+	 
+   <category>
+	     <description>Life Events/Experiences</description>
+	     <question id = "q569" type = "coffee">
+			<text> How many Cup(s)?</text>
+			<answer id = "a69">Integer</answer>			
+		</question>		
+	 </category>
+	 
+      <category>
+	     <description>Life Events/Experiences</description>
+	  <question id = "q5610" type = "radio">
+			<text> Since the last prompt have you used over the counter-medications(IF YES, LOG MEDICATIONS in your paper diary)?</text>
+			<answer id = "y">yes</answer>
+			<answer id = "n">no</answer>
+		</question>		
+	 </category>
+	 	 
+	  <category> 
+	      <description>Life Events/Experiences</description>
+		<question id="q5611" type="radio">
+			<text>Since the last prompt have you taken your medications as prescribed(if no, log changes in your paper diary)?</text>	
+		    <answer id="y">Yes</answer>
+		    <answer id="n">no</answer>
+		</question>	
+	 </category>
+  
+			
+	<externalsource baseid="q57" filename="CravingsAndSymptomsSubset.xml"></externalsource>
+	<externalsource baseid="q58" filename="SituationAndSetting.xml"></externalsource>   
+</root>

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<root>
+    <externalsource baseid="q21" filename="DrinkingMotivation.xml"></externalsource>
+    <externalsource baseid="q22" filename="DrinkingEffects.xml"></externalsource>
+    
+	<category>
+		<description>Recent Smoking</description>
+		<question id= "q231" type = "radio">
+			<text>Have you SMOKED A CIGARETTE in the PAST 15 MINUTES?</text>
+			<answer id = "y">yes</answer>
+			<answer id = "n" skip="q61">no</answer>
+		</question>
+	</category>
+
+	
+	<externalsource baseid="q24" filename="SmokingMotivation.xml"></externalsource>
+	<externalsource baseid="q25" filename="SmokingEffects.xml"></externalsource>
+	<externalsource baseid="q26" filename="MoodSubset.xml"></externalsource>
+	<externalsource baseid="q27" filename="CravingsAndSymptomsSubset.xml"></externalsource>
+	<externalsource baseid="q28" filename="SituationAndSetting.xml"></externalsource>
+	
+
+</root>

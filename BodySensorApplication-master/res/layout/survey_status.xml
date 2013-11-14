@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    <TableRow >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Survey Status : "
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/tvSetSurveyStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Not Scheduled"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+        
+    </TableRow>
+    
+        <Button
+          android:id="@+id/btnSchedule"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Schedule Survey Activity" />
+        <Button
+          android:id="@+id/btnReturn"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Return to Main Menu" />
+</TableLayout>

@@ -1,0 +1,12 @@
+<root>
+<menu>
+    <item type="select" file="MorningReportParcel.xml" name="MORNING_REPORT">Morning Report</item>
+    <item type="select" file="InitialDrinkingParcel.xml" name = "INITIAL_DRINKING">Initial Drinking</item>
+    <item type="select" file="MoodDysregulationParcel.xml" name = "MOOD_DYSREGULATION">Mood Change</item>
+    <item type="select" file="CravingEpisodeParcel.xml" name="CRAVING_EPISODE">Craving Episode</item>
+</menu>
+
+<components>
+    <sensor type="internal" name="accelerometer" interval="1s"/>
+</components>
+</root>

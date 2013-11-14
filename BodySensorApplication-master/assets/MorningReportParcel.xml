@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<root>
+    
+    <category>
+    <description>Last Night's Drinking</description>
+		<question id = "q111" type = "radio">
+			<text>Did you DRINK ALCOHOL last night?</text>
+			<answer id = "y">yes</answer>
+			<answer id = "n" skip = "q121">no</answer>
+		</question>
+		<question id = "q112" type = "number">
+			<text>How many ALCOHOLIC DRINKS did you have?</text>
+			<answer id = "a12I">Integer</answer>
+		</question>
+		<question id = "q113" type = "radio">
+			<text>Do you have a HANGOVER from last night's drinking?</text>
+			<answer id = "y">yes</answer>
+			<answer id = "n">no</answer>
+		</question>
+	</category>
+	<category>
+		<description>Recent Smoking</description>
+		<question id= "q121" type = "radio">
+			<text>Have you SMOKED a cigarette since wake up?</text>
+			<answer id = "y">yes</answer>
+			<answer id = "n" skip="q141">no</answer>
+		</question>
+	</category>
+		
+	
+	 <externalsource baseid="q13" filename="SmokingEffects.xml"></externalsource>
+
+	<externalsource baseid="q14" filename="MoodSubset.xml"></externalsource>	
+			
+	<externalsource baseid="q15" filename="CravingsAndSymptomsSubset.xml"></externalsource>
+
+	<externalsource baseid="q16" filename="SituationAndSetting.xml"></externalsource>
+	
+
+</root>

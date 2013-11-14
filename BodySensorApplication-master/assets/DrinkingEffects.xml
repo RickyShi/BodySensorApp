@@ -1,0 +1,16 @@
+<root>
+    <category>
+		<description>Alcohol Effects items</description>
+	    <questionblock type="radio">
+		    <description>Alcohol Effects</description>
+			<answer id = "1">1 - Very Slightly or Not At All</answer>
+			<answer id = "2">2 - A little</answer>
+			<answer id = "3">3 - Somewhat</answer>
+			<answer id = "4">4 - Quite a bit</answer>
+			<answer id = "5">5 - Extremely</answer>
+		    <text id="1">The DRINK was PLEASUREABLE</text>
+			<text id="2">The DRINK RELIEVED UNPLEASANT FEELINGS OR SYMPTOMS</text>
+			<text id="3">The DRINK MADE ME FEEL WORSE</text>										    
+		</questionblock>	    
+	</category>    
+</root>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <menu xmlns:android="http://schemas.android.com/apk/res/android">
+        <item android:id="@+id/Connect" android:title="Connect to a device" ></item>
+        <item android:id="@+id/Enable" android:title="Enable BT" ></item>
+        <item android:id="@+id/Disable" android:title="Disable BT" ></item>
+    </menu>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    <TableRow >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wrist Sensor Status : "
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/tvSetWristStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Not Connected"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+        
+    </TableRow>
+    
+  
+
+      <Button
+          android:id="@+id/btnConnectWrist"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Connect to Wrist Sensor" />
+      <TableRow >
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chest Sensor Status : "
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/tvSetChestStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Not Connected"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+        
+    </TableRow>
+      
+
+      <Button
+          android:id="@+id/btnConnectChest"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Connect to Chest Sensor" />
+    
+      
+  <TableRow>
+      
+       <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bluetooth : "
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+       <ToggleButton
+           android:id="@+id/tbBluetooth"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:textOff="Disable"
+           android:textOn="Enable"
+            />
+      
+  </TableRow>
+
+      <Button
+          android:id="@+id/btnCheckState"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Referesh" />
+ 
+  
+      
+
+</TableLayout>

@@ -1,0 +1,27 @@
+<root>
+    <category>
+        <description>Alcohol Urge/Craving</description>
+        <questionblock type="radio">
+			<answer id = "1">1 - Very Slightly or Not At All</answer>
+			<answer id = "2">2 - A little</answer>
+			<answer id = "3">3 - Somewhat</answer>
+			<answer id = "4">4 - Quite a bit</answer>
+			<answer id = "5">5 - Extremely</answer>
+            <text id="q411">How much do you CRAVE A DRINK right now?</text>
+            <text id="q412">How likely do you think it is that you will drink alcohol soon?</text>
+        </questionblock>
+        <question id="q413" type="check">
+            <text>What TRIGGERED your craving for alcohol? (check all that apply)</text>
+            <answer id="1">Near a bar or liquor store</answer>
+            <answer id="2">Saw others drinking</answer>
+            <answer id="3">Felt sad, tense, or angry</answer>
+            <answer id="4">Was offered a drink</answer>
+            <answer id="5">Felt good or happy</answer>
+            <answer id="6">Other</answer>
+            <answer id="7" action="uncheck">There were no triggers</answer>                                                            
+        </question>
+    </category>
+    
+    <externalsource baseid="q42" filename="MoodSubset.xml"></externalsource>
+    <externalsource baseid="q43" filename="SituationAndSetting.xml"></externalsource>
+</root>
