@@ -4,6 +4,7 @@
     <item type="select" file="InitialDrinkingParcel.xml" name = "INITIAL_DRINKING">Initial Drinking</item>
     <item type="select" file="MoodDysregulationParcel.xml" name = "MOOD_DYSREGULATION">Mood Change</item>
     <item type="select" file="CravingEpisodeParcel.xml" name="CRAVING_EPISODE">Craving Episode</item>
+    <item type="select" file="DrinkingFollowup.xml" name="DRINKING_FOLLOWUP">Drinking Followup</item>
 </menu>
 
 <components>

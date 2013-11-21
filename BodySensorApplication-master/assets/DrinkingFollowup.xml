@@ -3,13 +3,13 @@
 		<description>Drinking Follow-up</description>
 		<question id="q11" type="radio">
 			<text>HOW MANY DRINKS did you consume SINCE THE LAST RECORDING</text>
-			<answer id="a111" skip="q31">0</answer>
-			<answer id="a112">1</answer>
-			<answer id="a113">2</answer>
-			<answer id="a114">3</answer>
-			<answer id="a115">4</answer>
-			<answer id="a116">5</answer>
-			<answer id="a117">6+</answer>
+			<answer id="0" skip="q41">0</answer>
+			<answer id="1">1</answer>
+			<answer id="2">2</answer>
+			<answer id="3">3</answer>
+			<answer id="4">4</answer>
+			<answer id="5">5</answer>
+			<answer id="6">6+</answer>
 		</question>
 	</category>
 	
@@ -20,8 +20,8 @@
 		<description>Recent Smoking</description>
 		<question id= "q41" type = "radio">
 			<text>Have you SMOKED A CIGARETTE in the PAST 15 MINUTES?</text>
-			<answer id = "a31y">yes</answer>
-			<answer id = "a31n" skip="q61">no</answer>
+			<answer id = "y">yes</answer>
+			<answer id = "n" skip="q81">no</answer>
 		</question>
 	</category>
 	
@@ -32,13 +32,13 @@
 		<description>Smoking Follow-up</description>
 		<question id="q71" type="radio">
 			<text>HOW MANY CIGARETTES did you smoke SINCE THE LAST RECORDING</text>
-			<answer id="a611" skip="q71">0</answer>
-			<answer id="a612">1</answer>
-			<answer id="a613">2</answer>
-			<answer id="a614">3</answer>
-			<answer id="a615">4</answer>
-			<answer id="a616">5</answer>
-			<answer id="a617">6+</answer>
+			<answer id="0" skip="q81">0</answer>
+			<answer id="1">1</answer>
+			<answer id="2">2</answer>
+			<answer id="3">3</answer>
+			<answer id="4">4</answer>
+			<answer id="5">5</answer>
+			<answer id="6">6+</answer>
 		</question>
 		
 	    <questionblock type="radio">
