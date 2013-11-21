@@ -892,7 +892,6 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			}
 			if(i != sorted.size()-1) sb.append(",");
 		}
-
 		sb.append("\n");
 		sendDatatoServer(surveyName+"."+bluetoothMacAddress+"."+dateObj,sb.toString());
 		writeToFile(f,sb.toString());
@@ -955,7 +954,10 @@ GooglePlayServicesClient.OnConnectionFailedListener
         //file_name 
         params.add(new BasicNameValuePair("file_name",FileName));
         //data
-        params.add(new BasicNameValuePair("data",DataToSend+"\n"));
+        //Modified to deal with the additional line for location data
+        //Ricky 2013/11/21
+        //params.add(new BasicNameValuePair("data",DataToSend+"\n"));
+        params.add(new BasicNameValuePair("data",DataToSend));
 
         
         try {
