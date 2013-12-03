@@ -1,9 +1,9 @@
 <root>
 	<category>
 		<description>Drinking Follow-up</description>
-		<question id="q11" type="radio">
+		<question id="q611" type="radio">
 			<text>HOW MANY DRINKS did you consume SINCE THE LAST RECORDING</text>
-			<answer id="0" skip="q41">0</answer>
+			<answer id="0" skip="q641">0</answer>
 			<answer id="1">1</answer>
 			<answer id="2">2</answer>
 			<answer id="3">3</answer>
@@ -13,26 +13,26 @@
 		</question>
 	</category>
 	
-	<externalsource baseid="q2" filename="DrinkingMotivation.xml"></externalsource>
-    <externalsource baseid="q3" filename="DrinkingEffects.xml"></externalsource>
+	<externalsource baseid="q62" filename="DrinkingMotivation.xml"></externalsource>
+    <externalsource baseid="q63" filename="DrinkingEffects.xml"></externalsource>
     
     <category>
 		<description>Recent Smoking</description>
-		<question id= "q41" type = "radio">
+		<question id= "q641" type = "radio">
 			<text>Have you SMOKED A CIGARETTE in the PAST 15 MINUTES?</text>
 			<answer id = "y">yes</answer>
-			<answer id = "n" skip="q81">no</answer>
+			<answer id = "n" skip="q681">no</answer>
 		</question>
 	</category>
 	
-    <externalsource baseid="q5" filename="SmokingMotivation.xml"></externalsource>
-    <externalsource baseid="q6" filename="SmokingEffects.xml"></externalsource>
+    <externalsource baseid="q65" filename="SmokingMotivation.xml"></externalsource>
+    <externalsource baseid="q66" filename="SmokingEffects.xml"></externalsource>
     
     <category>
 		<description>Smoking Follow-up</description>
-		<question id="q71" type="radio">
+		<question id="q671" type="radio">
 			<text>HOW MANY CIGARETTES did you smoke SINCE THE LAST RECORDING</text>
-			<answer id="0" skip="q81">0</answer>
+			<answer id="0" skip="q681">0</answer>
 			<answer id="1">1</answer>
 			<answer id="2">2</answer>
 			<answer id="3">3</answer>
@@ -48,15 +48,15 @@
 			<answer id = "3">3 - Somewhat</answer>
 			<answer id = "4">4 - Quite a bit</answer>
 			<answer id = "5">5 - Extremely</answer>
-		    <text id="q72">The CIGARETTE was PLEASUREABLE</text>
-			<text id="q73">The CIGARETTE RELIEVED UNPLEASANT FEELINGS OR SYMPTOMS</text>
-			<text id="q74">The CIGARETTE MADE ME FEEL WORSE</text>										    
+		    <text id="q672">The CIGARETTE was PLEASUREABLE</text>
+			<text id="q673">The CIGARETTE RELIEVED UNPLEASANT FEELINGS OR SYMPTOMS</text>
+			<text id="q674">The CIGARETTE MADE ME FEEL WORSE</text>										    
 		</questionblock>	
 	</category>
 	
-	<externalsource baseid="q8" filename="MoodSubset.xml"></externalsource>
-    <externalsource baseid="q9" filename="CravingsAndSymptomsSubset.xml"></externalsource>
-    <externalsource baseid="qA" filename="SituationAndSetting.xml"></externalsource>
+	<externalsource baseid="q68" filename="CravingsAndSymptomsSubset.xml"></externalsource>
+    <externalsource baseid="q69" filename="MoodSubset.xml"></externalsource>
+    <externalsource baseid="q6A" filename="SituationAndSetting.xml"></externalsource>
     	
     
 </root>
