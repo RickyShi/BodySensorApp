@@ -8,8 +8,8 @@
 			<answer id = "4">4 - Quite a bit</answer>
 			<answer id = "5">5 - Extremely</answer>
 			
-			<text id="19">How much have you felt the following IN THE PAST 15 MINUTES? 						ALONE</text>			
 			<text id="1">How much have you felt the following IN THE PAST 15 MINUTES? 						AFRAID</text>
+			<text id="19">How much have you felt the following IN THE PAST 15 MINUTES? 						ALONE</text>			
 			<text id="21">How much have you felt the following IN THE PAST 15 MINUTES? 						ACTIVE</text>
 			<text id="22">How much have you felt the following IN THE PAST 15 MINUTES? 						 ALERT</text>
 			<text id="8">How much have you felt the following IN THE PAST 15 MINUTES? 						SCARED</text>
