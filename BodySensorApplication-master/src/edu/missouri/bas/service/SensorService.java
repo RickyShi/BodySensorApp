@@ -158,8 +158,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	 */
 	public static AlarmManager mAlarmManager;
 	private PendingIntent scheduleSurvey;
-	private PendingIntent scheduleSensor;
-	private static PendingIntent scheduleLocation;
+	//private PendingIntent scheduleSensor;
+	//private static PendingIntent scheduleLocation;
 	private static PendingIntent scheduleCheck;
 	private static PendingIntent triggerSound;
 	private static PendingIntent triggerSound2;
@@ -250,12 +250,20 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	
 	boolean mExternalStorageWriteable = false;
 	
+	//ADD ACTION STRING FOR DRINKING-FOLLOWUP
+	public static final String ACTION_DRINK_FOLLOWUP = "INTENT_ACTION_DRINK_FOLLOWUP";
+	
 	public static Timer t1=new Timer();
 	public static Timer t2=new Timer();
 	public static Timer t3=new Timer();
 	public static Timer t4=new Timer();
 	public static Timer t5=new Timer();
 	public static Timer t6=new Timer();
+	
+	//ADD 3 TIMERRS FOR THE DRINK-FOLLOW TIMER
+	public static Timer t7=new Timer();
+	public static Timer t8=new Timer();
+	public static Timer t9=new Timer();
 	
 		
 	/*
@@ -305,7 +313,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	public StartSound2 ss2;
 	public static StartSound mSound1;
 	public static StartSound2 mSound2;*/
-	static Timer mTimer;
+	//static Timer mTimer;
 	int reconnectionAttempts=0;
 	/*
 	 * (non-Javadoc)
@@ -543,14 +551,13 @@ GooglePlayServicesClient.OnConnectionFailedListener
 
 
 	private void prepareAlarms(){
-		IntentFilter locationSchedulerFilter =
-				new IntentFilter(ACTION_SCHEDULE_LOCATION);
-		IntentFilter locationInterruptSchedulerFilter =
-				new IntentFilter(ACTION_STOP_LOCATIONCONTROL);
-		IntentFilter surveyScheduleFilter =
-				new IntentFilter(ACTION_SCHEDULE_SURVEY);
-		IntentFilter surveyTest =
-				new IntentFilter("ACTION_SURVEY_TEST");
+		IntentFilter locationSchedulerFilter = new IntentFilter(ACTION_SCHEDULE_LOCATION);
+		IntentFilter locationInterruptSchedulerFilter = new IntentFilter(ACTION_STOP_LOCATIONCONTROL);
+		IntentFilter surveyScheduleFilter = new IntentFilter(ACTION_SCHEDULE_SURVEY);
+		IntentFilter surveyTest = new IntentFilter("ACTION_SURVEY_TEST");
+		
+		//ADD INTENTFILTER FOR DRINKING-FOLLOWUP
+		IntentFilter followUpFilter = new IntentFilter(ACTION_DRINK_FOLLOWUP);
 
 	/*	Intent scheduleLocationIntent = new Intent(SensorService.ACTION_SCHEDULE_LOCATION);
 		scheduleLocation = PendingIntent.getBroadcast(
@@ -569,6 +576,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		SensorService.this.registerReceiver(alarmReceiver, locationInterruptSchedulerFilter);
 		SensorService.this.registerReceiver(alarmReceiver, surveyScheduleFilter);
 		SensorService.this.registerReceiver(alarmReceiver, surveyTest);
+		//Register the drink-followup to the alarmReceiver
+		SensorService.this.registerReceiver(alarmReceiver, followUpFilter);
 		SensorService.this.registerReceiver(soundRequestReceiver,soundRequest);
 		SensorService.this.registerReceiver(soundRequestReceiver,sound1);
 		SensorService.this.registerReceiver(soundRequestReceiver,sound2);
@@ -579,32 +588,50 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		}
 	
 	
-	
+	//Function to trigger random survey
 	private class ScheduleSurvey extends TimerTask
 	{
 		int TriggerInterval;
 		public ScheduleSurvey(int Time)
 		{
-			TriggerInterval=Time;
-			
+			TriggerInterval=Time;			
 		}
 
-				@Override
-		public void run() {
-					
-			// TODO Auto-generated method stub
+		@Override
+		public void run() {					
+		// TODO Auto-generated method stub
 		  Random rand=new Random();
 		  int TriggerTime=rand.nextInt(TriggerInterval)+1;		 
 		  Intent i = new Intent(serviceContext, XMLSurveyActivity.class);
 		  i.putExtra("survey_name", "RANDOM_ASSESSMENT");
 		  i.putExtra("survey_file", "RandomAssessmentParcel.xml");	
-		  PendingIntent surveyIntent = PendingIntent.getActivity(SensorService.this, 0,
+		  scheduleSurvey = PendingIntent.getActivity(SensorService.this, 0,
 				                i, Intent.FLAG_ACTIVITY_NEW_TASK);
 		  mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-					SystemClock.elapsedRealtime()+1000*60*TriggerTime , surveyIntent);
+					SystemClock.elapsedRealtime()+1000*60*TriggerTime , scheduleSurvey);
+		}	
+	}
+	
+	//Function to trigger drinking-followup survey
+	private class DrinkSurvey extends TimerTask
+	{
+		int TriggerTime;
+		public DrinkSurvey()
+		{
+			TriggerTime=3000;			
 		}
-		
-		
+
+		@Override
+		public void run() {					
+		// TODO Auto-generated method stub	 
+		  Intent i = new Intent(serviceContext, XMLSurveyActivity.class);
+		  i.putExtra("survey_name", "DRINKING_FOLLOWUP");
+		  i.putExtra("survey_file", "DrinkingFollowup.xml");	
+		  scheduleSurvey = PendingIntent.getActivity(SensorService.this, 0,
+				                i, Intent.FLAG_ACTIVITY_NEW_TASK);
+		  mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+					SystemClock.elapsedRealtime()+TriggerTime , scheduleSurvey);
+		}	
 	}
 	
 	/*
@@ -657,8 +684,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		SensorService.this.unregisterReceiver(checkRequestReceiver);
 		
 		mAlarmManager.cancel(scheduleSurvey);
-		mAlarmManager.cancel(scheduleSensor);
-		mAlarmManager.cancel(scheduleLocation);	
+		//mAlarmManager.cancel(scheduleSensor);
+		//mAlarmManager.cancel(scheduleLocation);	
 		mAlarmManager.cancel(scheduleCheck);
 		mAlarmManager.cancel(triggerSound);
 		mAlarmManager.cancel(triggerSound2);
@@ -700,42 +727,48 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			
 			else if(action.equals(SensorService.ACTION_SCHEDULE_SURVEY))
 			{
-							Log.d(TAG,"Received alarm event - schedule survey");								
-							int StartHour=intent.getIntExtra(START_HOUR,0);
-							int EndHour=intent.getIntExtra(END_HOUR,0);
-							int StartMin=intent.getIntExtra(START_MIN,0);
-							int EndMin=intent.getIntExtra(END_MIN,0);
-							int Interval=(((EndHour-StartHour)*60)+(EndMin-StartMin))/6;
-							int delay=Interval/2;
-							int Increment=Interval+delay;
-							int TriggerInterval=Interval-delay;
-							Log.d(TAG,String.valueOf(Interval));
-							
-							Date dt1=new Date();				
-							dt1.setHours(StartHour);
-							dt1.setMinutes(StartMin+delay);
-							Date dt2=new Date();
-							dt2.setHours(StartHour);
-							dt2.setMinutes(StartMin+Increment);				
-							Date dt3=new Date();
-							dt3.setHours(StartHour);
-							dt3.setMinutes(StartMin+Increment+Interval);
-							Date dt4=new Date();
-							dt4.setHours(StartHour);
-							dt4.setMinutes(StartMin+Increment+(Interval*2));
-							Date dt5=new Date();
-							dt5.setHours(StartHour);
-							dt5.setMinutes(StartMin+Increment+(Interval*3));
-							Date dt6=new Date();
-							dt6.setHours(StartHour);
-							dt6.setMinutes(StartMin+Increment+(Interval*4));
-							t1.schedule(new ScheduleSurvey(TriggerInterval),dt1);	
-							t2.schedule(new ScheduleSurvey(TriggerInterval),dt2);
-							t3.schedule(new ScheduleSurvey(TriggerInterval),dt3);
-							t4.schedule(new ScheduleSurvey(TriggerInterval),dt4);
-							t5.schedule(new ScheduleSurvey(TriggerInterval),dt5);
-							t6.schedule(new ScheduleSurvey(TriggerInterval),dt6);
-							setStatus(true);
+				Log.d(TAG,"Received alarm event - schedule survey");								
+				int StartHour=intent.getIntExtra(START_HOUR,0);
+				int EndHour=intent.getIntExtra(END_HOUR,0);
+				int StartMin=intent.getIntExtra(START_MIN,0);
+				int EndMin=intent.getIntExtra(END_MIN,0);
+				int Interval=(((EndHour-StartHour)*60)+(EndMin-StartMin))/6;
+				int delay=Interval/2;
+				int Increment=Interval+delay;
+				int TriggerInterval=Interval-delay;
+				Log.d(TAG,String.valueOf(Interval));
+				
+				Date dt1=new Date();				
+				dt1.setHours(StartHour);
+				dt1.setMinutes(StartMin+delay);
+				Date dt2=new Date();
+				dt2.setHours(StartHour);
+				dt2.setMinutes(StartMin+Increment);				
+				Date dt3=new Date();
+				dt3.setHours(StartHour);
+				dt3.setMinutes(StartMin+Increment+Interval);
+				Date dt4=new Date();
+				dt4.setHours(StartHour);
+				dt4.setMinutes(StartMin+Increment+(Interval*2));
+				Date dt5=new Date();
+				dt5.setHours(StartHour);
+				dt5.setMinutes(StartMin+Increment+(Interval*3));
+				Date dt6=new Date();
+				dt6.setHours(StartHour);
+				dt6.setMinutes(StartMin+Increment+(Interval*4));
+				t1.schedule(new ScheduleSurvey(TriggerInterval),dt1);	
+				t2.schedule(new ScheduleSurvey(TriggerInterval),dt2);
+				t3.schedule(new ScheduleSurvey(TriggerInterval),dt3);
+				t4.schedule(new ScheduleSurvey(TriggerInterval),dt4);
+				t5.schedule(new ScheduleSurvey(TriggerInterval),dt5);
+				t6.schedule(new ScheduleSurvey(TriggerInterval),dt6);
+				setStatus(true);
+			}
+		  	//ADD THE PROCESSING AFTER THE RECEIVER RECEIVE THE FOLLOWUP MSG
+			else if(action.equals(SensorService.ACTION_DRINK_FOLLOWUP)){
+				Log.d(TAG,"Received alarm event - schedule survey");
+				Date dt7 = new Date();
+				t7.schedule(new DrinkSurvey(),dt7);
 			}
 			
 			else if(action.equals(LocationControl.INTENT_ACTION_LOCATION)){
@@ -787,7 +820,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
   
 	public static void CancelTimers()
 	{
-		if(t1!=null&&t2!=null&&t3!=null&&t4!=null&&t5!=null&&t6!=null&&mTimer!=null)
+		//if(t1!=null&&t2!=null&&t3!=null&&t4!=null&&t5!=null&&t6!=null&&mTimer!=null)
+		if(t1!=null&&t2!=null&&t3!=null&&t4!=null&&t5!=null&&t6!=null)
 		{
 		t1.cancel();
 		t1.purge();
@@ -801,7 +835,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		t5.purge();
 		t6.cancel();
 		t6.purge();	
-		mTimer.cancel();
+		//mTimer.cancel();
 		}
 	}	
 	
@@ -947,7 +981,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		if (checkDataConnectivity())
     	{
 
-        //HttpPost request = new HttpPost("http://babbage.cs.missouri.edu/~rs79c/Android/Test/writeArrayToFile.php");
+		//HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
 		//new test URL	
 		HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
         List<NameValuePair> params = new ArrayList<NameValuePair>();

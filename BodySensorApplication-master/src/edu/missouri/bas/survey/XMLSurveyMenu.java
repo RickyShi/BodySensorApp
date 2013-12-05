@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.xml.sax.InputSource;
 
+import edu.missouri.bas.service.SensorService;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -68,6 +69,11 @@ public class XMLSurveyMenu extends Activity{
 					
 					public void onClick(View v) {
 						SurveyInfo temp = buttonMap.get(v);
+						//once click the initial drinking survey, the drinking follow MSG will be broadcast.
+						if (temp.getDisplayName().equals("Initial Drinking")){
+							Intent drinkFollowUpScheduler = new Intent(SensorService.ACTION_DRINK_FOLLOWUP);
+							getApplicationContext().sendBroadcast(drinkFollowUpScheduler);
+						}
 						Intent launchSurvey = 
 								new Intent(getApplicationContext(), XMLSurveyActivity.class);
 						launchSurvey.putExtra("survey_file", temp.getFileName());
