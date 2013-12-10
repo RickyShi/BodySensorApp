@@ -28,6 +28,9 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+//Ricky 2013/12/09
+import android.os.AsyncTask;
+
 public class InternalSensor implements Runnable, SensorEventListener {
 	
 	static SensorManager mSensorManager;
@@ -96,8 +99,11 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	            {
 	            	    List<String> subList = dataPoints.subList(0,41);
 	     	            String data=subList.toString();	     	            
-	     	            String formatedData=data.replaceAll("[\\[\\]]","");		     	            
-	     	            sendDatatoServer("Accelerometer."+identifier+"."+getDate(),formatedData);
+	     	            String formatedData=data.replaceAll("[\\[\\]]","");	
+	     	            //Ricky 2013/12/09
+	     	            //sendDatatoServer("Accelerometer."+identifier+"."+getDate(),formatedData);
+	     	            TransmitData transmitData=new TransmitData();
+	     	            transmitData.execute("Accelerometer."+identifier+"."+getDate(),formatedData);
 	     	            subList.clear(); 	     	            
 	     	    }
 	    		try {
@@ -120,8 +126,11 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	             {
 	            	    List<String> subList = dataPoints.subList(0,41);
 	     	            String data=subList.toString();	     	            
-	     	            String formattedData=data.replaceAll("[\\[\\]]","");		     	            
-	     	            sendDatatoServer("LightSensor."+identifier+"."+getDate(),formattedData);
+	     	            String formattedData=data.replaceAll("[\\[\\]]","");
+	     	            //Ricky 2013/12/09
+	     	            //sendDatatoServer("LightSensor."+identifier+"."+getDate(),formattedData);
+	     	            TransmitData transmitData=new TransmitData();
+	     	            transmitData.execute("LightSensor."+identifier+"."+getDate(),formattedData);
 	     	            subList.clear();  
 	     	      }	            
 	    		try {
@@ -155,7 +164,52 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	}	
 	
 	
-	
+	//Ricky 2013/12/09
+	private class TransmitData extends AsyncTask<String,Void, Boolean>
+	{
+
+		@Override
+		protected Boolean doInBackground(String... strings) {
+			// TODO Auto-generated method stub
+			 String fileName=strings[0];
+	         String dataToSend=strings[1];
+	         if(checkDataConnectivity())
+	 		{
+	        //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");	
+	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
+	         List<NameValuePair> params = new ArrayList<NameValuePair>();
+	         //file_name 
+	         params.add(new BasicNameValuePair("file_name",fileName));        
+	         //data                       
+	         params.add(new BasicNameValuePair("data",dataToSend));
+	         try {
+	         	        	
+	             request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+	             HttpResponse response = new DefaultHttpClient().execute(request);
+	             if(response.getStatusLine().getStatusCode() == 200){
+	                 String result = EntityUtils.toString(response.getEntity());
+	                 Log.d("Sensor Data Point Info",result);                
+	                // Log.d("Wrist Sensor Data Point Info","Data Point Successfully Uploaded!");
+	             }
+	             return true;
+	         } 
+	         catch (Exception e) 
+	         {	             
+	             e.printStackTrace();
+	             return false;
+	         }
+	 	  }
+	     	
+	     else 
+	     {
+	     	Log.d("Sensor Data Point Info","No Network Connection:Data Point was not uploaded");
+	     	return false;
+	      } 
+		    
+		}
+		
+	}
+	/*
 	public static void sendDatatoServer(String FileName,String DataToSend)
 	{
 		if(checkDataConnectivity())
@@ -189,4 +243,5 @@ public class InternalSensor implements Runnable, SensorEventListener {
         
     	 }
     }
+    */
 }

@@ -40,12 +40,9 @@ import edu.missouri.bas.service.modules.location.ActivityRecognitionScan;
 import edu.missouri.bas.service.modules.location.DetectionRemover;
 import edu.missouri.bas.service.modules.location.LocationControl;
 import edu.missouri.bas.service.modules.sensors.SensorControl;
-
 import edu.missouri.bas.survey.XMLSurveyActivity;
 import edu.missouri.bas.survey.XMLSurveyActivity.StartSound;
 import edu.missouri.bas.survey.answer.SurveyAnswer;
-
-
 import android.R.string;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
@@ -89,11 +86,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.equivital.sdk.connection.SemBluetoothConnection;
 import com.equivital.sdk.decoder.SDKLicense;
 import com.equivital.sdk.decoder.SemDevice;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.ActivityRecognitionClient;
@@ -110,6 +105,10 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
 
+
+
+//Ricky 2013/12/09
+import android.os.AsyncTask;
 
 public class SensorService extends Service implements
 GooglePlayServicesClient.ConnectionCallbacks,
@@ -866,7 +865,10 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		if(f != null){
 			try {
 				writeToFile(f, toWrite);
-				sendDatatoServer("locations."+bluetoothMacAddress+"."+dateObj,toWrite);
+				//sendDatatoServer("locations."+bluetoothMacAddress+"."+dateObj,toWrite);
+				//Ricky
+				TransmitData transmitData=new TransmitData();
+				transmitData.execute("locations."+bluetoothMacAddress+"."+dateObj,toWrite);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -927,7 +929,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			if(i != sorted.size()-1) sb.append(",");
 		}
 		sb.append("\n");
-		sendDatatoServer(surveyName+"."+bluetoothMacAddress+"."+dateObj,sb.toString());
+		//sendDatatoServer(surveyName+"."+bluetoothMacAddress+"."+dateObj,sb.toString());
+		//Ricky 2013/12/09
+		TransmitData transmitData=new TransmitData();
+		transmitData.execute(surveyName+"."+bluetoothMacAddress+"."+dateObj,sb.toString());
+				writeToFile(f,sb.toString());
 		writeToFile(f,sb.toString());
 	}
 	
@@ -975,7 +981,54 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	
 
 //---------------------------------------Code to upload data to the server----------------------------------------------//
-	
+	//Ricky 2013/12/09
+	//Use AsyncTask to deal with not responding things
+	private class TransmitData extends AsyncTask<String,Void, Boolean>
+	{
+
+		@Override
+		protected Boolean doInBackground(String... strings) {
+			// TODO Auto-generated method stub
+			 String fileName=strings[0];
+	         String dataToSend=strings[1];
+	         if(checkDataConnectivity())
+	 		{
+	        //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
+	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
+	         List<NameValuePair> params = new ArrayList<NameValuePair>();
+	         //file_name 
+	         params.add(new BasicNameValuePair("file_name",fileName));        
+	         //data                       
+	         params.add(new BasicNameValuePair("data",dataToSend));
+	         try {
+	         	        	
+	             request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+	             HttpResponse response = new DefaultHttpClient().execute(request);
+	             if(response.getStatusLine().getStatusCode() == 200){
+	                 String result = EntityUtils.toString(response.getEntity());
+	                 Log.d("Sensor Data Point Info",result);                
+	                // Log.d("Wrist Sensor Data Point Info","Data Point Successfully Uploaded!");
+	             }
+	             return true;
+	         } 
+	         catch (Exception e) 
+	         {	             
+	             e.printStackTrace();
+	             return false;
+	         }
+	 	  }
+	     	
+	     else 
+	     {
+	     	Log.d("Sensor Data Point Info","No Network Connection:Data Point was not uploaded");
+	     	Toast.makeText(serviceContext, errMSG, Toast.LENGTH_LONG).show();
+	     	return false;
+	      } 
+		    
+		}
+		
+	}
+	/*	
 	public static void sendDatatoServer(String FileName,String DataToSend)
 	{
 		if (checkDataConnectivity())
@@ -1009,7 +1062,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
     	}
     	else Toast.makeText(serviceContext, errMSG, Toast.LENGTH_LONG).show();
     }
-		
+	*/	
 	
 	 public static boolean checkDataConnectivity() {
 	    	ConnectivityManager connectivity = (ConnectivityManager) serviceContext

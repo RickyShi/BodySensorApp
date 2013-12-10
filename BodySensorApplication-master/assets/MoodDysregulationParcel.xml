@@ -16,17 +16,17 @@
 		</question>
 		<question id= "q313" type = "check">
 			<text> if worse, WHAT TRIGGERED your mood change? (check all that apply)</text>
-			<answer id = "a131">lack of sleep</answer>
-			<answer id = "a132">argument or conflict</answer>
-			<answer id = "a133">alcohol or drug use</answer>
-			<answer id = "a134">prescribed medications</answer>
-			<answer id = "a135">problem at work or school</answer>
-			<answer id = "a136">stress</answer>
-			<answer id = "a137">received bad news</answer>
-			<answer id = "a138">upset/mad at self</answer>
-			<answer id = "a139">felt rejected by someone close to me</answer>
-			<answer id = "a1310">other</answer>
-			<answer id = "a1311" action="uncheck">THERE WERE NO TRIGGERS</answer>
+			<answer id = "1">lack of sleep</answer>
+			<answer id = "2">argument or conflict</answer>
+			<answer id = "3">alcohol or drug use</answer>
+			<answer id = "4">prescribed medications</answer>
+			<answer id = "5">problem at work or school</answer>
+			<answer id = "6">stress</answer>
+			<answer id = "7">received bad news</answer>
+			<answer id = "8">upset/mad at self</answer>
+			<answer id = "9">felt rejected by someone close to me</answer>
+			<answer id = "A">other</answer>
+			<answer id = "B" action="uncheck">THERE WERE NO TRIGGERS</answer>
 		</question>	
 	</category>
 	

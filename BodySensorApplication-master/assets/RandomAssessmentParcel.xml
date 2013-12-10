@@ -23,15 +23,16 @@
 
 	<category>
 	    <description>Life Events/Experiences</description>
-			<questionblock type = "check">			
-			<answer id = "1">boss/teacher</answer>
-			<answer id = "2">coworker</answer>
-			<answer id = "3">sibling</answer>
-			<answer id = "4">friend</answer>
+			<questionblock type = "check">
+			<answer id = "1">romantic partner</answer>			
+			<answer id = "2">boss/teacher</answer>
+			<answer id = "3">coworker</answer>
+			<answer id = "4">sibling</answer>
+			<answer id = "5">friend</answer>
 			<answer id = "5">parent</answer>
-			<answer id = "6">roommate</answer>
-			<answer id = "7">other family member</answer>			
-			<answer id = "8" action="uncheck">THERE WAS NO SUCH INCIDENT/FEELING</answer>
+			<answer id = "7">roommate</answer>
+			<answer id = "8">other family member</answer>			
+			<answer id = "9" action="uncheck">THERE WAS NO SUCH INCIDENT/FEELING</answer>
 			<text id="q560">Since the last prompt have you had a disagreement (if yes,with whom)?</text>
 			<text id="q561">Since the last prompt have you felt rejected (if yes,by whom)?</text>
 			<text id="q562">Since the last prompt have you felt complimented or praised (if yes,by whom)?</text>										    
