@@ -623,14 +623,14 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		{
 			//TriggerTime=30*60*1000;
 			//Test
-			TriggerTime = 30000;
+			TriggerTime = 3000;
 		}
 
 		@Override
 		public void run() {					
 		// TODO Auto-generated method stub
 			//if dFlag is true, it means the drinkingfollow Task is triggered.
-			dFlag = true;
+			//dFlag = true;
 			if ((dCount<=3)){
 				Intent i = new Intent(serviceContext, XMLSurveyActivity.class);
 				i.putExtra("survey_name", "DRINKING_FOLLOWUP");
@@ -787,16 +787,18 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				//PurgeDrinkTimers();
 				//trigger time is 30min 
 				//long dIncrement = 30*60*1000;
-				//test
-				long dIncrement = 1*60*1000;
-				Date dt7 = new Date();
+				//test				
 				if (dFlag == true){
 					drinkSurveyTask.cancel();
 					dFlag = false;
 					dCount = 1; 
 				}
+				long dIncrement = 1*60*1000;
+				Date dt7 = new Date(); 
+				dt7.setMinutes(dt7.getMinutes()+1);
 				drinkSurveyTask = new DrinkSurvey();
-				t7.schedule(drinkSurveyTask,dt7,dIncrement);	
+				t7.schedule(drinkSurveyTask,dt7,dIncrement);
+				dFlag = true;
 			}
 			
 			else if(action.equals(LocationControl.INTENT_ACTION_LOCATION)){
