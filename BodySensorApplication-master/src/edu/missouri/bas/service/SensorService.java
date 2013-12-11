@@ -157,7 +157,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	 */
 	public static AlarmManager mAlarmManager;
 	private PendingIntent scheduleSurvey;
-	//private PendingIntent scheduleSensor;
+	private PendingIntent drinkfollowupSurvey;
 	//private static PendingIntent scheduleLocation;
 	private static PendingIntent scheduleCheck;
 	private static PendingIntent triggerSound;
@@ -259,11 +259,15 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	public static Timer t5=new Timer();
 	public static Timer t6=new Timer();
 	
-	//ADD 3 TIMERRS FOR THE DRINK-FOLLOW TIMER
+	//Ricky 2013/12/10
+	//ADD TIMER FOR THE DRINK-FOLLOW TIMER
 	public static Timer t7=new Timer();
-	public static Timer t8=new Timer();
-	public static Timer t9=new Timer();
-	
+	//Add count to stop the timer tasks
+	private static int dCount = 1;
+	//Flag for detecting whether there is still some drinkingfollowup being scheduled
+	private static boolean dFlag = false;
+	//static var for DrinkSurvey task;
+	private static TimerTask drinkSurveyTask;
 		
 	/*
 	 * Bluetooth Variables
@@ -617,19 +621,32 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		int TriggerTime;
 		public DrinkSurvey()
 		{
-			TriggerTime=3000;			
+			//TriggerTime=30*60*1000;
+			//Test
+			TriggerTime = 30000;
 		}
 
 		@Override
 		public void run() {					
-		// TODO Auto-generated method stub	 
-		  Intent i = new Intent(serviceContext, XMLSurveyActivity.class);
-		  i.putExtra("survey_name", "DRINKING_FOLLOWUP");
-		  i.putExtra("survey_file", "DrinkingFollowup.xml");	
-		  scheduleSurvey = PendingIntent.getActivity(SensorService.this, 0,
-				                i, Intent.FLAG_ACTIVITY_NEW_TASK);
-		  mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-					SystemClock.elapsedRealtime()+TriggerTime , scheduleSurvey);
+		// TODO Auto-generated method stub
+			//if dFlag is true, it means the drinkingfollow Task is triggered.
+			dFlag = true;
+			if ((dCount<=3)){
+				Intent i = new Intent(serviceContext, XMLSurveyActivity.class);
+				i.putExtra("survey_name", "DRINKING_FOLLOWUP");
+				i.putExtra("survey_file", "DrinkingFollowup.xml");	
+				drinkfollowupSurvey = PendingIntent.getActivity(SensorService.this, 0,
+					                i, Intent.FLAG_ACTIVITY_NEW_TASK);
+				mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+						SystemClock.elapsedRealtime()+TriggerTime , drinkfollowupSurvey);
+				dCount++;
+			}
+			else {
+				dCount = 1;
+				this.cancel();
+				//reset the dFlag 
+				dFlag = false;
+			}
 		}	
 	}
 	
@@ -683,7 +700,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		SensorService.this.unregisterReceiver(checkRequestReceiver);
 		
 		mAlarmManager.cancel(scheduleSurvey);
-		//mAlarmManager.cancel(scheduleSensor);
+		mAlarmManager.cancel(drinkfollowupSurvey);
 		//mAlarmManager.cancel(scheduleLocation);	
 		mAlarmManager.cancel(scheduleCheck);
 		mAlarmManager.cancel(triggerSound);
@@ -766,8 +783,20 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		  	//ADD THE PROCESSING AFTER THE RECEIVER RECEIVE THE FOLLOWUP MSG
 			else if(action.equals(SensorService.ACTION_DRINK_FOLLOWUP)){
 				Log.d(TAG,"Received alarm event - schedule survey");
+				//If timers already exists, cancel the current schedule tasks.
+				//PurgeDrinkTimers();
+				//trigger time is 30min 
+				//long dIncrement = 30*60*1000;
+				//test
+				long dIncrement = 1*60*1000;
 				Date dt7 = new Date();
-				t7.schedule(new DrinkSurvey(),dt7);
+				if (dFlag == true){
+					drinkSurveyTask.cancel();
+					dFlag = false;
+					dCount = 1; 
+				}
+				drinkSurveyTask = new DrinkSurvey();
+				t7.schedule(drinkSurveyTask,dt7,dIncrement);	
 			}
 			
 			else if(action.equals(LocationControl.INTENT_ACTION_LOCATION)){
@@ -816,11 +845,10 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		}
 	};
 	
-  
 	public static void CancelTimers()
 	{
 		//if(t1!=null&&t2!=null&&t3!=null&&t4!=null&&t5!=null&&t6!=null&&mTimer!=null)
-		if(t1!=null&&t2!=null&&t3!=null&&t4!=null&&t5!=null&&t6!=null)
+		if(t1!=null&&t2!=null&&t3!=null&&t4!=null&&t5!=null&&t6!=null&&t7!=null)
 		{
 		t1.cancel();
 		t1.purge();
@@ -833,7 +861,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		t5.cancel();
 		t5.purge();
 		t6.cancel();
-		t6.purge();	
+		t6.purge();
+		t7.cancel();
+		t7.purge();	
 		//mTimer.cancel();
 		}
 	}	

@@ -29,7 +29,7 @@
 			<answer id = "3">coworker</answer>
 			<answer id = "4">sibling</answer>
 			<answer id = "5">friend</answer>
-			<answer id = "5">parent</answer>
+			<answer id = "6">parent</answer>
 			<answer id = "7">roommate</answer>
 			<answer id = "8">other family member</answer>			
 			<answer id = "9" action="uncheck">THERE WAS NO SUCH INCIDENT/FEELING</answer>

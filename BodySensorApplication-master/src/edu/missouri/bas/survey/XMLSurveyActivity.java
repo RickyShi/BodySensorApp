@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 import edu.missouri.bas.R;
+import edu.missouri.bas.service.SensorService;
 import edu.missouri.bas.survey.category.RandomCategory;
 import edu.missouri.bas.survey.category.SurveyCategory;
 import edu.missouri.bas.survey.question.SurveyQuestion;
@@ -96,6 +97,7 @@ public class XMLSurveyActivity extends Activity {
      */
     LinkedHashMap<String, List<String>> answerMap;
     MediaPlayer mp;
+
     public class StartSound extends TimerTask {
     	@Override    	
     	public void run(){    		
@@ -157,7 +159,7 @@ public class XMLSurveyActivity extends Activity {
 			Timer t=new Timer();
 			t.schedule(new  StartSound(),1000*5);			
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-	        v.vibrate(1000); 
+	        v.vibrate(1000);
 		}
 		//ADD VOICE AND VIBRATE CONTROL TO THE DRINKFOLLOWUP
 		if(surveyName.equalsIgnoreCase("DRINKING_FOLLOWUP") && surveyFile.equalsIgnoreCase("DrinkingFollowup.xml"))
@@ -165,7 +167,7 @@ public class XMLSurveyActivity extends Activity {
 			Timer t=new Timer();
 			t.schedule(new  StartSound(),1000*5);			
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-	        v.vibrate(1000); 
+	        v.vibrate(1000);
 		}
 		
 		Log.d("XMLSurvey","File Name: "+surveyFile);
@@ -246,6 +248,17 @@ public class XMLSurveyActivity extends Activity {
     	for(SurveyCategory cat: cats){
     		for(SurveyQuestion question: cat.getQuestions()){
     			answerMap.put(question.getId(), question.getSelectedAnswers());
+    			//Here to target the first question of Drinking Follow-up
+    			if (cat.getCurrentQuestionText().equals("Drinking Follow-up")&&question.getId().equals("q611")){
+    				//dAns is the answer of drink numbers user reported
+    				String dAns = question.getSelectedAnswers().get(0);
+    				if (!dAns.equals("0")){
+    					Intent drinkFollowUpScheduler = new Intent(SensorService.ACTION_DRINK_FOLLOWUP);
+    					getApplicationContext().sendBroadcast(drinkFollowUpScheduler);
+    				}
+    				//Log.d(TAG,dAns);
+    				
+    			}
     		}
     	}
 		//answerMap.put(currentQuestion.getId(), currentQuestion.getSelectedAnswers());

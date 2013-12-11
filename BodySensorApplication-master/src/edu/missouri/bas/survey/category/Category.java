@@ -74,8 +74,13 @@ public class Category implements SurveyCategory{
 		}
 	}
 	
+	//Ricky 2013/12/10 Add
+	public String getCurrentQuestionText(){
+		return questionText;
+	}
 	
 	public String getQuestionText(String question){
+	
 		return questionText;
 	}
 	

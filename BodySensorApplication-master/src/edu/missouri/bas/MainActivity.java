@@ -80,7 +80,7 @@ public class MainActivity extends ListActivity {
 	protected static final int CONNECTIONS = 3;
 	protected static final int SURVEY_STATUS = 4;
 	public  final MainActivity thisActivity = this;
-	private final static String urlServer = "http://babbage.cs.missouri.edu/~rs79c/Android/upload.php";
+	//private final static String urlServer = "http://babbage.cs.missouri.edu/~rs79c/Android/upload.php";
 	HttpURLConnection connection = null;
 	DataOutputStream outputStream = null;
 	DataInputStream inputStream = null;

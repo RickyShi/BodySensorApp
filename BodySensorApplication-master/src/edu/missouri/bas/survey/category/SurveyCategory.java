@@ -23,6 +23,9 @@ public interface SurveyCategory {
 	
 	public void setQuestionText(String question);
 	
+	//Ricky 2013/12/10 Add
+	public String getCurrentQuestionText();
+	
 	public String getQuestionText(String question);
 	
 	public int totalQuestions();
