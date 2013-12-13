@@ -145,16 +145,16 @@ public class SurveyScheduler extends Activity {
 			    	
 			   else {
 				   
-				    Intent startScheduler = new Intent(SensorService.ACTION_SCHEDULE_SURVEY);	
+				    Intent startDrinkScheduler = new Intent(SensorService.ACTION_SCHEDULE_SURVEY);	
 		    		int Hours=StartTime.getHours();
 		    		int Minutes=StartTime.getMinutes();
 		    		int EndHours=EndTime.getHours();
 		    		int EndMinutes=EndTime.getMinutes();
-		    		startScheduler.putExtra(SensorService.START_HOUR,Hours);					    		
-		    		startScheduler.putExtra(SensorService.END_HOUR,EndHours);
-		    		startScheduler.putExtra(SensorService.START_MIN,Minutes);					    		
-		    		startScheduler.putExtra(SensorService.END_MIN,EndMinutes);
-		    		getApplicationContext().sendBroadcast(startScheduler);
+		    		startDrinkScheduler.putExtra(SensorService.START_HOUR,Hours);					    		
+		    		startDrinkScheduler.putExtra(SensorService.END_HOUR,EndHours);
+		    		startDrinkScheduler.putExtra(SensorService.START_MIN,Minutes);					    		
+		    		startDrinkScheduler.putExtra(SensorService.END_MIN,EndMinutes);
+		    		getApplicationContext().sendBroadcast(startDrinkScheduler);
 					Toast.makeText(getApplicationContext(),"Message sent to the service",Toast.LENGTH_LONG).show();					
 					Intent i=new Intent(getApplicationContext(), SurveyStatus.class);
 					startActivity(i);
