@@ -2,6 +2,7 @@ package edu.missouri.bas.survey;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Timer;
@@ -31,8 +32,8 @@ import edu.missouri.bas.survey.question.SurveyQuestion;
 
 
 
-/* Author: Paul Baskett
- * Last Update: 9/25/2012
+/* Author: Ricky Shi
+ * Last Update: 12/14/2013
  * Comments Added
  * 
  * Generic activity used for displaying surveys.
@@ -97,17 +98,35 @@ public class XMLSurveyActivity extends Activity {
      */
     LinkedHashMap<String, List<String>> answerMap;
     MediaPlayer mp;
+    
+    //Add one Timer
+    private static Timer alarmTimer = new Timer();
 
     public class StartSound extends TimerTask {
     	@Override    	
-    	public void run(){    		
+    	public void run(){ 
+    		Log.d(TAG,"Sound ALarm");
         mp = MediaPlayer.create(getApplicationContext(), R.raw.bodysensor_alarm);
     	mp.start();
     	}
     }
+    
+    private class SurveyNotCompletedAlarm extends TimerTask{
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			Log.d(TAG,"Final ALarm");
+			finish();
+			this.cancel();
+			
+		}
+    	
+    }
 	
     /** Called when the activity is first created. */
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.survey_layout);
@@ -124,6 +143,25 @@ public class XMLSurveyActivity extends Activity {
         backButton = new Button(this);
         submitButton.setText("Submit");
         backButton.setText("Previous Question");
+        
+        /*
+         * Here to alarm the user to complete the survey
+         * Ricky 2013/12/14
+         */
+        Date aTime1 = new Date();
+        Date aTime2 = new Date();
+        Date aTime3 = new Date();
+        Date aTime4 = new Date();
+        aTime1.setMinutes(aTime1.getMinutes()+5);
+        aTime2.setMinutes(aTime2.getMinutes()+10);
+        aTime3.setMinutes(aTime3.getMinutes()+15);
+        aTime4.setMinutes(aTime4.getMinutes()+15);
+        aTime4.setSeconds(aTime4.getSeconds()+20);
+        alarmTimer.schedule(new StartSound(), aTime1);
+        alarmTimer.schedule(new StartSound(), aTime2);
+        alarmTimer.schedule(new StartSound(), aTime3);
+        alarmTimer.schedule(new SurveyNotCompletedAlarm(), aTime4);
+        
         
         submitButton.setOnClickListener(new OnClickListener(){
 			
@@ -274,11 +312,21 @@ public class XMLSurveyActivity extends Activity {
     	//Alert user
     	Toast.makeText(this, "Survey Complete.", Toast.LENGTH_LONG).show();
     	
+    	cancelAllTimer();
     	/* Finish, this call is asynchronous, so handle that when
     	 * views need to be changed...
     	 */
     	finish();
     }
+    
+    public static void cancelAllTimer()
+	{
+		if(alarmTimer!=null)
+		{
+			alarmTimer.cancel();
+			alarmTimer.purge();
+		}
+	}	
     
     //Get the next question to be displayed
     protected LinearLayout nextQuestion(){

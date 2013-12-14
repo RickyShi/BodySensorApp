@@ -2,16 +2,18 @@ package edu.missouri.bas.survey;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.xml.sax.InputSource;
 
-import edu.missouri.bas.service.SensorService;
-import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,13 +22,54 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import edu.missouri.bas.R;
+import edu.missouri.bas.service.SensorService;
 
-public class XMLSurveyMenu extends Activity{
+//Here Change the Activity to FragmentActivity to enable the use of AlertDialog 
+//Ricky 2013/12/14
+public class XMLSurveyMenu extends FragmentActivity{
 	
 	Button morningButton;
 	List<SurveyInfo> surveys;
 	HashMap<View, SurveyInfo> buttonMap;
 	//SurveyInfo currentSurvey;
+	
+	private static final String INITIAL_DRINK_FILE = "InitialDrinkingParcel.xml";
+	private static final String INITIAL_DRINK_NAME = "INITIAL_DRINKING";
+	
+	private class FireMissilesDialogFragment extends DialogFragment {
+	    @Override
+	    public Dialog onCreateDialog(Bundle s) {
+	        // Use the Builder class for convenient dialog construction
+	        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+	        builder.setMessage(R.string.first_drink_check)
+	        	   .setTitle(R.string.first_drink_title)
+	               .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+	                   public void onClick(DialogInterface dialog, int id) {
+	                	   Intent drinkFollowUpScheduler = new Intent(SensorService.ACTION_DRINK_FOLLOWUP);
+	                	   XMLSurveyMenu.this.getApplicationContext().sendBroadcast(drinkFollowUpScheduler);
+	                	   dialog.dismiss();	                	   
+	                	   //Intent launchInitalDrink = 
+						   //		new Intent(getApplicationContext(), XMLSurveyActivity.class);
+	                	   Intent launchInitalDrink =new Intent(XMLSurveyMenu.this ,XMLSurveyActivity.class);
+	                	   launchInitalDrink.putExtra("survey_file", INITIAL_DRINK_FILE);
+	                	   launchInitalDrink.putExtra("survey_name", INITIAL_DRINK_NAME);
+	                	   launchInitalDrink.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	                	   XMLSurveyMenu.this.startActivity(launchInitalDrink);
+	                	    
+	                	   //Toast.makeText(getApplicationContext(), "Fire",Toast.LENGTH_LONG).show();
+	                   }
+	               })
+	               .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+	                   public void onClick(DialogInterface dialog, int id) {
+	                       // User cancelled the dialog
+	                	   dialog.cancel();
+	                   }
+	               });
+	        // Create the AlertDialog object and return it
+	        return builder.create();
+	    }
+	} 
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -71,14 +114,17 @@ public class XMLSurveyMenu extends Activity{
 						SurveyInfo temp = buttonMap.get(v);
 						//once click the initial drinking survey, the drinking follow MSG will be broadcast.
 						if (temp.getDisplayName().equals("Initial Drinking")){
-							Intent drinkFollowUpScheduler = new Intent(SensorService.ACTION_DRINK_FOLLOWUP);
-							getApplicationContext().sendBroadcast(drinkFollowUpScheduler);
+							FireMissilesDialogFragment TestDialog = new FireMissilesDialogFragment();
+							TestDialog.setCancelable(false);
+							TestDialog.show(getSupportFragmentManager(), "drink_check");
 						}
-						Intent launchSurvey = 
-								new Intent(getApplicationContext(), XMLSurveyActivity.class);
-						launchSurvey.putExtra("survey_file", temp.getFileName());
-						launchSurvey.putExtra("survey_name", temp.getName());
-						startActivity(launchSurvey);
+						else {
+							Intent launchSurvey = 
+									new Intent(getApplicationContext(), XMLSurveyActivity.class);
+							launchSurvey.putExtra("survey_file", temp.getFileName());
+							launchSurvey.putExtra("survey_name", temp.getName());
+							startActivity(launchSurvey);
+						}
 					}
 				});
 				buttonMap.put(b, survey);

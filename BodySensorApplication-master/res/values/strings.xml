@@ -5,5 +5,9 @@
     <string name="menu_settings" translatable="false">Settings</string>
     <string name="title_activity_main" translatable="false">Body Sensor Application</string>
     <string name="title_activity_device_list" translatable="false">DeviceListActivity</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="first_drink_check">Are you going to report your first drink?</string>
+    <string name="first_drink_title">First Drink Confirmation</string>
 
 </resources>

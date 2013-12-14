@@ -364,10 +364,14 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f070013;
+        public static final int first_drink_check=0x7f070021;
+        public static final int first_drink_title=0x7f070022;
         public static final int hello_world=0x7f07001b;
         public static final int menu_settings=0x7f07001c;
+        public static final int no=0x7f070020;
         public static final int title_activity_device_list=0x7f07001e;
         public static final int title_activity_main=0x7f07001d;
+        public static final int yes=0x7f07001f;
     }
     public static final class style {
         public static final int AppTheme=0x7f090000;
