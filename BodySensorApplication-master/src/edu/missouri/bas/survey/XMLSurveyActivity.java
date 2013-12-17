@@ -60,6 +60,8 @@ public class XMLSurveyActivity extends Activity {
 
 	public static final String INTENT_EXTRA_COMPLETION_TIME =
 			"survey_completion_time";
+	
+	
 
 	//List of read categories
 	ArrayList<SurveyCategory> cats = null;
@@ -84,6 +86,13 @@ public class XMLSurveyActivity extends Activity {
     boolean skipTo = false;
     String skipFrom = null;
     
+  //Add one Timer
+    public static Timer alarmTimer = new Timer();
+    //Add Four TimerTask var so later we could cancel the task
+    public static TimerTask alarmTask1;
+    public static TimerTask alarmTask2;
+    public static TimerTask alarmTask3;
+    public static TimerTask alarmTask4;
     
     String surveyName;
     String surveyFile;
@@ -99,13 +108,12 @@ public class XMLSurveyActivity extends Activity {
     LinkedHashMap<String, List<String>> answerMap;
     MediaPlayer mp;
     
-    //Add one Timer
-    private static Timer alarmTimer = new Timer();
+    
 
     public class StartSound extends TimerTask {
     	@Override    	
     	public void run(){ 
-    		Log.d(TAG,"Sound ALarm");
+    	Log.d(TAG,"Sound ALarm");
         mp = MediaPlayer.create(getApplicationContext(), R.raw.bodysensor_alarm);
     	mp.start();
     	}
@@ -144,6 +152,7 @@ public class XMLSurveyActivity extends Activity {
         submitButton.setText("Submit");
         backButton.setText("Previous Question");
         
+        
         /*
          * Here to alarm the user to complete the survey
          * Ricky 2013/12/14
@@ -157,10 +166,14 @@ public class XMLSurveyActivity extends Activity {
         aTime3.setMinutes(aTime3.getMinutes()+15);
         aTime4.setMinutes(aTime4.getMinutes()+15);
         aTime4.setSeconds(aTime4.getSeconds()+20);
-        alarmTimer.schedule(new StartSound(), aTime1);
-        alarmTimer.schedule(new StartSound(), aTime2);
-        alarmTimer.schedule(new StartSound(), aTime3);
-        alarmTimer.schedule(new SurveyNotCompletedAlarm(), aTime4);
+        alarmTask1 = new StartSound();
+        alarmTask2 = new StartSound();
+        alarmTask3 = new StartSound();
+        alarmTask4 = new SurveyNotCompletedAlarm();
+        alarmTimer.schedule(alarmTask1, aTime1);
+        alarmTimer.schedule(alarmTask2, aTime2);
+        alarmTimer.schedule(alarmTask3, aTime3);
+        alarmTimer.schedule(alarmTask4, aTime4);
         
         
         submitButton.setOnClickListener(new OnClickListener(){
@@ -201,7 +214,8 @@ public class XMLSurveyActivity extends Activity {
 		}
 		//ADD VOICE AND VIBRATE CONTROL TO THE DRINKFOLLOWUP
 		if(surveyName.equalsIgnoreCase("DRINKING_FOLLOWUP") && surveyFile.equalsIgnoreCase("DrinkingFollowup.xml"))
-		{
+		{	
+			SensorService.drinkUpFlag =true;
 			Timer t=new Timer();
 			t.schedule(new  StartSound(),1000*5);			
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -312,7 +326,11 @@ public class XMLSurveyActivity extends Activity {
     	//Alert user
     	Toast.makeText(this, "Survey Complete.", Toast.LENGTH_LONG).show();
     	
+    	if(surveyName.equalsIgnoreCase("DRINKING_FOLLOWUP") && surveyFile.equalsIgnoreCase("DrinkingFollowup.xml")){
+    		SensorService.drinkUpFlag = false;
+    	}
     	cancelAllTimer();
+    	
     	/* Finish, this call is asynchronous, so handle that when
     	 * views need to be changed...
     	 */
@@ -322,9 +340,13 @@ public class XMLSurveyActivity extends Activity {
     public static void cancelAllTimer()
 	{
 		if(alarmTimer!=null)
-		{
-			alarmTimer.cancel();
+		{	
+			alarmTask1.cancel();
+			alarmTask2.cancel();
+			alarmTask3.cancel();
+			alarmTask4.cancel();
 			alarmTimer.purge();
+			//alarmTimer.cancel();
 		}
 	}	
     

@@ -107,6 +107,7 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
 //Ricky 2013/12/09
 import android.os.AsyncTask;
 
@@ -268,6 +269,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	private static boolean dFlag = false;
 	//static var for DrinkSurvey task;
 	private static TimerTask drinkSurveyTask;
+	//variable to detect whether the drinking follow-up survey is on the top 
+	public static Boolean drinkUpFlag = false;
 		
 	/*
 	 * Bluetooth Variables
@@ -603,15 +606,18 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		@Override
 		public void run() {					
 		// TODO Auto-generated method stub
-		  Random rand=new Random();
-		  int TriggerTime=rand.nextInt(TriggerInterval)+1;		 
-		  Intent i = new Intent(serviceContext, XMLSurveyActivity.class);
-		  i.putExtra("survey_name", "RANDOM_ASSESSMENT");
-		  i.putExtra("survey_file", "RandomAssessmentParcel.xml");	
-		  scheduleSurvey = PendingIntent.getActivity(SensorService.this, 0,
-				                i, Intent.FLAG_ACTIVITY_NEW_TASK);
-		  mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-					SystemClock.elapsedRealtime()+1000*60*TriggerTime , scheduleSurvey);
+		  if (drinkUpFlag==false){
+			  Random rand=new Random();
+			  int TriggerTime=rand.nextInt(TriggerInterval)+1;		 
+			  Intent i = new Intent(serviceContext, XMLSurveyActivity.class);
+			  i.putExtra("survey_name", "RANDOM_ASSESSMENT");
+			  i.putExtra("survey_file", "RandomAssessmentParcel.xml");	
+			  scheduleSurvey = PendingIntent.getActivity(SensorService.this, 0,
+					                i, Intent.FLAG_ACTIVITY_NEW_TASK);
+			  mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+						SystemClock.elapsedRealtime()+1000*60*TriggerTime , scheduleSurvey);
+		  }
+		  else this.cancel();
 		}	
 	}
 	
@@ -631,7 +637,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		// TODO Auto-generated method stub
 			//if dFlag is true, it means the drinkingfollow Task is triggered.
 			//dFlag = true;
-			if ((dCount<=3)){
+			if ((dCount<=3)){				
 				Intent i = new Intent(serviceContext, XMLSurveyActivity.class);
 				i.putExtra("survey_name", "DRINKING_FOLLOWUP");
 				i.putExtra("survey_file", "DrinkingFollowup.xml");	
@@ -699,6 +705,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		SensorService.this.unregisterReceiver(soundRequestReceiver);
 		SensorService.this.unregisterReceiver(checkRequestReceiver);
 		
+		//If canceled, it will have some problems. Need to be handled later.
 		mAlarmManager.cancel(scheduleSurvey);
 		mAlarmManager.cancel(drinkfollowupSurvey);
 		//mAlarmManager.cancel(scheduleLocation);	
@@ -711,7 +718,14 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		LightSensor.stop();
 		
 		serviceWakeLock.release();
-		CancelTimers();
+		CancelTimers(t1);
+		CancelTimers(t2);
+		CancelTimers(t3);
+		CancelTimers(t4);
+		CancelTimers(t5);
+		CancelTimers(t6);
+		CancelTimers(t7);
+		//CancelTimers(alarmTimer);
 		setStatus(false);
 		
 		Log.d(TAG,"Service Stopped.");
@@ -847,25 +861,13 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		}
 	};
 	
-	public static void CancelTimers()
+	public static void CancelTimers(Timer t)
 	{
 		//if(t1!=null&&t2!=null&&t3!=null&&t4!=null&&t5!=null&&t6!=null&&mTimer!=null)
-		if(t1!=null&&t2!=null&&t3!=null&&t4!=null&&t5!=null&&t6!=null&&t7!=null)
+		if(t!=null)
 		{
-		t1.cancel();
-		t1.purge();
-		t2.cancel();
-		t2.purge();
-		t3.cancel();
-		t3.purge();
-		t4.cancel();
-		t4.purge();
-		t5.cancel();
-		t5.purge();
-		t6.cancel();
-		t6.purge();
-		t7.cancel();
-		t7.purge();	
+		t.cancel();
+		t.purge();	
 		//mTimer.cancel();
 		}
 	}	
