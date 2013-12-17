@@ -88,11 +88,7 @@ public class XMLSurveyActivity extends Activity {
     
   //Add one Timer
     public static Timer alarmTimer = new Timer();
-    //Add Four TimerTask var so later we could cancel the task
-    public static TimerTask alarmTask1;
-    public static TimerTask alarmTask2;
-    public static TimerTask alarmTask3;
-    public static TimerTask alarmTask4;
+    
     
     String surveyName;
     String surveyFile;
@@ -166,14 +162,14 @@ public class XMLSurveyActivity extends Activity {
         aTime3.setMinutes(aTime3.getMinutes()+15);
         aTime4.setMinutes(aTime4.getMinutes()+15);
         aTime4.setSeconds(aTime4.getSeconds()+20);
-        alarmTask1 = new StartSound();
-        alarmTask2 = new StartSound();
-        alarmTask3 = new StartSound();
-        alarmTask4 = new SurveyNotCompletedAlarm();
-        alarmTimer.schedule(alarmTask1, aTime1);
-        alarmTimer.schedule(alarmTask2, aTime2);
-        alarmTimer.schedule(alarmTask3, aTime3);
-        alarmTimer.schedule(alarmTask4, aTime4);
+        SensorService.alarmTask1 = new StartSound();
+        SensorService.alarmTask2 = new StartSound();
+        SensorService.alarmTask3 = new StartSound();
+        SensorService.alarmTask4 = new SurveyNotCompletedAlarm();
+        alarmTimer.schedule(SensorService.alarmTask1, aTime1);
+        alarmTimer.schedule(SensorService.alarmTask2, aTime2);
+        alarmTimer.schedule(SensorService.alarmTask3, aTime3);
+        alarmTimer.schedule(SensorService.alarmTask4, aTime4);
         
         
         submitButton.setOnClickListener(new OnClickListener(){
@@ -341,11 +337,13 @@ public class XMLSurveyActivity extends Activity {
 	{
 		if(alarmTimer!=null)
 		{	
-			alarmTask1.cancel();
-			alarmTask2.cancel();
-			alarmTask3.cancel();
-			alarmTask4.cancel();
+			//Boolean rickytest = alarmTask1.cancel();
+			SensorService.alarmTask1.cancel();
+			SensorService.alarmTask2.cancel();
+			SensorService.alarmTask3.cancel();
+			SensorService.alarmTask4.cancel();
 			alarmTimer.purge();
+			//Log.d(TAG, rickytest.toString());
 			//alarmTimer.cancel();
 		}
 	}	

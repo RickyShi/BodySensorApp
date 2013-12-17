@@ -271,6 +271,18 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	private static TimerTask drinkSurveyTask;
 	//variable to detect whether the drinking follow-up survey is on the top 
 	public static Boolean drinkUpFlag = false;
+	//Add Four TimerTask var for drink-survey so later we could cancel the task instead of canceling the timer
+    public static TimerTask alarmTask1;
+    public static TimerTask alarmTask2;
+    public static TimerTask alarmTask3;
+    public static TimerTask alarmTask4;
+    //Add Four TimerTask var for ramdom survey so later we could cancel the task instead of canceling the timer
+    public static TimerTask rTask1;
+    public static TimerTask rTask2;
+    public static TimerTask rTask3;
+    public static TimerTask rTask4;
+    public static TimerTask rTask5;
+    public static TimerTask rTask6;
 		
 	/*
 	 * Bluetooth Variables
@@ -717,7 +729,20 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		Accelerometer.stop();
 		LightSensor.stop();
 		
-		serviceWakeLock.release();
+		CancelTask(alarmTask1);
+		CancelTask(alarmTask2);
+		CancelTask(alarmTask3);
+		CancelTask(alarmTask4);
+		CancelTask(drinkSurveyTask);
+		CancelTask(rTask1);
+		CancelTask(rTask2);
+		CancelTask(rTask3);
+		CancelTask(rTask4);
+		CancelTask(rTask5);
+		CancelTask(rTask6);
+		/*
+		 * If we try to cancel the timer, when we reuse the timer
+		 * the system will show error msg
 		CancelTimers(t1);
 		CancelTimers(t2);
 		CancelTimers(t3);
@@ -725,9 +750,19 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		CancelTimers(t5);
 		CancelTimers(t6);
 		CancelTimers(t7);
+		*/		
 		//CancelTimers(alarmTimer);
+		PurgeTimers(t1);
+		PurgeTimers(t2);
+		PurgeTimers(t3);
+		PurgeTimers(t4);
+		PurgeTimers(t5);
+		PurgeTimers(t6);
+		PurgeTimers(t7);
 		setStatus(false);
 		
+		serviceWakeLock.release();
+				
 		Log.d(TAG,"Service Stopped.");
 		
 		super.onDestroy();
@@ -786,12 +821,18 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				Date dt6=new Date();
 				dt6.setHours(StartHour);
 				dt6.setMinutes(StartMin+Increment+(Interval*4));
-				t1.schedule(new ScheduleSurvey(TriggerInterval),dt1);	
-				t2.schedule(new ScheduleSurvey(TriggerInterval),dt2);
-				t3.schedule(new ScheduleSurvey(TriggerInterval),dt3);
-				t4.schedule(new ScheduleSurvey(TriggerInterval),dt4);
-				t5.schedule(new ScheduleSurvey(TriggerInterval),dt5);
-				t6.schedule(new ScheduleSurvey(TriggerInterval),dt6);
+				rTask1 = new ScheduleSurvey(TriggerInterval);
+				rTask2 = new ScheduleSurvey(TriggerInterval);
+				rTask3 = new ScheduleSurvey(TriggerInterval);
+				rTask4 = new ScheduleSurvey(TriggerInterval);
+				rTask5 = new ScheduleSurvey(TriggerInterval);
+				rTask6 = new ScheduleSurvey(TriggerInterval);				
+				t1.schedule(rTask1,dt1);	
+				t2.schedule(rTask2,dt2);
+				t3.schedule(rTask3,dt3);
+				t4.schedule(rTask4,dt4);
+				t5.schedule(rTask5,dt5);
+				t6.schedule(rTask6,dt6);
 				setStatus(true);
 			}
 		  	//ADD THE PROCESSING AFTER THE RECEIVER RECEIVE THE FOLLOWUP MSG
@@ -860,7 +901,10 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			}
 		}
 	};
-	
+	public static void CancelTask(TimerTask tTask){
+		if  (tTask!=null)
+		tTask.cancel();
+	}
 	public static void CancelTimers(Timer t)
 	{
 		//if(t1!=null&&t2!=null&&t3!=null&&t4!=null&&t5!=null&&t6!=null&&mTimer!=null)
@@ -870,7 +914,16 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		t.purge();	
 		//mTimer.cancel();
 		}
-	}	
+	}
+	public static void PurgeTimers(Timer t)
+	{
+		//if(t1!=null&&t2!=null&&t3!=null&&t4!=null&&t5!=null&&t6!=null&&mTimer!=null)
+		if(t!=null)
+		{
+		t.purge();	
+		//mTimer.cancel();
+		}
+	}
 	
 	public static void setStatus(boolean value)
 	{
