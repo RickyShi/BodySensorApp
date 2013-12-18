@@ -269,8 +269,7 @@ public class MainActivity extends ListActivity {
     
     private void stopSService() {
     	mIsRunning = false;     	
-    	this.stopService(new Intent(MainActivity.this,SensorService.class));
-    	
+    	this.stopService(new Intent(MainActivity.this,SensorService.class));    	
     }
     private void startSService() {
         if (! mIsRunning) {

@@ -121,6 +121,7 @@ public class XMLSurveyActivity extends Activity {
 		public void run() {
 			// TODO Auto-generated method stub
 			Log.d(TAG,"Final ALarm");
+			SensorService.drinkUpFlag = false;
 			finish();
 			this.cancel();
 			
