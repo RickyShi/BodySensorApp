@@ -85,11 +85,7 @@ public class XMLSurveyActivity extends Activity {
     //Will be set if a question needs to skip others
     boolean skipTo = false;
     String skipFrom = null;
-    
-  //Add one Timer
-    public static Timer alarmTimer = new Timer();
-    
-    
+        
     String surveyName;
     String surveyFile;
     
@@ -167,10 +163,10 @@ public class XMLSurveyActivity extends Activity {
         SensorService.alarmTask2 = new StartSound();
         SensorService.alarmTask3 = new StartSound();
         SensorService.alarmTask4 = new SurveyNotCompletedAlarm();
-        alarmTimer.schedule(SensorService.alarmTask1, aTime1);
-        alarmTimer.schedule(SensorService.alarmTask2, aTime2);
-        alarmTimer.schedule(SensorService.alarmTask3, aTime3);
-        alarmTimer.schedule(SensorService.alarmTask4, aTime4);
+        SensorService.alarmTimer.schedule(SensorService.alarmTask1, aTime1);
+        SensorService.alarmTimer.schedule(SensorService.alarmTask2, aTime2);
+        SensorService.alarmTimer.schedule(SensorService.alarmTask3, aTime3);
+        SensorService.alarmTimer.schedule(SensorService.alarmTask4, aTime4);
         
         
         submitButton.setOnClickListener(new OnClickListener(){
@@ -260,7 +256,13 @@ public class XMLSurveyActivity extends Activity {
 	}
 
 
-
+    protected void onDestroy(){
+    	if(surveyName.equalsIgnoreCase("DRINKING_FOLLOWUP") && surveyFile.equalsIgnoreCase("DrinkingFollowup.xml")){
+    		SensorService.drinkUpFlag = false;
+    	}
+    	cancelAllTimerTask();
+    	super.onDestroy();
+    }
 	protected ScrollView setupLayout(LinearLayout layout){
     	/* Didn't get a layout from nextQuestion(),
     	 * error (shouldn't be possible) or survey complete,
@@ -326,7 +328,7 @@ public class XMLSurveyActivity extends Activity {
     	if(surveyName.equalsIgnoreCase("DRINKING_FOLLOWUP") && surveyFile.equalsIgnoreCase("DrinkingFollowup.xml")){
     		SensorService.drinkUpFlag = false;
     	}
-    	cancelAllTimer();
+    	cancelAllTimerTask();
     	
     	/* Finish, this call is asynchronous, so handle that when
     	 * views need to be changed...
@@ -334,16 +336,16 @@ public class XMLSurveyActivity extends Activity {
     	finish();
     }
     
-    public static void cancelAllTimer()
+    public static void cancelAllTimerTask()
 	{
-		if(alarmTimer!=null)
+		if(SensorService.alarmTimer!=null)
 		{	
 			//Boolean rickytest = alarmTask1.cancel();
 			SensorService.alarmTask1.cancel();
 			SensorService.alarmTask2.cancel();
 			SensorService.alarmTask3.cancel();
 			SensorService.alarmTask4.cancel();
-			alarmTimer.purge();
+			SensorService.alarmTimer.purge();
 			//Log.d(TAG, rickytest.toString());
 			//alarmTimer.cancel();
 		}

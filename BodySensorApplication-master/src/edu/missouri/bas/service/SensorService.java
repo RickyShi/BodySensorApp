@@ -283,6 +283,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
     public static TimerTask rTask4;
     public static TimerTask rTask5;
     public static TimerTask rTask6;
+    //Add one Timer
+    public static Timer alarmTimer = new Timer();
 		
 	/*
 	 * Bluetooth Variables
@@ -618,6 +620,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		@Override
 		public void run() {					
 		// TODO Auto-generated method stub
+			Log.d("TAG",drinkUpFlag.toString());
 		  if (drinkUpFlag==false){
 			  Random rand=new Random();
 			  int TriggerTime=rand.nextInt(TriggerInterval)+1;		 
@@ -629,7 +632,10 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			  mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
 						SystemClock.elapsedRealtime()+1000*60*TriggerTime , scheduleSurvey);
 		  }
-		  else this.cancel();
+		  else {
+			  this.cancel();
+			  Log.d(TAG, "Random Survey Canceled due to the drinkSurvey");
+		  }
 		}	
 	}
 	
@@ -759,6 +765,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		PurgeTimers(t5);
 		PurgeTimers(t6);
 		PurgeTimers(t7);
+		PurgeTimers(alarmTimer);
 		setStatus(false);
 		
 		serviceWakeLock.release();
@@ -848,9 +855,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 					dFlag = false;
 					dCount = 1; 
 				}
-				long dIncrement = 1*60*1000;
+				long dIncrement = 30*60*1000;
 				Date dt7 = new Date(); 
-				dt7.setMinutes(dt7.getMinutes()+1);
+				dt7.setMinutes(dt7.getMinutes()+30);
 				drinkSurveyTask = new DrinkSurvey();
 				t7.schedule(drinkSurveyTask,dt7,dIncrement);
 				dFlag = true;
@@ -1080,8 +1087,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	         String dataToSend=strings[1];
 	         if(checkDataConnectivity())
 	 		{
-	        //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
-	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
+	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
+	         //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
 	         List<NameValuePair> params = new ArrayList<NameValuePair>();
 	         //file_name 
 	         params.add(new BasicNameValuePair("file_name",fileName));        
