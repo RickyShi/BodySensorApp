@@ -459,7 +459,7 @@ public class XMLSurveyActivity extends Activity {
  	public void onBackPressed(){
  		    new AlertDialog.Builder(this)
  		        .setTitle("Are you sure you want to exit?")
- 		        .setMessage("This action will destroy the current survey.\r\nYou should complete the survey.")
+ 		        .setMessage("This action will erase the current survey.\r\nYou should complete the survey.")
  		        .setNegativeButton(android.R.string.no, null)
  		        .setPositiveButton(android.R.string.yes, new android.content.DialogInterface.OnClickListener() {
 
