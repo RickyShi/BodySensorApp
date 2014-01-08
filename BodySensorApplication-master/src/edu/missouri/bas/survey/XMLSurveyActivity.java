@@ -11,7 +11,9 @@ import java.util.TimerTask;
 import org.xml.sax.InputSource;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -29,8 +31,6 @@ import edu.missouri.bas.service.SensorService;
 import edu.missouri.bas.survey.category.RandomCategory;
 import edu.missouri.bas.survey.category.SurveyCategory;
 import edu.missouri.bas.survey.question.SurveyQuestion;
-
-
 
 /* Author: Ricky Shi
  * Last Update: 12/14/2013
@@ -449,4 +449,25 @@ public class XMLSurveyActivity extends Activity {
     	currentQuestion = temp;
     	return currentQuestion.prepareLayout(this);
     }
+    
+    /* 2014/1/8
+     * onBackPressed deal with the condition when back button is pressed
+     * android.view.View.OnClickListener() is conflicted with content.DialogInterface.OnClickListener()
+     * so here need to write the full path of android.content.DialogInterface.OnClickListener()
+     */
+	
+ 	public void onBackPressed(){
+ 		    new AlertDialog.Builder(this)
+ 		        .setTitle("Are you sure you want to exit?")
+ 		        .setMessage("This action will destroy the current survey.\r\nYou should complete the survey.")
+ 		        .setNegativeButton(android.R.string.no, null)
+ 		        .setPositiveButton(android.R.string.yes, new android.content.DialogInterface.OnClickListener() {
+
+ 		            public void onClick(DialogInterface arg0, int arg1) {
+ 		            	XMLSurveyActivity.super.onBackPressed();
+ 		            }
+ 		        }).create().show();
+ 		
+ 		return;
+ 	}
 }
