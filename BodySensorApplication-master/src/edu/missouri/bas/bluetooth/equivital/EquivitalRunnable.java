@@ -125,9 +125,16 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents {
 			double impedanceQuality, double heartRateConfidence,
 			double breathingRateConfidence,double GSR) {
 		// TODO Auto-generated method stub
-		 String dataFromChestSensor=motion+","+bodyPosition+","+String.valueOf(beltSensorRate)+","+String.valueOf(ecgDerivedRate)+","+
-				 String.valueOf(impedanceRate)+","+String.valueOf(ecgRate)+","+String.valueOf(beltQuality)+","+String.valueOf(ecgQuality)+","+
-				 String.valueOf(impedanceQuality)+","+String.valueOf(heartRateConfidence)+","+String.valueOf(breathingRateConfidence)+","+String.valueOf(GSR);	
+			/* 
+			 * 1/22 Ricky Reduce ecgDerivedRate,impedanceRate,impedanceQuality
+			 */
+			/*
+			 String dataFromChestSensor=motion+","+bodyPosition+","+String.valueOf(beltSensorRate)+","+String.valueOf(ecgDerivedRate)+","+
+					 String.valueOf(impedanceRate)+","+String.valueOf(ecgRate)+","+String.valueOf(beltQuality)+","+String.valueOf(ecgQuality)+","+
+					 String.valueOf(impedanceQuality)+","+String.valueOf(heartRateConfidence)+","+String.valueOf(breathingRateConfidence)+","+String.valueOf(GSR);
+			*/
+		String dataFromChestSensor=motion+","+bodyPosition+","+String.valueOf(beltSensorRate)+","+String.valueOf(ecgRate)+","+String.valueOf(beltQuality)+","+String.valueOf(ecgQuality)+","+
+				 String.valueOf(heartRateConfidence)+","+String.valueOf(breathingRateConfidence)+","+String.valueOf(GSR);
 		 Message msgData=new Message();
 		 msgData.what = CHEST_SENSOR_DATA;
 		 Bundle dataBundle = new Bundle();

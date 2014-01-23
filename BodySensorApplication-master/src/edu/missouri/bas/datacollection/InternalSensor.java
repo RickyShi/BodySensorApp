@@ -85,7 +85,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
    		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));
 		return String.valueOf(cal.getTime());
 	}
-
+	//1/22 Ricky disabled phone accelerometer/light data transmission to server
 	@Override
 	public void onSensorChanged(SensorEvent event) {				
 		// TODO Auto-generated method stub
@@ -95,6 +95,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	    		String file_name="Accelerometer."+identifier+"."+getDate()+".txt";
 	            File f = new File(SensorService.BASE_PATH,file_name);	           	   
                 dataPoints.add(Accelerometer_Values+";");
+                /*
 	            if(dataPoints.size()==80)
 	            {
 	            	    List<String> subList = dataPoints.subList(0,41);
@@ -106,6 +107,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	     	            transmitData.execute("Accelerometer."+identifier+"."+getDate(),formatedData);
 	     	            subList.clear(); 	     	            
 	     	    }
+	     	    */
 	    		try {
 					writeToFile(f,Accelerometer_Values);
 				} catch (IOException e) {
@@ -122,8 +124,9 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	        	String file_name="LightSensor."+identifier+"."+getDate()+".txt";
 	            File f = new File(SensorService.BASE_PATH,file_name);	              
                 dataPoints.add(LightIntensity+";");
+                /*
 	            if(dataPoints.size()==80)
-	             {
+	            {
 	            	    List<String> subList = dataPoints.subList(0,41);
 	     	            String data=subList.toString();	     	            
 	     	            String formattedData=data.replaceAll("[\\[\\]]","");
@@ -132,7 +135,8 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	     	            TransmitData transmitData=new TransmitData();
 	     	            transmitData.execute("LightSensor."+identifier+"."+getDate(),formattedData);
 	     	            subList.clear();  
-	     	      }	            
+	     	     }	
+	     	     */            
 	    		try {
 					writeToFile(f,LightIntensity);
 				} catch (IOException e) {
