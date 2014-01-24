@@ -4,10 +4,31 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <Button android:id="@+id/start" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Start Service"></Button>
-    <Button android:layout_width="match_parent" android:text="Stop Service" android:id="@+id/button3" android:layout_height="wrap_content"></Button>
-    <TextView android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:layout_height="wrap_content" android:id="@+id/BluetoothState" android:text="Current State: "></TextView>
-    <Button android:layout_width="match_parent" android:text="Get Bluetooth State" android:id="@+id/button2" android:layout_height="wrap_content"></Button>
-    <Button android:layout_width="match_parent" android:text="Start Survey Menu" android:id="@+id/button1" android:layout_height="wrap_content"></Button>
+    <Button 
+	android:id="@+id/start" 
+	android:layout_width="fill_parent" 
+	android:layout_height="wrap_content" 
+	android:text="Start Service"></Button>
+    <Button 
+	android:layout_width="match_parent" 
+	android:text="Stop Service" 
+	android:id="@+id/button3" 
+	android:layout_height="wrap_content"></Button>
+    <TextView 
+	android:layout_width="wrap_content" 
+	android:textAppearance="?android:attr/textAppearanceLarge" 
+	android:layout_height="wrap_content" 
+	android:id="@+id/BluetoothState" 
+	android:text="Current State: "></TextView>
+    <Button 
+	android:layout_width="match_parent" 
+	android:text="Get Bluetooth State" 
+	android:id="@+id/button2" 
+	android:layout_height="wrap_content"></Button>
+    <Button 
+	android:layout_width="match_parent" 
+	android:text="Start Survey Menu" 
+	android:id="@+id/button1" 
+	android:layout_height="wrap_content"></Button>
 
 </LinearLayout>

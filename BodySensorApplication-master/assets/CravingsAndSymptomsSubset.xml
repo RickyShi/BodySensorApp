@@ -7,13 +7,13 @@
 			<answer id = "3">3 - Somewhat</answer>
 			<answer id = "4">4 - Quite a bit</answer>
 			<answer id = "5">5 - Extremely</answer>
-			<text id="1">In the past 15 minutes, did you CRAVE a DRINK?</text>
-			<text id="2">In the past 15 minutes, did you CRAVE a CIGARETTE?</text>
-			<text id="3">In the past 15 minutes, did you feel SLUGGISH?</text>
-			<text id="4">In the past 15 minutes, did you feel BUZZED?</text>
-			<text id="5">In the past 15 minutes, did you feel DIZZY?</text>
-			<text id="6">In the past 15 minutes, have you had a HEADACHE?</text>
-			<text id="7">In the past 15 minutes, have you felt NAUSEOUS?</text>		
+			<text id="1">In the past 15 minutes, did you CRAVE |a DRINK?</text>
+			<text id="2">In the past 15 minutes, did you CRAVE |a CIGARETTE?</text>
+			<text id="3">In the past 15 minutes, did you feel |SLUGGISH?</text>
+			<text id="4">In the past 15 minutes, did you feel |BUZZED?</text>
+			<text id="5">In the past 15 minutes, did you feel |DIZZY?</text>
+			<text id="6">In the past 15 minutes, have you had |a HEADACHE?</text>
+			<text id="7">In the past 15 minutes, have you felt |NAUSEOUS?</text>		
 		</questionblock>
 	</category>	
 </root>

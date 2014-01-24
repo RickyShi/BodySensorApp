@@ -43,10 +43,18 @@ public class RadioInputQuestion extends Question{
 		layout.setOrientation(LinearLayout.VERTICAL);
 		
 		TextView questionText = new TextView(c);
-		questionText.setText(getQuestion());
+		questionText.setText(getQuestion().replace("|", "\n"));
 		//questionText.setTextAppearance(c, R.attr.textAppearanceLarge);
 		questionText.setTextSize(TypedValue.COMPLEX_UNIT_DIP,20);
-
+		questionText.setLines(4);
+		
+		LinearLayout.LayoutParams layoutq = new LinearLayout.LayoutParams(
+				 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		layoutq.setMargins(10, 15, 0, 0);
+		
+		
+		questionText.setLayoutParams(layoutq);
+		
 		
 		RadioGroup radioGroup = new RadioGroup(c);
 		radioGroup.setOrientation(RadioGroup.VERTICAL);
@@ -70,6 +78,12 @@ public class RadioInputQuestion extends Question{
 			temp.setText(ans.getValue());
 			temp.setTextSize(TypedValue.COMPLEX_UNIT_DIP,15);
 
+			
+			LinearLayout.LayoutParams layouta = new LinearLayout.LayoutParams(
+					 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+			layouta.setMargins(10, 20, 0, 0);
+			temp.setLayoutParams(layouta);
+			
 			radioGroup.addView(temp);
 			//temp.setText(ans.getAnswerText());
 
@@ -95,6 +109,12 @@ public class RadioInputQuestion extends Question{
 				}
 			});
 		}
+		
+		LinearLayout.LayoutParams layoutp = new LinearLayout.LayoutParams(
+				 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		layoutp.setMargins(0, 40, 0, 0);
+		radioGroup.setLayoutParams(layoutp);
+		
 		layout.addView(questionText);
 		layout.addView(radioGroup);
 		layout.addView(editText);

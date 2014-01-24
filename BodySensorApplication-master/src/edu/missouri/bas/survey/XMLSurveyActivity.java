@@ -19,11 +19,14 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.Toast;
 import edu.missouri.bas.R;
@@ -263,7 +266,7 @@ public class XMLSurveyActivity extends Activity {
     	cancelAllTimerTask();
     	super.onDestroy();
     }
-	protected ScrollView setupLayout(LinearLayout layout){
+	protected LinearLayout setupLayout(LinearLayout layout){
     	/* Didn't get a layout from nextQuestion(),
     	 * error (shouldn't be possible) or survey complete,
     	 * either way finish safely.
@@ -274,7 +277,7 @@ public class XMLSurveyActivity extends Activity {
     	}
     	else{
 			//Setup ScrollView
-			ScrollView sv = new ScrollView(getApplicationContext());
+    		LinearLayout sv = new LinearLayout(getApplicationContext());
 			//Remove submit button from its parent so we can reuse it
 			if(submitButton.getParent() != null){
 				((ViewGroup)submitButton.getParent()).removeView(submitButton);
@@ -283,8 +286,30 @@ public class XMLSurveyActivity extends Activity {
 				((ViewGroup)backButton.getParent()).removeView(backButton);
 			}
 			//Add submit button to layout
-			layout.addView(submitButton);
-			layout.addView(backButton);
+			
+			//LinearLayout.LayoutParams keepFull = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+			
+			RelativeLayout.LayoutParams keepBTTM = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+			keepBTTM.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+			
+			//sv.setLayoutParams(keepFull);
+			//layout.setLayoutParams(keepFull);
+			
+			RelativeLayout rela = new RelativeLayout(getApplicationContext());
+			//rela.setLayoutParams(keepFull);
+						
+			LinearLayout buttonCTN = new LinearLayout(getApplicationContext());
+			buttonCTN.setOrientation(LinearLayout.VERTICAL);
+			buttonCTN.setLayoutParams(keepBTTM);
+			
+			buttonCTN.addView(submitButton);
+			buttonCTN.addView(backButton);
+
+			rela.addView(buttonCTN);
+			layout.addView(rela);
+			
+			//layout.addView(submitButton);
+			//layout.addView(backButton);
 			//Add layout to scroll view in case it's too long
 			sv.addView(layout);
 			//Display scroll view
