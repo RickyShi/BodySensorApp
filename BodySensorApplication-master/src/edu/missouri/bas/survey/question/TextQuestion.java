@@ -26,10 +26,18 @@ public class TextQuestion extends Question{
 		layout.setOrientation(LinearLayout.VERTICAL);
 		
 		TextView questionText = new TextView(c);
-		questionText.setText(this.getQuestion());
+		questionText.setText(this.getQuestion().replace("|", "\n"));
 		//questionText.setTextAppearance(c, R.attr.textAppearanceLarge);
-		questionText.setTextSize(TypedValue.COMPLEX_UNIT_DIP,18);
-
+		questionText.setTextSize(TypedValue.COMPLEX_UNIT_DIP,20);
+		questionText.setLines(4);
+		
+		LinearLayout.LayoutParams layoutq = new LinearLayout.LayoutParams(
+				 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		layoutq.setMargins(10, 15, 0, 0);
+		
+		
+		questionText.setLayoutParams(layoutq);
+		
 		
 		EditText editText = new EditText(c);
 		editText.addTextChangedListener(new TextWatcher(){
@@ -43,6 +51,11 @@ public class TextQuestion extends Question{
 			public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) { }
 			
 		});
+		
+		LinearLayout.LayoutParams layoutp = new LinearLayout.LayoutParams(
+				 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		layoutp.setMargins(0, 40, 0, 0);
+		editText.setLayoutParams(layoutp);
 		
 		layout.addView(questionText);
 		layout.addView(editText);

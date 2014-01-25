@@ -29,14 +29,22 @@ public class CheckQuestion extends Question{
 		
 		LinearLayout layout = new LinearLayout(c);
 		layout.setOrientation(LinearLayout.VERTICAL);
+		
 		TextView questionText = new TextView(c);
-		questionText.setText(getQuestion());
+		questionText.setText(getQuestion().replace("|", "\n"));
 		//questionText.setTextAppearance(c, R.attr.textAppearanceLarge);
 		questionText.setTextSize(TypedValue.COMPLEX_UNIT_DIP,20);
+		questionText.setLines(3);
 
-		
+//		LinearLayout.LayoutParams layoutq = new LinearLayout.LayoutParams(
+//				 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//		layoutq.setMargins(10, 10, 0, 0);
+//		
+//		
+//		questionText.setLayoutParams(layoutq);		
 		
 		layout.addView(questionText);
+		
 		for(SurveyAnswer ans: this.answers){
 			CheckBox temp = new CheckBox(c);
 			temp.setText(ans.getValue());
@@ -80,6 +88,11 @@ public class CheckQuestion extends Question{
 					}
 				}
 			});
+			
+//			LinearLayout.LayoutParams layouta = new LinearLayout.LayoutParams(
+//					 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//			layouta.setMargins(10, 10, 0, 0);
+//			temp.setLayoutParams(layouta);
 			layout.addView(temp);
 		}
 		

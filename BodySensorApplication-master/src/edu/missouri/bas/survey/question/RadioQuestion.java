@@ -20,7 +20,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-
 public class RadioQuestion extends Question {
 	
 	boolean answered;
@@ -40,9 +39,17 @@ public class RadioQuestion extends Question {
 		layout.setOrientation(LinearLayout.VERTICAL);
 		
 		TextView questionText = new TextView(c);
-		questionText.setText(getQuestion());
+		questionText.setText(getQuestion().replace("|", "\n"));
 		//questionText.setTextAppearance(c, R.attr.textAppearanceLarge);
 		questionText.setTextSize(TypedValue.COMPLEX_UNIT_DIP,20);
+		questionText.setLines(4);
+		
+		LinearLayout.LayoutParams layoutq = new LinearLayout.LayoutParams(
+				 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		layoutq.setMargins(10, 15, 0, 0);
+		
+		
+		questionText.setLayoutParams(layoutq);
 
 		
 		RadioGroup radioGroup = new RadioGroup(c);
@@ -51,8 +58,14 @@ public class RadioQuestion extends Question {
 		for(SurveyAnswer ans: this.answers){
 			RadioButton temp = new RadioButton(c);
 			temp.setText(ans.getValue());
-			temp.setTextSize(TypedValue.COMPLEX_UNIT_DIP,18);
+			temp.setTextSize(TypedValue.COMPLEX_UNIT_DIP,22);
 			ans.checkClear();
+			
+			
+			LinearLayout.LayoutParams layouta = new LinearLayout.LayoutParams(
+					 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+			layouta.setMargins(10, 20, 0, 0);
+			temp.setLayoutParams(layouta);
 			
 			radioGroup.addView(temp);
 			
@@ -79,6 +92,12 @@ public class RadioQuestion extends Question {
 				}
 			});
 		}
+		
+		LinearLayout.LayoutParams layoutp = new LinearLayout.LayoutParams(
+				 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		layoutp.setMargins(0, 40, 0, 0);
+		radioGroup.setLayoutParams(layoutp);
+		
 		layout.addView(questionText);
 		layout.addView(radioGroup);
 		return layout;

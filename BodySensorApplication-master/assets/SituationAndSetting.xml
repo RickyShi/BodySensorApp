@@ -2,7 +2,7 @@
     <category>
 		<description>Situation and setting</description>
 		<question id = "1" type = "check">
-			<text>In the past 15 minutes, WHO have you been with: (Check all that apply</text>
+			<text>In the past 15 minutes, WHO have you been with: (Check all that apply)</text>
 			<type>multiple selection</type>
 			<answer id = "1" action="uncheck">no one</answer>
 			<answer id = "2">partner/spouse</answer>
@@ -10,7 +10,7 @@
 			<answer id = "4">other</answer>
 		</question>
 		<question id = "2" type = "check">
-			<text>In the past 15 minutes, WHERE is your location: (Check all that apply</text>
+			<text>In the past 15 minutes, WHERE is your location: (Check all that apply)</text>
 			<type>multiple selection</type>
 			<answer id = "1">home</answer>
 			<answer id = "2">work</answer>
