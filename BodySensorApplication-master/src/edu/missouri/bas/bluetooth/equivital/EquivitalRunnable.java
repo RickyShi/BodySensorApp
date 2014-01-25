@@ -34,8 +34,10 @@ import com.equivital.sdk.decoder.SDKLicense;
 import com.equivital.sdk.decoder.SemCalibrationParameterType;
 import com.equivital.sdk.decoder.SemDevice;
 import com.equivital.sdk.decoder.SemOperatingModeType;
+import com.equivital.sdk.decoder.events.AccelerometerSemMessageEventArgs;
 import com.equivital.sdk.decoder.events.BatteryVoltageEventArgs;
 import com.equivital.sdk.decoder.events.HeartRateEventArgs;
+import com.equivital.sdk.decoder.events.ISemDeviceAccelerometerEvents;
 import com.equivital.sdk.decoder.events.ISemDeviceBatteryEvents;
 import com.equivital.sdk.decoder.events.ISemDeviceBreathingRateEvents;
 import com.equivital.sdk.decoder.events.ISemDeviceHeartRateEvents;
@@ -50,13 +52,15 @@ import com.equivital.sdk.decoder.events.SynchronisationTimerEventArgs;
 import com.google.android.gms.location.DetectedActivity;
 
 
+
+
 //Ricky
 import android.os.AsyncTask;
 import edu.missouri.bas.service.SensorService;
 
 
 
-public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents {
+public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISemDeviceAccelerometerEvents {
 	
 	private static SemDevice device;
 	String deviceAddress;
@@ -101,6 +105,8 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents {
 		// TODO Auto-generated method stub
 	    device.addSummaryEventListener(this);	   	
 		device.setSummaryDataEnabled(true);
+		//Here to registered the Accelerometer Listener
+		//device.addAccelerometerEventListener(this);
 		ISemConnection connection = SemBluetoothConnection.createConnection(address);		
 		device.start(connection);
 	}
@@ -281,5 +287,19 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents {
 	        fw.flush();
 			fw.close();
 		}
+	
+	@Override
+	public void accelerometerDataReceived(SemDevice arg0,
+			AccelerometerSemMessageEventArgs arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void highResolutionAccelerometerDataReceived(SemDevice arg0,
+			AccelerometerSemMessageEventArgs arg1) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
