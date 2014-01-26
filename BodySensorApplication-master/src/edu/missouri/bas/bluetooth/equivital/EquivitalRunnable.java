@@ -123,7 +123,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 				arg1.getSummary().getQualityConfidence().getImpedanceQuality(),
 				arg1.getSummary().getQualityConfidence().getHeartRateConfidence(),
 				arg1.getSummary().getQualityConfidence().getBreathingRateConfidence(),arg1.getSummary().getGalvanicSkinResistance());
-		
+		Log.d("Chest Acc Info","chest data recorded:");
 	}
 
 	private void updateSummary(String motion, String bodyPosition,
@@ -158,6 +158,12 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			{
 				Bundle resBundle =  (Bundle)msg.obj;
 				writeChestSensorDatatoCSV(String.valueOf(resBundle.getString("DATA")));
+				
+			}
+			if(msg.what==CHEST_SENSOR_ACCELEORMETER_DATA)
+			{
+				Bundle resBundle =  (Bundle)msg.obj;
+				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")));
 				
 			}
 			
@@ -199,6 +205,73 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			
 		}	
 	}
+	
+	@Override
+	public void accelerometerDataReceived(SemDevice arg0,
+			AccelerometerSemMessageEventArgs arg1) {
+		// TODO Auto-generated method stub
+		updateAcceleormeterSummary(arg1.getResultant_mG());
+		 Log.d("Chest Acc Info","data recorded:");
+		
+	}
+	
+	private void updateAcceleormeterSummary(double resultantAccelerometer) {
+		// TODO Auto-generated method stub
+		 String AccelerometerDataFromChestSensor=String.valueOf(resultantAccelerometer);
+		 Message msg=new Message();
+		 msg.what = CHEST_SENSOR_ACCELEORMETER_DATA;
+		 Bundle dataBundle = new Bundle();
+		 dataBundle.putString("ACC",AccelerometerDataFromChestSensor);
+		 msg.obj=dataBundle;
+		 chestSensorDataHandler.sendMessage(msg);
+		 Log.d("Chest Acc Info","data recorded:"+AccelerometerDataFromChestSensor);
+	}
+	
+
+	private void writeChestSensorAccelerometerDatatoCSV(String chestSensorAccelerometerData)
+	{
+		// TODO Auto-generated method stub
+		//Toast.makeText(serviceContext,"Trying to write to the file",Toast.LENGTH_LONG).show();
+		Calendar c=Calendar.getInstance();
+		SimpleDateFormat curFormater = new SimpleDateFormat("MMMMM_dd"); 
+		String dateObj =curFormater.format(c.getTime()); 		
+		String file_name="chestAccelerometer."+deviceName+"."+dateObj+".txt";	
+		Calendar cal=Calendar.getInstance();
+		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
+        File f = new File(BASE_PATH,file_name);		
+		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorAccelerometerData;			   
+        dataPoints.add(dataToWrite+";");
+        /*
+        if(dataPoints.size()==57)
+        {
+        	    List<String> subList = dataPoints.subList(0,56);
+ 	            String data=subList.toString();
+ 	            String formattedData=data.replaceAll("[\\[\\]]","");
+ 	            //sendDatatoServer("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
+ 	            TransmitData transmitData=new TransmitData();
+ 	            transmitData.execute("chestAccelerometer"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
+ 	            Log.d("Equivital","Accelerometer Data Point Sent");
+ 	            subList.clear();  
+ 	            subList=null;
+ 	    } 
+ 	    */	
+		if(f != null){
+			try {
+				writeToFile(f, dataToWrite);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}				
+			
+		}	
+	}
+
+	@Override
+	public void highResolutionAccelerometerDataReceived(SemDevice arg0,
+			AccelerometerSemMessageEventArgs arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	//Ricky 2013/12/09
 	private class TransmitData extends AsyncTask<String,Void, Boolean>
 	{
@@ -290,83 +363,6 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			fw.close();
 		}
 	
-	@Override
-	public void accelerometerDataReceived(SemDevice arg0,
-			AccelerometerSemMessageEventArgs arg1) {
-		// TODO Auto-generated method stub
-		updateAcceleormeterSummary(arg1.getResultant_mG());
-		
-		
-	}
-	
-	private void updateAcceleormeterSummary(double resultantAccelerometer) {
-		// TODO Auto-generated method stub
-		 String AccelerometerDataFromChestSensor=String.valueOf(resultantAccelerometer);
-		 Message msgAccelerometerData=new Message();
-		 msgAccelerometerData.what = CHEST_SENSOR_ACCELEORMETER_DATA;
-		 Bundle dataBundle2 = new Bundle();
-		 dataBundle2.putString("DATA",AccelerometerDataFromChestSensor);
-		 msgAccelerometerData.obj=dataBundle2;
-		 chestSensorAccelerometerDataHandler.sendMessage(msgAccelerometerData);
-		 Log.d("Chest Acc Info","data recorded:"+AccelerometerDataFromChestSensor);
-	}
-	
-	Handler chestSensorAccelerometerDataHandler = new Handler(){
-		@Override
-		public void handleMessage(Message msgAccelerometerData){
-			if(msgAccelerometerData.what==CHEST_SENSOR_ACCELEORMETER_DATA)
-			{
-				Bundle resBundle =  (Bundle)msgAccelerometerData.obj;
-				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("DATA")));
-				
-			}
-			
-		}
-		
-	};
 
-	private void writeChestSensorAccelerometerDatatoCSV(String chestSensorAccelerometerData)
-	{
-		// TODO Auto-generated method stub
-		//Toast.makeText(serviceContext,"Trying to write to the file",Toast.LENGTH_LONG).show();
-		Calendar c=Calendar.getInstance();
-		SimpleDateFormat curFormater = new SimpleDateFormat("MMMMM_dd"); 
-		String dateObj =curFormater.format(c.getTime()); 		
-		String file_name="chestAccelerometer."+deviceName+"."+dateObj+".txt";	
-		Calendar cal=Calendar.getInstance();
-		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
-        File f = new File(BASE_PATH,file_name);		
-		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorAccelerometerData;			   
-        dataPoints.add(dataToWrite+";");
-        /*
-        if(dataPoints.size()==57)
-        {
-        	    List<String> subList = dataPoints.subList(0,56);
- 	            String data=subList.toString();
- 	            String formattedData=data.replaceAll("[\\[\\]]","");
- 	            //sendDatatoServer("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
- 	            TransmitData transmitData=new TransmitData();
- 	            transmitData.execute("chestAccelerometer"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
- 	            Log.d("Equivital","Accelerometer Data Point Sent");
- 	            subList.clear();  
- 	            subList=null;
- 	    } 
- 	    */	
-		if(f != null){
-			try {
-				writeToFile(f, dataToWrite);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}				
-			
-		}	
-	}
-
-	@Override
-	public void highResolutionAccelerometerDataReceived(SemDevice arg0,
-			AccelerometerSemMessageEventArgs arg1) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 }
