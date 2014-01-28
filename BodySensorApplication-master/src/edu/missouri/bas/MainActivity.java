@@ -50,10 +50,6 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-
-
-
-
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -383,7 +379,6 @@ public class MainActivity extends ListActivity {
 
 	@Override
 	public void onDestroy(){
-	
 		super.onDestroy();
 	}
 	

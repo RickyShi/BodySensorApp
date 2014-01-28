@@ -18,8 +18,6 @@ package edu.missouri.bas.activities;
 
 import java.util.Set;
 
-import edu.missouri.bas.R;
-
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -38,6 +36,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import edu.missouri.bas.R;
 
 /**
  * This Activity appears as a dialog. It lists any paired devices and
@@ -163,6 +162,7 @@ public class DeviceListActivity extends Activity {
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
             String address = info.substring(info.length() - 17);
+            //Log.d("addTest",address);
 
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();

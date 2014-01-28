@@ -361,6 +361,10 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	        fw.flush();
 			fw.close();
 		}
+	 
+	 public void stop(){
+		 device.stop();
+	 }
 	
 
 	

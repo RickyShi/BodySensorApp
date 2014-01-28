@@ -716,6 +716,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			}
 		}
 		
+		//Ricky 1/28/2014 deal with equivitalThread stopping problem
+		if(equivitalThread != null){
+			equivitalThread.stop();
+		}
+		
 		notificationManager.cancel(SensorService.SERVICE_NOTIFICATION_ID);
 		
 		SensorService.this.unregisterReceiver(alarmReceiver);		
