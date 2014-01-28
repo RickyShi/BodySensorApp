@@ -151,6 +151,27 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		 //Log.d("Chest Acc Info","data recorded:"+bodyPosition);
 	}
 	
+	@Override
+	public void accelerometerDataReceived(SemDevice arg0,
+			AccelerometerSemMessageEventArgs arg1) {
+		// TODO Auto-generated method stub
+		updateAcceleormeterSummary(arg1.getResultant_mG(),arg1.getLateral_mG(),arg1.getLongitudinal_mG(),arg1.getVertical_mG());
+		Log.d("Chest Acc Info","data recorded:");
+		
+	}
+	
+	private void updateAcceleormeterSummary(double resultantAcc, double lateralAcc, double longitudinalAcc, double verticalAcc) {
+		// TODO Auto-generated method stub
+		 String AccelerometerDataFromChestSensor=String.valueOf(resultantAcc)+","+String.valueOf(lateralAcc)+","+String.valueOf(longitudinalAcc)+","+String.valueOf(verticalAcc);
+		 Message msg=new Message();
+		 msg.what = CHEST_SENSOR_ACCELEORMETER_DATA;
+		 Bundle dataBundle = new Bundle();
+		 dataBundle.putString("ACC",AccelerometerDataFromChestSensor);
+		 msg.obj=dataBundle;
+		 chestSensorDataHandler.sendMessage(msg);
+		 Log.d("Chest Acc Info","data recorded:"+AccelerometerDataFromChestSensor);
+	}
+	
 	Handler chestSensorDataHandler = new Handler(){
 		@Override
 		public void handleMessage(Message msg){
@@ -204,29 +225,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			}				
 			
 		}	
-	}
-	
-	@Override
-	public void accelerometerDataReceived(SemDevice arg0,
-			AccelerometerSemMessageEventArgs arg1) {
-		// TODO Auto-generated method stub
-		updateAcceleormeterSummary(arg1.getResultant_mG());
-		 Log.d("Chest Acc Info","data recorded:");
-		
-	}
-	
-	private void updateAcceleormeterSummary(double resultantAccelerometer) {
-		// TODO Auto-generated method stub
-		 String AccelerometerDataFromChestSensor=String.valueOf(resultantAccelerometer);
-		 Message msg=new Message();
-		 msg.what = CHEST_SENSOR_ACCELEORMETER_DATA;
-		 Bundle dataBundle = new Bundle();
-		 dataBundle.putString("ACC",AccelerometerDataFromChestSensor);
-		 msg.obj=dataBundle;
-		 chestSensorDataHandler.sendMessage(msg);
-		 Log.d("Chest Acc Info","data recorded:"+AccelerometerDataFromChestSensor);
-	}
-	
+	}	
 
 	private void writeChestSensorAccelerometerDatatoCSV(String chestSensorAccelerometerData)
 	{
