@@ -94,7 +94,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	    		String Accelerometer_Values = getTimeStamp()+","+event.values[0]+","+event.values[1]+","+event.values[2];
 	    		String file_name="Accelerometer."+identifier+"."+getDate()+".txt";
 	            File f = new File(SensorService.BASE_PATH,file_name);
-	            /*
+	            
                 dataPoints.add(Accelerometer_Values+";");              
 	            if(dataPoints.size()==80)
 	            {
@@ -107,7 +107,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	     	            transmitData.execute("Accelerometer."+identifier+"."+getDate(),formatedData);
 	     	            subList.clear(); 	     	            
 	     	    }
-	     	    */
+	     	    
 	    		try {
 					writeToFile(f,Accelerometer_Values);
 				} catch (IOException e) {
@@ -123,7 +123,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
    				String LightIntensity= getTimeStamp()+","+event.values[0];
 	        	String file_name="LightSensor."+identifier+"."+getDate()+".txt";
 	            File f = new File(SensorService.BASE_PATH,file_name);
-	            /*
+	            
                 dataPoints.add(LightIntensity+";");               
 	            if(dataPoints.size()==80)
 	            {
@@ -136,7 +136,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	     	            transmitData.execute("LightSensor."+identifier+"."+getDate(),formattedData);
 	     	            subList.clear();  
 	     	     }	
-	     	     */            
+	     	                 
 	    		try {
 					writeToFile(f,LightIntensity);
 				} catch (IOException e) {
@@ -179,8 +179,8 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	         String dataToSend=strings[1];
 	         if(checkDataConnectivity())
 	 		{
-	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");	
-	         //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
+	         //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");	
+	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
 	         List<NameValuePair> params = new ArrayList<NameValuePair>();
 	         //file_name 
 	         params.add(new BasicNameValuePair("file_name",fileName));        
