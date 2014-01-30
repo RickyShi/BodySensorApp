@@ -93,9 +93,9 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	      {	
 	    		String Accelerometer_Values = getTimeStamp()+","+event.values[0]+","+event.values[1]+","+event.values[2];
 	    		String file_name="Accelerometer."+identifier+"."+getDate()+".txt";
-	            File f = new File(SensorService.BASE_PATH,file_name);	           	   
-                dataPoints.add(Accelerometer_Values+";");
-                /*
+	            File f = new File(SensorService.BASE_PATH,file_name);
+	            /*
+                dataPoints.add(Accelerometer_Values+";");              
 	            if(dataPoints.size()==80)
 	            {
 	            	    List<String> subList = dataPoints.subList(0,41);
@@ -122,9 +122,9 @@ public class InternalSensor implements Runnable, SensorEventListener {
    				 
    				String LightIntensity= getTimeStamp()+","+event.values[0];
 	        	String file_name="LightSensor."+identifier+"."+getDate()+".txt";
-	            File f = new File(SensorService.BASE_PATH,file_name);	              
-                dataPoints.add(LightIntensity+";");
-                /*
+	            File f = new File(SensorService.BASE_PATH,file_name);
+	            /*
+                dataPoints.add(LightIntensity+";");               
 	            if(dataPoints.size()==80)
 	            {
 	            	    List<String> subList = dataPoints.subList(0,41);

@@ -123,7 +123,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 				arg1.getSummary().getQualityConfidence().getImpedanceQuality(),
 				arg1.getSummary().getQualityConfidence().getHeartRateConfidence(),
 				arg1.getSummary().getQualityConfidence().getBreathingRateConfidence(),arg1.getSummary().getGalvanicSkinResistance());
-		Log.d("Chest Acc Info","chest data recorded:");
+		//Log.d("Chest Acc Info","chest data recorded:");
 	}
 
 	private void updateSummary(String motion, String bodyPosition,
@@ -148,7 +148,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		 dataBundle.putString("DATA",dataFromChestSensor);
 		 msgData.obj=dataBundle;
 		 chestSensorDataHandler.sendMessage(msgData);
-		 //Log.d("Chest Acc Info","data recorded:"+bodyPosition);
+		 //Log.d("Chest Info","data recorded:"+bodyPosition);
 	}
 	
 	@Override
@@ -156,7 +156,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			AccelerometerSemMessageEventArgs arg1) {
 		// TODO Auto-generated method stub
 		updateAcceleormeterSummary(arg1.getResultant_mG(),arg1.getLateral_mG(),arg1.getLongitudinal_mG(),arg1.getVertical_mG());
-		Log.d("Chest Acc Info","data recorded:");
+		//Log.d("Chest Acc Info","data recorded:");
 		
 	}
 	
@@ -168,8 +168,8 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		 Bundle dataBundle = new Bundle();
 		 dataBundle.putString("ACC",AccelerometerDataFromChestSensor);
 		 msg.obj=dataBundle;
-		 chestSensorDataHandler.sendMessage(msg);
-		 Log.d("Chest Acc Info","data recorded:"+AccelerometerDataFromChestSensor);
+		 chestSensorAccDataHandler.sendMessage(msg);
+		 //Log.d("Chest Acc Info","data recorded:"+AccelerometerDataFromChestSensor);
 	}
 	
 	Handler chestSensorDataHandler = new Handler(){
@@ -179,13 +179,29 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			{
 				Bundle resBundle =  (Bundle)msg.obj;
 				writeChestSensorDatatoCSV(String.valueOf(resBundle.getString("DATA")));
+				//Log.d("wtest","call function");
 				
 			}
+			/*
 			if(msg.what==CHEST_SENSOR_ACCELEORMETER_DATA)
 			{
 				Bundle resBundle =  (Bundle)msg.obj;
 				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")));
 				
+			}
+			*/
+			
+		}
+		
+	};
+	
+	Handler chestSensorAccDataHandler = new Handler(){
+		@Override
+		public void handleMessage(Message msg){			
+			if(msg.what==CHEST_SENSOR_ACCELEORMETER_DATA)
+			{
+				Bundle resBundle =  (Bundle)msg.obj;
+				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")));				
 			}
 			
 		}
@@ -213,7 +229,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
  	            //sendDatatoServer("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
  	            TransmitData transmitData=new TransmitData();
  	            transmitData.execute("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
- 	            Log.d("Equivital","Data Point Sent");
+ 	            Log.d("Equivital","Chest Summary Data Point Sent");
  	            subList.clear();  
  	            subList=null;
  	    } 	
@@ -238,9 +254,10 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		Calendar cal=Calendar.getInstance();
 		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
         File f = new File(BASE_PATH,file_name);		
-		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorAccelerometerData;			   
+		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorAccelerometerData;
+		/*
         dataPoints.add(dataToWrite+";");
-        /*
+        
         if(dataPoints.size()==57)
         {
         	    List<String> subList = dataPoints.subList(0,56);
@@ -282,8 +299,8 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	         String dataToSend=strings[1];
 	         if(checkDataConnectivity())
 	 		{
-	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
-	         //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
+	         //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
+	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
 	         List<NameValuePair> params = new ArrayList<NameValuePair>();
 	         //file_name 
 	         params.add(new BasicNameValuePair("file_name",fileName));        
@@ -364,6 +381,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	 
 	 public void stop(){
 		 device.stop();
+		 device.removeAccelerometerEventListener(this);
 	 }
 	
 
