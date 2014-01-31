@@ -9,12 +9,15 @@ import org.xml.sax.InputSource;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -142,4 +145,47 @@ public class XMLSurveyMenu extends FragmentActivity{
 			}
 		});*/
 	}
+	//Ricky 1/31 for test
+	ProgressDialog mydialog;
+	public void onBackPressed(){
+	
+	LayoutInflater factory=LayoutInflater.from(XMLSurveyMenu.this);  
+    //get view from my settings pin_number
+    final View DialogView=factory.inflate(R.layout.pin_number, null);  
+    
+    new AlertDialog.Builder(XMLSurveyMenu.this)  
+    .setTitle("test")  
+    .setView(DialogView)//using user defined view
+    .setPositiveButton("yes",   
+    new DialogInterface.OnClickListener() {
+          
+        @Override  
+        public void onClick(DialogInterface dialog, int which) {  
+            
+            mydialog=ProgressDialog.show(XMLSurveyMenu.this, "wait", "login",true);  
+            new Thread()  
+            {  
+                public void run()  
+                {  
+                    try  
+                    {  
+                        sleep(3000);  
+                    }catch(Exception e)  
+                    {  
+                        e.printStackTrace();  
+                    }finally  
+                    {  
+                        
+                        mydialog.dismiss();  
+                    }  
+                }  
+            }.start();  
+        }  
+    }).setNegativeButton(android.R.string.no, null)
+    .create().show();
+        
+    return;
+     
+}
+
 }

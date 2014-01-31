@@ -9,5 +9,7 @@
     <string name="no">no</string>
     <string name="first_drink_check">Are you going to report your first drink?</string>
     <string name="first_drink_title">First Drink Confirmation</string>
+    <string name="pin_text">Please input your pin number.</string>
+    <string name="pin_hint">Pin Number Here</string>
 
 </resources>
