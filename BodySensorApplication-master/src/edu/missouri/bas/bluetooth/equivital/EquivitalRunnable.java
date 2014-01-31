@@ -179,7 +179,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			dataBundle.putString("ACC",AccelerometerDataFromChestSensor);
 			msg.obj=dataBundle;
 			chestSensorAccDataHandler.sendMessage(msg);
-			Log.d("Chest Acc Info","average Acc:"+AccelerometerDataFromChestSensor);
+			//Log.d("Chest Acc Info","average Acc:"+AccelerometerDataFromChestSensor);
 		}
 	}
 	
@@ -229,7 +229,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
  	            //sendDatatoServer("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
  	            TransmitData transmitData=new TransmitData();
  	            transmitData.execute("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
- 	            Log.d("Equivital","Chest Summary Data Point Sent");
+ 	            //Log.d("Equivital","Chest Summary Data Point Sent");
  	            subList.clear();  
  	            subList=null;
  	    } 	

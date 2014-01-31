@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -147,41 +148,59 @@ public class XMLSurveyMenu extends FragmentActivity{
 	}
 	//Ricky 1/31 for test
 	ProgressDialog mydialog;
+	TextView mText;
+	EditText mEdit;
 	public void onBackPressed(){
 	
 	LayoutInflater factory=LayoutInflater.from(XMLSurveyMenu.this);  
     //get view from my settings pin_number
     final View DialogView=factory.inflate(R.layout.pin_number, null);  
     
-    new AlertDialog.Builder(XMLSurveyMenu.this)  
+    new AlertDialog.Builder(XMLSurveyMenu.this)
     .setTitle("test")  
     .setView(DialogView)//using user defined view
-    .setPositiveButton("yes",   
-    new DialogInterface.OnClickListener() {
-          
-        @Override  
-        public void onClick(DialogInterface dialog, int which) {  
-            
-            mydialog=ProgressDialog.show(XMLSurveyMenu.this, "wait", "login",true);  
-            new Thread()  
-            {  
-                public void run()  
-                {  
-                    try  
-                    {  
-                        sleep(3000);  
-                    }catch(Exception e)  
-                    {  
-                        e.printStackTrace();  
-                    }finally  
-                    {  
-                        
-                        mydialog.dismiss();  
-                    }  
-                }  
-            }.start();  
-        }  
-    }).setNegativeButton(android.R.string.no, null)
+    .setPositiveButton(android.R.string.yes,   
+    		new DialogInterface.OnClickListener() {		          
+		        @Override  
+		        public void onClick(DialogInterface dialog, int which) {  
+		        	mEdit = (EditText)findViewById(R.id.edit_pin);
+		        	mText = (TextView)findViewById(R.id.text_info);	
+		        	String pin = mEdit.getText().toString();
+		        	if (pin.equals("1234")){
+			            mydialog=ProgressDialog.show(XMLSurveyMenu.this, "wait", "login",true);  
+			            new Thread()  
+			            {  
+			                public void run()  
+			                {  
+			                    try  
+			                    {  
+			                        sleep(3000);  
+			                    }catch(Exception e)  
+			                    {  
+			                        e.printStackTrace();  
+			                    }finally  
+			                    {  
+			                        
+			                        mydialog.dismiss();  
+			                    }  
+			                }  
+			            }.start(); 
+		        	}
+		        	else {
+		        		//mText.setText("Pin Number is not correct.");
+		        	}
+		        }  
+    })
+    .setNegativeButton(android.R.string.no, 
+    		new DialogInterface.OnClickListener() {
+		
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			// TODO Auto-generated method stub
+			XMLSurveyMenu.super.onBackPressed();
+		}
+}
+    		)
     .create().show();
         
     return;

@@ -123,7 +123,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
    				String LightIntensity= getTimeStamp()+","+event.values[0];
 	        	String file_name="LightSensor."+identifier+"."+getDate()+".txt";
 	            File f = new File(SensorService.BASE_PATH,file_name);
-	            
+	            /*
                 dataPoints.add(LightIntensity+";");               
 	            if(dataPoints.size()==80)
 	            {
@@ -136,7 +136,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	     	            transmitData.execute("LightSensor."+identifier+"."+getDate(),formattedData);
 	     	            subList.clear();  
 	     	     }	
-	     	                 
+	     	     */            
 	    		try {
 					writeToFile(f,LightIntensity);
 				} catch (IOException e) {

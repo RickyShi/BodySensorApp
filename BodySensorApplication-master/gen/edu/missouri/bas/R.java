@@ -203,16 +203,16 @@ containing a value of this type.
     }
     public static final class id {
         public static final int BluetoothState=0x7f06000c;
-        public static final int Connect=0x7f060028;
-        public static final int Disable=0x7f06002a;
-        public static final int Enable=0x7f060029;
+        public static final int Connect=0x7f060029;
+        public static final int Disable=0x7f06002b;
+        public static final int Enable=0x7f06002a;
         public static final int bluetoothstatetext=0x7f060019;
         public static final int btnCheckState=0x7f060017;
         public static final int btnConnectChest=0x7f060014;
         public static final int btnConnectWrist=0x7f060011;
-        public static final int btnReturn=0x7f060025;
-        public static final int btnSchedule=0x7f060024;
-        public static final int btnStartTimer=0x7f060022;
+        public static final int btnReturn=0x7f060026;
+        public static final int btnSchedule=0x7f060025;
+        public static final int btnStartTimer=0x7f060023;
         public static final int button1=0x7f06000e;
         public static final int button2=0x7f06000d;
         public static final int button3=0x7f06000b;
@@ -220,31 +220,32 @@ containing a value of this type.
         public static final int edit_pin=0x7f06001b;
         public static final int hybrid=0x7f060004;
         public static final int main_listview1=0x7f060018;
-        public static final int menu_settings=0x7f060026;
+        public static final int menu_settings=0x7f060027;
         public static final int new_devices=0x7f060008;
         public static final int none=0x7f060000;
         public static final int normal=0x7f060001;
         public static final int paired_devices=0x7f060006;
         public static final int satellite=0x7f060002;
-        public static final int selectDevice=0x7f060027;
+        public static final int selectDevice=0x7f060028;
         public static final int start=0x7f06000a;
-        public static final int surveyLinearLayout=0x7f06001c;
-        public static final int tableview=0x7f06001d;
+        public static final int surveyLinearLayout=0x7f06001d;
+        public static final int tableview=0x7f06001e;
         public static final int tbBluetooth=0x7f060016;
         public static final int terrain=0x7f060003;
         public static final int textView1=0x7f06000f;
         public static final int textView2=0x7f060012;
         public static final int textView3=0x7f060015;
+        public static final int text_info=0x7f06001c;
         public static final int text_pin=0x7f06001a;
         public static final int title_new_devices=0x7f060007;
         public static final int title_paired_devices=0x7f060005;
-        public static final int tpEndTime=0x7f060021;
-        public static final int tpStartTime=0x7f06001f;
-        public static final int tvEndTime=0x7f060020;
+        public static final int tpEndTime=0x7f060022;
+        public static final int tpStartTime=0x7f060020;
+        public static final int tvEndTime=0x7f060021;
         public static final int tvSetChestStatus=0x7f060013;
-        public static final int tvSetSurveyStatus=0x7f060023;
+        public static final int tvSetSurveyStatus=0x7f060024;
         public static final int tvSetWristStatus=0x7f060010;
-        public static final int tvStartTime=0x7f06001e;
+        public static final int tvStartTime=0x7f06001f;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f080000;
