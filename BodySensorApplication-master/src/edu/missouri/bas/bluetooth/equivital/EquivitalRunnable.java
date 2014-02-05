@@ -75,7 +75,9 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	// List to store the chest accelerometer data in order to do compression later.
 	List<Double> chestAccList = new ArrayList<Double>();
 	// var to store the average chest accelerometer data
-	double averageAcc = 0;
+	private double averageAcc = 0;
+	private int count = 0;
+	
 
 	public EquivitalRunnable(String address,String name,String macAddress)
 	{
@@ -162,8 +164,12 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			AccelerometerSemMessageEventArgs arg1) {
 		// TODO Auto-generated method stub
 		//updateAcceleormeterSummary(arg1.getResultant_mG(),arg1.getLateral_mG(),arg1.getLongitudinal_mG(),arg1.getVertical_mG());
-		updateAcceleormeterSummary(arg1.getResultant_mG());
-		//Log.d("Chest Acc Info","data recorded:");
+		if (count<25*11){
+			count++;
+		} else {
+			updateAcceleormeterSummary(arg1.getResultant_mG());
+		}
+		//Log.d("Chest Acc Info",count+"|||"+String.valueOf(arg1.getResultant_mG()));
 		
 	}
 	
@@ -219,7 +225,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		Calendar cal=Calendar.getInstance();
 		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
         File f = new File(BASE_PATH,file_name);		
-		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorData;			   
+		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorData;		
         dataPoints.add(dataToWrite+";");
         if(dataPoints.size()==57)
         {
@@ -232,7 +238,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
  	            //Log.d("Equivital","Chest Summary Data Point Sent");
  	            subList.clear();  
  	            subList=null;
- 	    } 	
+ 	    } 	    	
 		if(f != null){
 			try {
 				writeToFile(f, dataToWrite);
@@ -255,7 +261,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
         File f = new File(BASE_PATH,file_name);		
 		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorAccelerometerData;
-		
+		/*
 		AccDataPoints.add(dataToWrite+";");
         
         if(AccDataPoints.size()==57)
@@ -270,7 +276,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
  	            subList.clear();  
  	            subList=null;
  	    } 
- 	    	
+ 	    */	
 		if(f != null){
 			try {
 				writeToFile(f, dataToWrite);
@@ -401,6 +407,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		}
 	 
 	 public void stop(){
+		 count = 0;
 		 device.stop();
 		 device.removeAccelerometerEventListener(this);
 	 }

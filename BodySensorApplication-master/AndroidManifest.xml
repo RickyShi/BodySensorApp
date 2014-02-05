@@ -98,6 +98,12 @@
             android:screenOrientation="portrait"
             >
         </activity>
+        <activity
+            android:name=".survey.SurveyPinCheck"
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait"
+            >
+        </activity>
         <service android:name=".service.SensorService"></service>       
         <service android:name=".service.ActivityRecognitionService" android:process=":remote"  ></service>
     </application>

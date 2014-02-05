@@ -13,5 +13,7 @@
     <string name="pin_hint">Please input here.</string>
     <string name="retry">Retry</string>
     <string name="back">Back</string>
+    <string name="retry_text">If you input a wrong PIN number or accidentally cancel the survey before finishing it, please press Retry Button.</string>
+    <string name="back_text">If you have completed the Survey, please press Back Button.</string>
 
 </resources>

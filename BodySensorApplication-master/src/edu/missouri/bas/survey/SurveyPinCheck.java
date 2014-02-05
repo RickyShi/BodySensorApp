@@ -1,24 +1,48 @@
 package edu.missouri.bas.survey;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Vibrator;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import edu.missouri.bas.R;
+import edu.missouri.bas.service.SensorService;
+import edu.missouri.bas.survey.XMLSurveyActivity.StartSound;
 
 public class SurveyPinCheck extends Activity {
 	
-	ProgressDialog mydialog;
-	TextView mText;
-	EditText mEdit;
-	Button pButton;
-	Button bButton;
+	private ProgressDialog mydialog;
+	private TextView mText;
+	private EditText mEdit;
+	private Button pButton;
+	private Button bButton;
+	private String surveyName;
+	private String surveyFile;
+	
+	private MediaPlayer mp;
+    
+    
+
+    public class StartSound extends TimerTask {
+    	@Override    	
+    	public void run(){ 
+        mp = MediaPlayer.create(getApplicationContext(), R.raw.bodysensor_alarm);
+    	mp.start();
+    	}
+    }
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +54,26 @@ public class SurveyPinCheck extends Activity {
 	    bButton = (Button)findViewById(R.id.button_exit);
 	    pButton = (Button)findViewById(R.id.button_pin);
 	    
+	    surveyName = getIntent().getStringExtra("survey_name");
+		surveyFile = getIntent().getStringExtra("survey_file");
+		// Alarm when the following two kind of survey is triggered
+		if(surveyName.equalsIgnoreCase("RANDOM_ASSESSMENT") && surveyFile.equalsIgnoreCase("RandomAssessmentParcel.xml"))
+		{
+			Timer t=new Timer();
+			t.schedule(new  StartSound(),1000*5);			
+			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+	        v.vibrate(1000);
+		}
+		//ADD VOICE AND VIBRATE CONTROL TO THE DRINKFOLLOWUP
+		if(surveyName.equalsIgnoreCase("DRINKING_FOLLOWUP") && surveyFile.equalsIgnoreCase("DrinkingFollowup.xml"))
+		{	
+			SensorService.drinkUpFlag =true;
+			Timer t=new Timer();
+			t.schedule(new  StartSound(),1000*5);			
+			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+	        v.vibrate(1000);
+		}
+		
 	    bButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -54,10 +98,10 @@ public class SurveyPinCheck extends Activity {
 	public void onBackPressed(){
 		    new AlertDialog.Builder(this)
 		        .setTitle("Are you sure you want to exit?")
-		        .setMessage("This action will cancel the Survey.")
+		        .setMessage("Did you complete the Survey?")
 		        .setCancelable(false)
-		        .setNegativeButton(android.R.string.no, null)
-		        .setPositiveButton(android.R.string.yes, new android.content.DialogInterface.OnClickListener() {
+		        .setNegativeButton(R.string.no, null)
+		        .setPositiveButton(R.string.yes, new android.content.DialogInterface.OnClickListener() {
 
 		            public void onClick(DialogInterface arg0, int arg1) {
 		            	SurveyPinCheck.super.onBackPressed();
@@ -82,12 +126,14 @@ public class SurveyPinCheck extends Activity {
 			        	mEdit = (EditText)DialogView.findViewById(R.id.edit_pin);
 			        	mText = (TextView)DialogView.findViewById(R.id.text_pin);
 			        	String pin = mEdit.getText().toString();
-			        	//Log.d("wtest",pin);
-			        	//createProgressDialog();
 			        	if (pin.equals("1234")){
-			        	//To do sth here
-			        	//send the intent and trigger new Activity....
-			        		//createProgressDialog();
+			        	//Send the intent and trigger new Survey Activity....
+			        	dialog.cancel();
+		        		Intent launchSurvey = 
+								new Intent(getApplicationContext(), XMLSurveyActivity.class);
+						launchSurvey.putExtra("survey_file", surveyFile);
+						launchSurvey.putExtra("survey_name", surveyName);
+						startActivity(launchSurvey);
 			        	}
 			        	else {
 			        		//New AlertDialog to show instruction.
@@ -113,7 +159,7 @@ public class SurveyPinCheck extends Activity {
 	    .create().show();
 	}
 	
-	// ProgressDialog designed to show better UI. Not used for now.
+	// ProgressDialog designed to show better UI. Not used now.
 	/*
 	private void createProgressDialog(){
 		mydialog=ProgressDialog.show(SurveyPinCheck.this, "Checking Pin Number", "login",true);  

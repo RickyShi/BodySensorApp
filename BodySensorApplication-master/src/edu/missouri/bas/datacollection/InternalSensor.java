@@ -94,7 +94,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	    		String Accelerometer_Values = getTimeStamp()+","+event.values[0]+","+event.values[1]+","+event.values[2];
 	    		String file_name="Accelerometer."+identifier+"."+getDate()+".txt";
 	            File f = new File(SensorService.BASE_PATH,file_name);
-	            
+	            /*
                 dataPoints.add(Accelerometer_Values+";");              
 	            if(dataPoints.size()==80)
 	            {
@@ -107,7 +107,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	     	            transmitData.execute("Accelerometer."+identifier+"."+getDate(),formatedData);
 	     	            subList.clear(); 	     	            
 	     	    }
-	     	    
+	     	    */
 	    		try {
 					writeToFile(f,Accelerometer_Values);
 				} catch (IOException e) {

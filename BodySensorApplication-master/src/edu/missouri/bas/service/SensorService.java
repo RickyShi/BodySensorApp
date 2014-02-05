@@ -40,6 +40,7 @@ import edu.missouri.bas.service.modules.location.ActivityRecognitionScan;
 import edu.missouri.bas.service.modules.location.DetectionRemover;
 import edu.missouri.bas.service.modules.location.LocationControl;
 import edu.missouri.bas.service.modules.sensors.SensorControl;
+import edu.missouri.bas.survey.SurveyPinCheck;
 import edu.missouri.bas.survey.XMLSurveyActivity;
 import edu.missouri.bas.survey.XMLSurveyActivity.StartSound;
 import edu.missouri.bas.survey.answer.SurveyAnswer;
@@ -103,6 +104,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+
 
 
 
@@ -624,7 +626,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		  if (drinkUpFlag==false){
 			  Random rand=new Random();
 			  int TriggerTime=rand.nextInt(TriggerInterval)+1;		 
-			  Intent i = new Intent(serviceContext, XMLSurveyActivity.class);
+			  Intent i = new Intent(serviceContext, SurveyPinCheck.class);
 			  i.putExtra("survey_name", "RANDOM_ASSESSMENT");
 			  i.putExtra("survey_file", "RandomAssessmentParcel.xml");	
 			  scheduleSurvey = PendingIntent.getActivity(SensorService.this, 0,
@@ -656,7 +658,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			//if dFlag is true, it means the drinkingfollow Task is triggered.
 			//dFlag = true;
 			if ((dCount<=3)){				
-				Intent i = new Intent(serviceContext, XMLSurveyActivity.class);
+				Intent i = new Intent(serviceContext, SurveyPinCheck.class);
 				i.putExtra("survey_name", "DRINKING_FOLLOWUP");
 				i.putExtra("survey_file", "DrinkingFollowup.xml");	
 				drinkfollowupSurvey = PendingIntent.getActivity(SensorService.this, 0,

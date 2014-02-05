@@ -3,20 +3,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
+	
+    <TextView
+       	android:id="@+id/retryTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/retry_text"
+        android:layout_marginTop="5dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+            
     <Button
         android:id="@+id/button_pin"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:layout_marginTop="5dp"
         android:text="@string/retry" />
 
+    <TextView
+       	android:id="@+id/backTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/back_text"
+        android:layout_marginTop="30dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
     <Button
         android:id="@+id/button_exit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
         android:gravity="center"
+        android:layout_marginTop="5dp"
         android:text="@string/back" />
 
 </LinearLayout>

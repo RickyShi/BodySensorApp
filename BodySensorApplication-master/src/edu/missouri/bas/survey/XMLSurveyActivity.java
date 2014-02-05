@@ -201,6 +201,10 @@ public class XMLSurveyActivity extends Activity {
 		//Tell the parser which survey to use		
 		surveyName = getIntent().getStringExtra("survey_name");
 		surveyFile = getIntent().getStringExtra("survey_file");
+		
+		//Ricky 2/4/2014
+		//The following alarms are used in SurvetPinCheck now.
+		/*
 		if(surveyName.equalsIgnoreCase("RANDOM_ASSESSMENT") && surveyFile.equalsIgnoreCase("RandomAssessmentParcel.xml"))
 		{
 			Timer t=new Timer();
@@ -217,7 +221,7 @@ public class XMLSurveyActivity extends Activity {
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 	        v.vibrate(1000);
 		}
-		
+		*/
 		Log.d("XMLSurvey","File Name: "+surveyFile);
 		
 		//Open the specified survey
