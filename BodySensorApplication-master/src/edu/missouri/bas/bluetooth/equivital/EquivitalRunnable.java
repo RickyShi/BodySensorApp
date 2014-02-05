@@ -67,8 +67,17 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	String deviceName;
 	String phoneAddress;
 	public static final int CHEST_SENSOR_DATA = 109;
+	public static final int CHEST_SENSOR_ACCELEORMETER_DATA = 111;
 	public final static String BASE_PATH = "sdcard/TestResults/";
+	// Lists to buffer the data sent to server.
 	List<String> dataPoints=new ArrayList<String>();
+	List<String> AccDataPoints=new ArrayList<String>();
+	// List to store the chest accelerometer data in order to do compression later.
+	List<Double> chestAccList = new ArrayList<Double>();
+	// var to store the average chest accelerometer data
+	private double averageAcc = 0;
+	private int count = 0;
+	
 
 	public EquivitalRunnable(String address,String name,String macAddress)
 	{
@@ -106,7 +115,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	    device.addSummaryEventListener(this);	   	
 		device.setSummaryDataEnabled(true);
 		//Here to registered the Accelerometer Listener
-		//device.addAccelerometerEventListener(this);
+		device.addAccelerometerEventListener(this);
 		ISemConnection connection = SemBluetoothConnection.createConnection(address);		
 		device.start(connection);
 	}
@@ -122,7 +131,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 				arg1.getSummary().getQualityConfidence().getImpedanceQuality(),
 				arg1.getSummary().getQualityConfidence().getHeartRateConfidence(),
 				arg1.getSummary().getQualityConfidence().getBreathingRateConfidence(),arg1.getSummary().getGalvanicSkinResistance());
-		
+		//Log.d("Chest Acc Info","chest data recorded:");
 	}
 
 	private void updateSummary(String motion, String bodyPosition,
@@ -147,18 +156,60 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		 dataBundle.putString("DATA",dataFromChestSensor);
 		 msgData.obj=dataBundle;
 		 chestSensorDataHandler.sendMessage(msgData);
+		 //Log.d("Chest Info","data recorded:"+bodyPosition);
+	}
+	
+	@Override
+	public void accelerometerDataReceived(SemDevice arg0,
+			AccelerometerSemMessageEventArgs arg1) {
+		// TODO Auto-generated method stub
+		//updateAcceleormeterSummary(arg1.getResultant_mG(),arg1.getLateral_mG(),arg1.getLongitudinal_mG(),arg1.getVertical_mG());
+		if (count<25*11){
+			count++;
+		} else {
+			updateAcceleormeterSummary(arg1.getResultant_mG());
+		}
+		//Log.d("Chest Acc Info",count+"|||"+String.valueOf(arg1.getResultant_mG()));
+		
+	}
+	
+	//private void updateAcceleormeterSummary(double resultantAcc, double lateralAcc, double longitudinalAcc, double verticalAcc) {
+	private void updateAcceleormeterSummary(double resultantAcc) {	
+		// TODO Auto-generated method stub
+		 //String AccelerometerDataFromChestSensor=String.valueOf(resultantAcc)+","+String.valueOf(lateralAcc)+","+String.valueOf(longitudinalAcc)+","+String.valueOf(verticalAcc);
+		if (compressChestSensorAccelerometerData(resultantAcc)){
+			String AccelerometerDataFromChestSensor = String.valueOf(averageAcc);       	
+			Message msg=new Message();
+			msg.what = CHEST_SENSOR_ACCELEORMETER_DATA;
+			Bundle dataBundle = new Bundle();
+			dataBundle.putString("ACC",AccelerometerDataFromChestSensor);
+			msg.obj=dataBundle;
+			chestSensorAccDataHandler.sendMessage(msg);
+			//Log.d("Chest Acc Info","average Acc:"+AccelerometerDataFromChestSensor);
+		}
 	}
 	
 	Handler chestSensorDataHandler = new Handler(){
 		@Override
 		public void handleMessage(Message msg){
-			if(msg.what==CHEST_SENSOR_DATA)
-			{
+			//if(msg.what==CHEST_SENSOR_DATA)
+			//{
 				Bundle resBundle =  (Bundle)msg.obj;
 				writeChestSensorDatatoCSV(String.valueOf(resBundle.getString("DATA")));
-				
-			}
-			
+				//Log.d("wtest","call function");				
+			//}			
+		}
+		
+	};
+	
+	Handler chestSensorAccDataHandler = new Handler(){
+		@Override
+		public void handleMessage(Message msg){			
+			//if(msg.what==CHEST_SENSOR_ACCELEORMETER_DATA)
+			//{
+				Bundle resBundle =  (Bundle)msg.obj;
+				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")));				
+			//}			
 		}
 		
 	};
@@ -174,7 +225,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		Calendar cal=Calendar.getInstance();
 		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
         File f = new File(BASE_PATH,file_name);		
-		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorData;			   
+		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorData;		
         dataPoints.add(dataToWrite+";");
         if(dataPoints.size()==57)
         {
@@ -184,10 +235,48 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
  	            //sendDatatoServer("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
  	            TransmitData transmitData=new TransmitData();
  	            transmitData.execute("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
- 	            Log.d("Equivital","Data Point Sent");
+ 	            //Log.d("Equivital","Chest Summary Data Point Sent");
  	            subList.clear();  
  	            subList=null;
- 	    } 	
+ 	    } 	    	
+		if(f != null){
+			try {
+				writeToFile(f, dataToWrite);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}				
+			
+		}	
+	}	
+
+	private void writeChestSensorAccelerometerDatatoCSV(String chestSensorAccelerometerData)
+	{
+		// TODO Auto-generated method stub
+		//Toast.makeText(serviceContext,"Trying to write to the file",Toast.LENGTH_LONG).show();
+		Calendar c=Calendar.getInstance();
+		SimpleDateFormat curFormater = new SimpleDateFormat("MMMMM_dd"); 
+		String dateObj =curFormater.format(c.getTime()); 		
+		String file_name="chestAccelerometer."+deviceName+"."+dateObj+".txt";	
+		Calendar cal=Calendar.getInstance();
+		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
+        File f = new File(BASE_PATH,file_name);		
+		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorAccelerometerData;
+		/*
+		AccDataPoints.add(dataToWrite+";");
+        
+        if(AccDataPoints.size()==57)
+        {
+        	    List<String> subList = AccDataPoints.subList(0,56);
+ 	            String data=subList.toString();
+ 	            String formattedData=data.replaceAll("[\\[\\]]","");
+ 	            //sendDatatoServer("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
+ 	            TransmitData transmitData=new TransmitData();
+ 	            transmitData.execute("chestAccelerometer"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
+ 	            Log.d("Equivital","Accelerometer Data Point Sent");
+ 	            subList.clear();  
+ 	            subList=null;
+ 	    } 
+ 	    */	
 		if(f != null){
 			try {
 				writeToFile(f, dataToWrite);
@@ -197,6 +286,35 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			
 		}	
 	}
+	
+	//Ricky 1/29 Function to compress the Chest Accelerometer Data
+	//1G = 1000 mG = 9.8 m/s^2
+	private Boolean compressChestSensorAccelerometerData(Double rawChestSensorAccelerometerDataMilli_Gs){
+		double chestSensorAccelerometerData = rawChestSensorAccelerometerDataMilli_Gs/100;
+		if (chestAccList.size()<=25){
+			chestAccList.add(chestSensorAccelerometerData);
+			return false;
+		}
+		else {
+			averageAcc = 0;
+			for (int i=0;i<chestAccList.size();i++){
+				averageAcc +=chestAccList.get(i); 
+			}
+			averageAcc /= chestAccList.size();
+			chestAccList.clear();
+			chestAccList.add(chestSensorAccelerometerData);
+			return true;
+		}
+	}
+
+	@Override
+	public void highResolutionAccelerometerDataReceived(SemDevice arg0,
+			AccelerometerSemMessageEventArgs arg1) {
+		// TODO Auto-generated method stub
+		// Not Used. No implementation here.
+		
+	}
+	
 	//Ricky 2013/12/09
 	private class TransmitData extends AsyncTask<String,Void, Boolean>
 	{
@@ -208,8 +326,8 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	         String dataToSend=strings[1];
 	         if(checkDataConnectivity())
 	 		{
-	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
-	         //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
+	         //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
+	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
 	         List<NameValuePair> params = new ArrayList<NameValuePair>();
 	         //file_name 
 	         params.add(new BasicNameValuePair("file_name",fileName));        
@@ -287,19 +405,13 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	        fw.flush();
 			fw.close();
 		}
+	 
+	 public void stop(){
+		 count = 0;
+		 device.stop();
+		 device.removeAccelerometerEventListener(this);
+	 }
 	
-	@Override
-	public void accelerometerDataReceived(SemDevice arg0,
-			AccelerometerSemMessageEventArgs arg1) {
-		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void highResolutionAccelerometerDataReceived(SemDevice arg0,
-			AccelerometerSemMessageEventArgs arg1) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 }

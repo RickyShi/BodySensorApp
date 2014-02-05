@@ -51,7 +51,7 @@ public class XMLSurveyMenu extends FragmentActivity{
 	                	   dialog.dismiss();	                	   
 	                	   //Intent launchInitalDrink = 
 						   //		new Intent(getApplicationContext(), XMLSurveyActivity.class);
-	                	   Intent launchInitalDrink =new Intent(XMLSurveyMenu.this ,XMLSurveyActivity.class);
+	                	   Intent launchInitalDrink =new Intent(XMLSurveyMenu.this ,SurveyPinCheck.class);
 	                	   launchInitalDrink.putExtra("survey_file", INITIAL_DRINK_FILE);
 	                	   launchInitalDrink.putExtra("survey_name", INITIAL_DRINK_NAME);
 	                	   launchInitalDrink.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -120,7 +120,7 @@ public class XMLSurveyMenu extends FragmentActivity{
 						}
 						else {
 							Intent launchSurvey = 
-									new Intent(getApplicationContext(), XMLSurveyActivity.class);
+									new Intent(getApplicationContext(), SurveyPinCheck.class);
 							launchSurvey.putExtra("survey_file", temp.getFileName());
 							launchSurvey.putExtra("survey_name", temp.getName());
 							startActivity(launchSurvey);
@@ -142,4 +142,5 @@ public class XMLSurveyMenu extends FragmentActivity{
 			}
 		});*/
 	}
+
 }
