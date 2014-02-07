@@ -64,6 +64,11 @@ public class XMLSurveyActivity extends Activity {
 	public static final String INTENT_EXTRA_COMPLETION_TIME =
 			"survey_completion_time";
 	
+	private static final String LAST_QUESTION_TEXT =
+			"In the past 15 minutes, WHERE is your location: (Check all that apply)";
+	
+	private boolean modifyBackButtonFlag = false;
+	
 	
 
 	//List of read categories
@@ -177,8 +182,9 @@ public class XMLSurveyActivity extends Activity {
 			public void onClick(View v) {
 				if(currentQuestion.validateSubmit()){
 					ViewGroup vg = setupLayout(nextQuestion());
-					if(vg != null)
+					if(vg != null){
 						setContentView(vg);
+					}
 				}
 			}
         });
@@ -392,7 +398,14 @@ public class XMLSurveyActivity extends Activity {
     			answerMap.put(temp.getId(), null);
     		//Simplest case: category has the next question
     		temp = currentCategory.nextQuestion();
-    		
+    		//Ricky 2/7
+    		//To check whether it is the last Question
+    		if(temp!=null){
+        		if (temp.getQuestion().equals(LAST_QUESTION_TEXT)){
+        			backButton.setText("Cancel");
+        			modifyBackButtonFlag = true;
+        		}
+    		}
     		//Category is out of questions, try to move to next category
     		if(temp == null && (++categoryNum < cats.size())){
     			/* Advance the category.  Loop will get the question
@@ -435,6 +448,11 @@ public class XMLSurveyActivity extends Activity {
     
     protected LinearLayout previousQuestion(){
     	SurveyQuestion temp = null;
+    	//Ricky 2/7 restore text of back-button
+    	if (modifyBackButtonFlag){
+    		backButton.setText("Previous Question");
+    		modifyBackButtonFlag = false;
+    	}
     	while(temp == null){
     		temp = currentCategory.previousQuestion();
     		Log.d(TAG,"Trying to get previous question");
