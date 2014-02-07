@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -18,44 +20,25 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+
+
+//Ricky
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.equivital.sdk.ISemConnection;
 import com.equivital.sdk.connection.SemBluetoothConnection;
 import com.equivital.sdk.decoder.BadLicenseException;
 import com.equivital.sdk.decoder.SDKLicense;
-import com.equivital.sdk.decoder.SemCalibrationParameterType;
 import com.equivital.sdk.decoder.SemDevice;
-import com.equivital.sdk.decoder.SemOperatingModeType;
 import com.equivital.sdk.decoder.events.AccelerometerSemMessageEventArgs;
-import com.equivital.sdk.decoder.events.BatteryVoltageEventArgs;
-import com.equivital.sdk.decoder.events.HeartRateEventArgs;
 import com.equivital.sdk.decoder.events.ISemDeviceAccelerometerEvents;
-import com.equivital.sdk.decoder.events.ISemDeviceBatteryEvents;
-import com.equivital.sdk.decoder.events.ISemDeviceBreathingRateEvents;
-import com.equivital.sdk.decoder.events.ISemDeviceHeartRateEvents;
 import com.equivital.sdk.decoder.events.ISemDeviceSummaryEvents;
-import com.equivital.sdk.decoder.events.ISemDeviceTimingEvents;
-import com.equivital.sdk.decoder.events.QualityConfidenceEventArgs;
-import com.equivital.sdk.decoder.events.RRIntervalEventArgs;
-import com.equivital.sdk.decoder.events.RespirationRateEventArgs;
-import com.equivital.sdk.decoder.events.SEMDateTimeDataEventArgs;
 import com.equivital.sdk.decoder.events.SemSummaryDataEventArgs;
-import com.equivital.sdk.decoder.events.SynchronisationTimerEventArgs;
-import com.google.android.gms.location.DetectedActivity;
 
-
-
-
-//Ricky
-import android.os.AsyncTask;
 import edu.missouri.bas.service.SensorService;
 
 
@@ -74,9 +57,18 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	List<String> AccDataPoints=new ArrayList<String>();
 	// List to store the chest accelerometer data in order to do compression later.
 	List<Double> chestAccList = new ArrayList<Double>();
+	// List to calculate the median value of a shifting windows.
+	List<Double> medianList;
+	// Queue to implement the median shifting windows. 
+	LinkedList<Double> medianWindowQueue = new LinkedList<Double>();
 	// var to store the average chest accelerometer data
 	private double averageAcc = 0;
+	// count used to discard first several outliers
 	private int count = 0;
+	// var generated after applying median filter
+	private double medianFilteredAcc = 0;
+	// delay time 11s
+	private int delaySecond = 10;
 	
 
 	public EquivitalRunnable(String address,String name,String macAddress)
@@ -178,14 +170,17 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		// TODO Auto-generated method stub
 		 //String AccelerometerDataFromChestSensor=String.valueOf(resultantAcc)+","+String.valueOf(lateralAcc)+","+String.valueOf(longitudinalAcc)+","+String.valueOf(verticalAcc);
 		if (compressChestSensorAccelerometerData(resultantAcc)){
-			String AccelerometerDataFromChestSensor = String.valueOf(averageAcc);       	
+			if (medianFilterChestSensorAccelerometerData(averageAcc,delaySecond)){
+			String AccelerometerDataFromChestSensor = String.valueOf(medianFilteredAcc);       	
 			Message msg=new Message();
 			msg.what = CHEST_SENSOR_ACCELEORMETER_DATA;
 			Bundle dataBundle = new Bundle();
 			dataBundle.putString("ACC",AccelerometerDataFromChestSensor);
 			msg.obj=dataBundle;
 			chestSensorAccDataHandler.sendMessage(msg);
-			//Log.d("Chest Acc Info","average Acc:"+AccelerometerDataFromChestSensor);
+			//Log.d("Chest Acc Info", "AVG Acc"+averageAcc);
+			//Log.d("Chest Acc Info","filtered Acc:"+AccelerometerDataFromChestSensor);
+			}
 		}
 	}
 	
@@ -224,7 +219,10 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		String file_name="chestsensor."+deviceName+"."+dateObj+".txt";	
 		Calendar cal=Calendar.getInstance();
 		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
-        File f = new File(BASE_PATH,file_name);		
+        File f = new File(BASE_PATH,file_name);
+        // Deal with the delay
+        int delayMillis = 1000*(delaySecond+1);
+        cal.setTimeInMillis(cal.getTime().getTime() + delayMillis);
 		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorData;		
         dataPoints.add(dataToWrite+";");
         if(dataPoints.size()==57)
@@ -305,6 +303,34 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			chestAccList.add(chestSensorAccelerometerData);
 			return true;
 		}
+	}
+	
+	/*
+	 * @author Ricky 2/6
+	 * Funtion to apply the median filter.
+	 * @param compressedAVGChestSensorAccelerometerData: Avg value of 1 second data
+	 * @param filterSize: filter shifting window size (second)
+	 */
+	private Boolean medianFilterChestSensorAccelerometerData(Double compressedAVGChestSensorAccelerometerData, int filterSize){
+		if (medianWindowQueue.size()<=filterSize){
+			medianWindowQueue.add(compressedAVGChestSensorAccelerometerData);
+			return false;
+		} else {
+			medianList = new ArrayList<Double>(medianWindowQueue);
+			Collections.sort(medianList);
+			int medianPosition = medianList.size()/2;
+			if (medianList.size()%2==0){
+				medianFilteredAcc = (medianList.get(medianPosition)+medianList.get(medianPosition-1))/2;
+			} else {
+				medianFilteredAcc = medianList.get(medianPosition);
+			}
+			medianList.clear();
+			medianWindowQueue.poll();						
+			medianWindowQueue.add(compressedAVGChestSensorAccelerometerData);			
+			return true;
+		}
+		
+		
 	}
 
 	@Override
@@ -408,6 +434,9 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	 
 	 public void stop(){
 		 count = 0;
+		 chestAccList.clear();
+		 medianList.clear();
+		 medianWindowQueue.clear();
 		 device.stop();
 		 device.removeAccelerometerEventListener(this);
 	 }
