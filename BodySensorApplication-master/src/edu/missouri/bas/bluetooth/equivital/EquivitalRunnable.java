@@ -60,7 +60,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	// List to calculate the median value of a shifting windows.
 	List<Double> medianList;
 	// Queue to implement the median shifting windows. 
-	LinkedList<Double> medianWindowQueue = new LinkedList<Double>();
+	//LinkedList<Double> medianWindowQueue = new LinkedList<Double>();
 	// var to store the average chest accelerometer data
 	private double averageAcc = 0;
 	// count used to discard first several outliers
@@ -68,7 +68,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	// var generated after applying median filter
 	private double medianFilteredAcc = 0;
 	// delay time 11s
-	private int delaySecond = 10;
+	//private int delaySecond = 10;
 	
 
 	public EquivitalRunnable(String address,String name,String macAddress)
@@ -170,17 +170,21 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		// TODO Auto-generated method stub
 		 //String AccelerometerDataFromChestSensor=String.valueOf(resultantAcc)+","+String.valueOf(lateralAcc)+","+String.valueOf(longitudinalAcc)+","+String.valueOf(verticalAcc);
 		if (compressChestSensorAccelerometerData(resultantAcc)){
-			if (medianFilterChestSensorAccelerometerData(averageAcc,delaySecond)){
-			String AccelerometerDataFromChestSensor = String.valueOf(medianFilteredAcc);       	
+			//medianFilterChestSensorAccelerometerData used to apply the filter
+			//not used now, so discard the methods
+			//if (medianFilterChestSensorAccelerometerData(averageAcc,delaySecond)){
+			String AccelerometerDataFromChestSensor = String.valueOf(averageAcc);
+			String AccelerometerDataFromChestSensorMedian = String.valueOf(medianFilteredAcc);
 			Message msg=new Message();
 			msg.what = CHEST_SENSOR_ACCELEORMETER_DATA;
 			Bundle dataBundle = new Bundle();
 			dataBundle.putString("ACC",AccelerometerDataFromChestSensor);
+			dataBundle.putString("medianACC",AccelerometerDataFromChestSensorMedian);			
 			msg.obj=dataBundle;
 			chestSensorAccDataHandler.sendMessage(msg);
 			//Log.d("Chest Acc Info", "AVG Acc"+averageAcc);
 			//Log.d("Chest Acc Info","filtered Acc:"+AccelerometerDataFromChestSensor);
-			}
+			//}
 		}
 	}
 	
@@ -203,7 +207,8 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			//if(msg.what==CHEST_SENSOR_ACCELEORMETER_DATA)
 			//{
 				Bundle resBundle =  (Bundle)msg.obj;
-				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")));				
+				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")),"chestAccelerometer");
+				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("medianACC")),"chestAccelerometerMedian");
 			//}			
 		}
 		
@@ -220,9 +225,11 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		Calendar cal=Calendar.getInstance();
 		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
         File f = new File(BASE_PATH,file_name);
-        // Deal with the delay
+        /*
+        // Deal with the delay when applying the filter
         int delayMillis = 1000*(delaySecond+1);
         cal.setTimeInMillis(cal.getTime().getTime() + delayMillis);
+		*/
 		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorData;		
         dataPoints.add(dataToWrite+";");
         if(dataPoints.size()==57)
@@ -247,14 +254,14 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		}	
 	}	
 
-	private void writeChestSensorAccelerometerDatatoCSV(String chestSensorAccelerometerData)
+	private void writeChestSensorAccelerometerDatatoCSV(String chestSensorAccelerometerData, String fileName)
 	{
 		// TODO Auto-generated method stub
 		//Toast.makeText(serviceContext,"Trying to write to the file",Toast.LENGTH_LONG).show();
 		Calendar c=Calendar.getInstance();
 		SimpleDateFormat curFormater = new SimpleDateFormat("MMMMM_dd"); 
 		String dateObj =curFormater.format(c.getTime()); 		
-		String file_name="chestAccelerometer."+deviceName+"."+dateObj+".txt";	
+		String file_name=fileName+"."+deviceName+"."+dateObj+".txt";	
 		Calendar cal=Calendar.getInstance();
 		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
         File f = new File(BASE_PATH,file_name);		
@@ -299,6 +306,14 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 				averageAcc +=chestAccList.get(i); 
 			}
 			averageAcc /= chestAccList.size();
+			//median part
+			Collections.sort(chestAccList);
+			int medianPosition = chestAccList.size()/2;
+			if (chestAccList.size()%2==0){
+				medianFilteredAcc = (chestAccList.get(medianPosition)+chestAccList.get(medianPosition-1))/2;
+			} else {
+				medianFilteredAcc = chestAccList.get(medianPosition);
+			}
 			chestAccList.clear();
 			chestAccList.add(chestSensorAccelerometerData);
 			return true;
@@ -311,6 +326,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	 * @param compressedAVGChestSensorAccelerometerData: Avg value of 1 second data
 	 * @param filterSize: filter shifting window size (second)
 	 */
+	/*
 	private Boolean medianFilterChestSensorAccelerometerData(Double compressedAVGChestSensorAccelerometerData, int filterSize){
 		if (medianWindowQueue.size()<=filterSize){
 			medianWindowQueue.add(compressedAVGChestSensorAccelerometerData);
@@ -332,7 +348,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		
 		
 	}
-
+	*/
 	@Override
 	public void highResolutionAccelerometerDataReceived(SemDevice arg0,
 			AccelerometerSemMessageEventArgs arg1) {
@@ -435,8 +451,8 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	 public void stop(){
 		 count = 0;
 		 chestAccList.clear();
-		 medianList.clear();
-		 medianWindowQueue.clear();
+		 //medianList.clear();
+		 //medianWindowQueue.clear();
 		 device.stop();
 		 device.removeAccelerometerEventListener(this);
 	 }
