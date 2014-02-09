@@ -55,8 +55,8 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	// Lists to buffer the data sent to server.
 	List<String> dataPoints=new ArrayList<String>();
 	List<String> AccDataPoints=new ArrayList<String>();
-	List<String> AccDataMedianPoints=new ArrayList<String>();
-	List<String> AccDataDiffPoints=new ArrayList<String>();
+	//List<String> AccDataMedianPoints=new ArrayList<String>();
+	//List<String> AccDataDiffPoints=new ArrayList<String>();
 	// List to store the chest accelerometer data in order to do compression later.
 	List<Double> chestAccList = new ArrayList<Double>();
 	// List to calculate the median value of a shifting windows.
@@ -68,7 +68,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	// count used to discard first several outliers
 	private int count = 0;
 	// var generated after applying median filter
-	private double medianFilteredAcc = 0;
+	//private double medianFilteredAcc = 0;
 	// delay time 11s
 	//private int delaySecond = 10;
 	
@@ -176,14 +176,14 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			//not used now, so discard the methods
 			//if (medianFilterChestSensorAccelerometerData(averageAcc,delaySecond)){
 			String AccelerometerDataFromChestSensor = String.valueOf(averageAcc);
-			String AccelerometerDataFromChestSensorMedian = String.valueOf(medianFilteredAcc);
-			String AccelerometerDataFromChestSensorDiff = String.valueOf(medianFilteredAcc-averageAcc);
+			//String AccelerometerDataFromChestSensorMedian = String.valueOf(medianFilteredAcc);
+			//String AccelerometerDataFromChestSensorDiff = String.valueOf(medianFilteredAcc-averageAcc);
 			Message msg=new Message();
 			msg.what = CHEST_SENSOR_ACCELEORMETER_DATA;
 			Bundle dataBundle = new Bundle();
 			dataBundle.putString("ACC",AccelerometerDataFromChestSensor);
-			dataBundle.putString("medianACC",AccelerometerDataFromChestSensorMedian);	
-			dataBundle.putString("diffACC",AccelerometerDataFromChestSensorDiff);
+			//dataBundle.putString("medianACC",AccelerometerDataFromChestSensorMedian);	
+			//dataBundle.putString("diffACC",AccelerometerDataFromChestSensorDiff);
 			msg.obj=dataBundle;
 			chestSensorAccDataHandler.sendMessage(msg);
 			//Log.d("Chest Acc Info", "AVG Acc"+averageAcc);
@@ -211,10 +211,10 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			//if(msg.what==CHEST_SENSOR_ACCELEORMETER_DATA)
 			//{
 				Bundle resBundle =  (Bundle)msg.obj;
-				//writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")),"chestAccelerometer");
-				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")),"chestAccelerometerAVG");
-				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("medianACC")),"chestAccelerometerMedian");
-				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("diffACC")),"chestAccelerometerDiff");
+				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")),"chestAccelerometer");
+				//writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")),"chestAccelerometerAVG");
+				//writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("medianACC")),"chestAccelerometerMedian");
+				//writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("diffACC")),"chestAccelerometerDiff");
 			//}			
 		}
 		
@@ -272,7 +272,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
         File f = new File(BASE_PATH,file_name);		
 		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorAccelerometerData;
-		if (fileName.equals("chestAccelerometerAVG")){
+		//if (fileName.equals("chestAccelerometerAVG")){
 		AccDataPoints.add(dataToWrite+";");
         
         if(AccDataPoints.size()==57)
@@ -287,7 +287,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
  	            subList.clear();  
  	            subList=null;
  	    }
-		}
+		/*}
 		else if (fileName.equals("chestAccelerometerMedian")){
 			AccDataMedianPoints.add(dataToWrite+";");
 	        
@@ -319,7 +319,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	 	            subList=null;
 	 	    }
 		} 
- 	    	
+ 	    */	
 		if(f != null){
 			try {
 				writeToFile(f, dataToWrite);
@@ -344,6 +344,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 				averageAcc +=chestAccList.get(i); 
 			}
 			averageAcc /= chestAccList.size();
+			/*
 			//median part
 			Collections.sort(chestAccList);
 			int medianPosition = chestAccList.size()/2;
@@ -352,6 +353,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			} else {
 				medianFilteredAcc = chestAccList.get(medianPosition);
 			}
+			*/
 			chestAccList.clear();
 			chestAccList.add(chestSensorAccelerometerData);
 			return true;
