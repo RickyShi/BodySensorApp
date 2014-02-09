@@ -55,10 +55,12 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	// Lists to buffer the data sent to server.
 	List<String> dataPoints=new ArrayList<String>();
 	List<String> AccDataPoints=new ArrayList<String>();
+	List<String> AccDataMedianPoints=new ArrayList<String>();
+	List<String> AccDataDiffPoints=new ArrayList<String>();
 	// List to store the chest accelerometer data in order to do compression later.
 	List<Double> chestAccList = new ArrayList<Double>();
 	// List to calculate the median value of a shifting windows.
-	List<Double> medianList;
+	//List<Double> medianList;
 	// Queue to implement the median shifting windows. 
 	//LinkedList<Double> medianWindowQueue = new LinkedList<Double>();
 	// var to store the average chest accelerometer data
@@ -175,11 +177,13 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			//if (medianFilterChestSensorAccelerometerData(averageAcc,delaySecond)){
 			String AccelerometerDataFromChestSensor = String.valueOf(averageAcc);
 			String AccelerometerDataFromChestSensorMedian = String.valueOf(medianFilteredAcc);
+			String AccelerometerDataFromChestSensorDiff = String.valueOf(medianFilteredAcc-averageAcc);
 			Message msg=new Message();
 			msg.what = CHEST_SENSOR_ACCELEORMETER_DATA;
 			Bundle dataBundle = new Bundle();
 			dataBundle.putString("ACC",AccelerometerDataFromChestSensor);
-			dataBundle.putString("medianACC",AccelerometerDataFromChestSensorMedian);			
+			dataBundle.putString("medianACC",AccelerometerDataFromChestSensorMedian);	
+			dataBundle.putString("diffACC",AccelerometerDataFromChestSensorDiff);
 			msg.obj=dataBundle;
 			chestSensorAccDataHandler.sendMessage(msg);
 			//Log.d("Chest Acc Info", "AVG Acc"+averageAcc);
@@ -207,8 +211,10 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 			//if(msg.what==CHEST_SENSOR_ACCELEORMETER_DATA)
 			//{
 				Bundle resBundle =  (Bundle)msg.obj;
-				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")),"chestAccelerometer");
+				//writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")),"chestAccelerometer");
+				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("ACC")),"chestAccelerometerAVG");
 				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("medianACC")),"chestAccelerometerMedian");
+				writeChestSensorAccelerometerDatatoCSV(String.valueOf(resBundle.getString("diffACC")),"chestAccelerometerDiff");
 			//}			
 		}
 		
@@ -266,7 +272,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
         File f = new File(BASE_PATH,file_name);		
 		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorAccelerometerData;
-		/*
+		if (fileName.equals("chestAccelerometerAVG")){
 		AccDataPoints.add(dataToWrite+";");
         
         if(AccDataPoints.size()==57)
@@ -276,12 +282,44 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
  	            String formattedData=data.replaceAll("[\\[\\]]","");
  	            //sendDatatoServer("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
  	            TransmitData transmitData=new TransmitData();
- 	            transmitData.execute("chestAccelerometer"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
- 	            Log.d("Equivital","Accelerometer Data Point Sent");
+ 	            transmitData.execute(fileName+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
+ 	            Log.d("Equivital","AVG Accelerometer Data Point Sent");
  	            subList.clear();  
  	            subList=null;
- 	    } 
- 	    */	
+ 	    }
+		}
+		else if (fileName.equals("chestAccelerometerMedian")){
+			AccDataMedianPoints.add(dataToWrite+";");
+	        
+	        if(AccDataMedianPoints.size()==57)
+	        {
+	        	    List<String> subList = AccDataMedianPoints.subList(0,56);
+	 	            String data=subList.toString();
+	 	            String formattedData=data.replaceAll("[\\[\\]]","");
+	 	            //sendDatatoServer("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
+	 	            TransmitData transmitData=new TransmitData();
+	 	            transmitData.execute(fileName+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
+	 	            Log.d("Equivital","Median Accelerometer Data Point Sent");
+	 	            subList.clear();  
+	 	            subList=null;
+	 	    }
+		} else if (fileName.equals("chestAccelerometerDiff")){
+			AccDataDiffPoints.add(dataToWrite+";");
+	        
+	        if(AccDataDiffPoints.size()==57)
+	        {
+	        	    List<String> subList = AccDataDiffPoints.subList(0,56);
+	 	            String data=subList.toString();
+	 	            String formattedData=data.replaceAll("[\\[\\]]","");
+	 	            //sendDatatoServer("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
+	 	            TransmitData transmitData=new TransmitData();
+	 	            transmitData.execute(fileName+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
+	 	            Log.d("Equivital","Diff Accelerometer Data Point Sent");
+	 	            subList.clear();  
+	 	            subList=null;
+	 	    }
+		} 
+ 	    	
 		if(f != null){
 			try {
 				writeToFile(f, dataToWrite);
