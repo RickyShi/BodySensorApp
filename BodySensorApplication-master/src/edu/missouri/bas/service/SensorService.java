@@ -159,6 +159,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	 * Alarm manager variables, for scheduling intents
 	 */
 	public static AlarmManager mAlarmManager;
+	/*
+	 * Ricky 2/10
+	 * Alarm manager variables, for scheduling intents
+	 */
+	public static AlarmManager bAlarmManager;
 	private PendingIntent scheduleSurvey;
 	private PendingIntent drinkfollowupSurvey;
 	//private static PendingIntent scheduleLocation;

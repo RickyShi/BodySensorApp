@@ -12,10 +12,12 @@ import java.net.URL;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,14 +33,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import edu.missouri.bas.activities.DeviceListActivity;
 import edu.missouri.bas.bluetooth.BluetoothRunnable;
 import edu.missouri.bas.service.SensorService;
 import edu.missouri.bas.service.modules.location.ActivityRecognitionScan;
-
+import edu.missouri.bas.survey.SurveyPinCheck;
+import edu.missouri.bas.survey.XMLSurveyActivity;
 import edu.missouri.bas.survey.XMLSurveyMenu;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -74,7 +81,7 @@ public class MainActivity extends ListActivity {
 	protected static final int STOP = 1;
 	protected static final int SURVEY = 2;	
 	protected static final int CONNECTIONS = 3;
-	protected static final int SURVEY_STATUS = 4;
+	protected static final int BED_STATUS = 4;
 	public  final MainActivity thisActivity = this;
 	//private final static String urlServer = "http://babbage.cs.missouri.edu/~rs79c/Android/upload.php";
 	HttpURLConnection connection = null;
@@ -107,6 +114,8 @@ public class MainActivity extends ListActivity {
 	byte[] buffer;
 	int maxBufferSize = 1*1024*1024;
 	
+	private TextView mText;
+	private EditText mEdit;
 	
 
 	//action URL
@@ -121,7 +130,7 @@ public class MainActivity extends ListActivity {
        
         
     	String[] options = {"Start Service", "Stop Service", "Survey Menu",
-		"External Sensor Connections","Schedule Survey Activity"};
+		"External Sensor Connections","Bed Time Report"};
     	
     	ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
     			android.R.layout.simple_list_item_1, options);
@@ -148,8 +157,8 @@ public class MainActivity extends ListActivity {
 	    		case CONNECTIONS:
 	    			startConnections();	    			
 	    			break;
-	    		case SURVEY_STATUS:
-	    			startSurveyScheduler();	    			
+	    		case BED_STATUS:
+	    			createPinAlertDialog();	    				
 	    			break;
 		    	}
 			}
@@ -382,6 +391,55 @@ public class MainActivity extends ListActivity {
 		super.onDestroy();
 	}
 	
+	private void createPinAlertDialog(){		
+		LayoutInflater factory=LayoutInflater.from(MainActivity.this);  
+	    //get view from my settings pin_number
+	    final View DialogView=factory.inflate(R.layout.pin_number, null);  
+		new AlertDialog.Builder(MainActivity.this)
+	    .setTitle("Checking identity")  
+	    .setCancelable(false)
+	    .setView(DialogView)//using user defined view
+	    .setPositiveButton(android.R.string.yes,   
+	    		new DialogInterface.OnClickListener() {		          
+			        @Override  
+			        public void onClick(DialogInterface dialog, int which) {  
+			        	mEdit = (EditText)DialogView.findViewById(R.id.edit_pin);
+			        	mText = (TextView)DialogView.findViewById(R.id.text_pin);
+			        	String pin = mEdit.getText().toString();
+			        	if (pin.equals("1234")){
+			        	//Send the intent and trigger new Survey Activity....
+			        	bedAlertDialog();			        	
+			        	dialog.cancel();
+			        	}
+			        	else {
+			        		//New AlertDialog to show instruction.
+			        		new AlertDialog.Builder(MainActivity.this)
+			        		.setTitle("Pin number is incorrect.")
+			        		.setMessage("Please Press OK to exit and retry with your pin number.")
+			        		.setPositiveButton("OK", null)
+			        		.create().show();
+			        	}			        	
+			        	dialog.cancel();
+			        }  
+	    })
+	    .create().show();
+	}
 	
+	private void bedAlertDialog(){		
+		new AlertDialog.Builder(MainActivity.this)
+	    .setTitle("Report Bed Time")
+	    .setMessage("Confirm that you are going to bed for the night.")
+	    .setCancelable(false)
+	    .setPositiveButton(R.string.yes,   
+	    		new DialogInterface.OnClickListener() {		          
+			        @Override  
+			        public void onClick(DialogInterface dialog, int which) { 
+			        	startSurveyScheduler();
+			        	dialog.cancel();
+			        	}
+	    })
+	    .setNegativeButton(R.string.no, null)
+	    .create().show();
+	}
 }
 
