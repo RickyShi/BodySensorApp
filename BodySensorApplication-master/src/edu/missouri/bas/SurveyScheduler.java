@@ -1,43 +1,34 @@
 package edu.missouri.bas;
 
-import java.text.ParseException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import edu.missouri.bas.service.SensorService;
-
-import android.os.Bundle;
-import android.os.Message;
 import android.app.Activity;
-import android.app.TimePickerDialog;
-import android.content.Intent;
-import android.text.format.DateFormat;
-import android.text.format.Time;
+import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 public class SurveyScheduler extends Activity {
 	
 	public int StartHours;
 	public int StartMinutes;
-	public int EndHours;
-	public int EndMinutes;
+	//Ricky 2/10
+	//public int EndHours;
+	//public int EndMinutes;
 	private boolean mIsRunning=false;
+	private static final String USER_PATH = "sdcard/BSAUserData/";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.survey_scheduler);
 		TimePicker tpStartTime=(TimePicker)findViewById(R.id.tpStartTime);
-		TimePicker tpEndTime=(TimePicker)findViewById(R.id.tpEndTime);
+		//TimePicker tpEndTime=(TimePicker)findViewById(R.id.tpEndTime);
 		Button btnStartTimer=(Button)findViewById(R.id.btnStartTimer);
 		Calendar c=Calendar.getInstance();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
@@ -47,8 +38,14 @@ public class SurveyScheduler extends Activity {
 		int CurrentMinutes=Integer.parseInt(Time[1]);
 		StartHours=CurrentHours;
 		StartMinutes=CurrentMinutes;
-		EndHours=CurrentHours;
-		EndMinutes=CurrentMinutes;
+		
+		//Ricky 2/10
+		//end time: 23:59
+		//Design to let the survey end time to midnight
+		//EndHours=CurrentHours;
+		//EndMinutes=CurrentMinutes;
+		//EndHours=23;
+		//EndMinutes=59;
 		
 		  tpStartTime.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
 			
@@ -60,8 +57,9 @@ public class SurveyScheduler extends Activity {
 				
 			}
 		});
-		  
-		  
+		
+		// Ricky 2/10
+		/*  
 		  tpEndTime.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
 			
 			@Override
@@ -72,11 +70,35 @@ public class SurveyScheduler extends Activity {
 				
 			}
 		});
-		
+		*/
+		  
 		btnStartTimer.setOnClickListener(new View.OnClickListener(){
 
-			@SuppressWarnings("deprecation")
 			public void onClick(View v) {
+				File bedDir = new File(USER_PATH);
+				if (!bedDir.exists()){
+					bedDir.mkdirs();
+				}
+				File bedTime = new File(USER_PATH,"time.txt");
+				if (bedTime.exists()){
+					bedTime.delete();					
+				}
+				try {
+					bedTime.createNewFile();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					Log.d("bedTime","Create File ERROR");
+				}
+				try {
+					writeToFile(bedTime, StartHours+":"+StartMinutes);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				//Ricky 2/10
+				/*
 				Calendar c=Calendar.getInstance();
 				SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 				String currentTime=dateFormat.format(c.getTime());
@@ -104,6 +126,7 @@ public class SurveyScheduler extends Activity {
 			    	
 			    	Toast.makeText(getApplicationContext(),"Start Time must be greater than equal to the Current Time",Toast.LENGTH_LONG).show();
 			    }
+			    /*
 			    else if(!(EndTime.after(StartTime)))
 			    {
 			    	Toast.makeText(getApplicationContext(),"End Time must be greater than the Start Time",Toast.LENGTH_LONG).show();
@@ -142,7 +165,8 @@ public class SurveyScheduler extends Activity {
 					 }
 			    				   		
 			    }
-			    	
+			    */	
+				/*
 			   else {
 				   
 				    Intent startDrinkScheduler = new Intent(SensorService.ACTION_SCHEDULE_SURVEY);	
@@ -159,13 +183,18 @@ public class SurveyScheduler extends Activity {
 					Intent i=new Intent(getApplicationContext(), SurveyStatus.class);
 					startActivity(i);
 			   }			     	
-			 
+			 */
 			}
         });
 		
 	}
 	
-
+	protected void writeToFile(File f, String toWrite) throws IOException{
+		FileWriter fw = new FileWriter(f, true);
+		fw.write(toWrite);		
+        fw.flush();
+		fw.close();
+	}
 
 	
 	
