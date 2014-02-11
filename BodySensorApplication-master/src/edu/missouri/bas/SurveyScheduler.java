@@ -6,12 +6,22 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import edu.missouri.bas.service.SensorService;
+import edu.missouri.bas.survey.SurveyPinCheck;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 public class SurveyScheduler extends Activity {
 	
@@ -21,8 +31,19 @@ public class SurveyScheduler extends Activity {
 	//public int EndHours;
 	//public int EndMinutes;
 	private boolean mIsRunning=false;
-	private static final String USER_PATH = "sdcard/BSAUserData/";
-
+	//private static final String USER_PATH = "sdcard/BSAUserData/";
+	public static final String BED_TIME_INFO = "BED_TIME_INFO";
+	public static final String BED_TIME = "BED_TIME";
+	public Context ctx = SurveyScheduler.this;
+	/*
+	 * Ricky 2/11
+	 * Alarm manager variables, for scheduling intents
+	 * start the Body Sensor App tomorrow and start the morning report
+	 */
+	public static AlarmManager bAlarmManager;
+	private PendingIntent morningWakeUp;
+	private PendingIntent morningReport;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,15 +60,7 @@ public class SurveyScheduler extends Activity {
 		StartHours=CurrentHours;
 		StartMinutes=CurrentMinutes;
 		
-		//Ricky 2/10
-		//end time: 23:59
-		//Design to let the survey end time to midnight
-		//EndHours=CurrentHours;
-		//EndMinutes=CurrentMinutes;
-		//EndHours=23;
-		//EndMinutes=59;
-		
-		  tpStartTime.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+	  	tpStartTime.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
 			
 			@Override
 			public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
@@ -75,6 +88,39 @@ public class SurveyScheduler extends Activity {
 		btnStartTimer.setOnClickListener(new View.OnClickListener(){
 
 			public void onClick(View v) {
+				if (StartHours < 12){				
+					String timeToWrite = StartHours+":"+StartMinutes;
+					SharedPreferences bedTime = ctx.getSharedPreferences(BED_TIME, MODE_PRIVATE);
+					Editor editor = bedTime.edit();
+					editor.putString(BED_TIME_INFO, timeToWrite);
+					editor.commit();
+					//Log.d(BED_TIME, bedTime.getString(BED_TIME_INFO, "none"));
+					Calendar tT = Calendar.getInstance();
+					tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
+					tT.set(Calendar.HOUR_OF_DAY, StartHours);
+					tT.set(Calendar.MINUTE, StartMinutes);
+					
+					bAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+					Intent mIntent = new Intent(SensorService.serviceContext, MainActivity.class);
+					morningWakeUp = PendingIntent.getActivity(SensorService.serviceContext, 0,
+							mIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+					bAlarmManager.set(AlarmManager.RTC_WAKEUP,
+							tT.getTimeInMillis() , morningWakeUp);
+					Intent mRIntent = new Intent(SensorService.serviceContext, SurveyPinCheck.class);
+					mRIntent.putExtra("survey_name", "MORNING_REPORT");
+					mRIntent.putExtra("survey_file", "MorningReportParcel.xml");
+					morningReport = PendingIntent.getActivity(SensorService.serviceContext, 0, mRIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+					//trigger morning report 60 seconds later than MainActivity is restarted by bAlarmManager 
+					bAlarmManager.set(AlarmManager.RTC_WAKEUP,
+							tT.getTimeInMillis()+1000*60, morningReport);
+					Intent i=new Intent(getApplicationContext(), SurveyStatus.class);
+					startActivity(i);
+				} 
+				else {
+					Toast.makeText(getApplicationContext(),"Start Time must be earlier than 12:00 P.M.",Toast.LENGTH_LONG).show();
+				}
+				//Ricky 2/11 instead of using file storage, we use sharePreferences
+				/*
 				File bedDir = new File(USER_PATH);
 				if (!bedDir.exists()){
 					bedDir.mkdirs();
@@ -96,7 +142,7 @@ public class SurveyScheduler extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+				*/
 				//Ricky 2/10
 				/*
 				Calendar c=Calendar.getInstance();

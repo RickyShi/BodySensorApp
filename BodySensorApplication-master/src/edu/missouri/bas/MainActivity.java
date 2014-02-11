@@ -130,7 +130,7 @@ public class MainActivity extends ListActivity {
        
         
     	String[] options = {"Start Service", "Stop Service", "Survey Menu",
-		"External Sensor Connections","Bed Time Report"};
+		"External Sensor Connections","Bed Report"};
     	
     	ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
     			android.R.layout.simple_list_item_1, options);
@@ -427,7 +427,7 @@ public class MainActivity extends ListActivity {
 	
 	private void bedAlertDialog(){		
 		new AlertDialog.Builder(MainActivity.this)
-	    .setTitle("Report Bed Time")
+	    .setTitle("Bed Report")
 	    .setMessage("Confirm that you are going to bed for the night.")
 	    .setCancelable(false)
 	    .setPositiveButton(R.string.yes,   

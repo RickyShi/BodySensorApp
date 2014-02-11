@@ -8,14 +8,13 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Survey Status : "
+            android:text="Wake Time : "
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
             android:id="@+id/tvSetSurveyStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Not Scheduled"
             android:textAppearance="?android:attr/textAppearanceSmall" />
         
     </TableRow>
@@ -24,7 +23,7 @@
           android:id="@+id/btnSchedule"
           android:layout_width="fill_parent"
           android:layout_height="wrap_content"
-          android:text="Schedule Survey Activity" />
+          android:text="Set Wake Up Time of Tomorrow" />
         <Button
           android:id="@+id/btnReturn"
           android:layout_width="fill_parent"

@@ -1,10 +1,12 @@
 package edu.missouri.bas;
 import edu.missouri.bas.service.SensorService;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,7 +19,6 @@ import android.widget.Toast;
 
 public class SurveyStatus extends Activity{
 
-	
 	public static String IsScheduled="IS_SCHEDULED";
 	public static int Scheduled = 1;
 	Button btnSchedule;	
@@ -32,12 +33,23 @@ public class SurveyStatus extends Activity{
 		btnReturn=(Button)findViewById(R.id.btnReturn);
 		
 		tvSetSurveyStatus=(TextView)findViewById(R.id.tvSetSurveyStatus);
+		//Ricky 2/11/2014 Not for random survey anymore
+		/*
 		if(SensorService.getStatus())
 		{
 			
 			tvSetSurveyStatus.setText("Scheduled");
 		}
-				
+		*/
+		SharedPreferences bedTime = this.getSharedPreferences(SurveyScheduler.BED_TIME, MODE_PRIVATE);
+		String wakeTime = bedTime.getString(SurveyScheduler.BED_TIME_INFO, "none")+" A.M.";
+		//Log.d(SurveyScheduler.BED_TIME, bedTime.getString(SurveyScheduler.BED_TIME_INFO, "none"));
+		if (wakeTime.equals("none A.M.")){
+			tvSetSurveyStatus.setText("12:00 P.M.");
+		} else {
+			tvSetSurveyStatus.setText(wakeTime);
+		}
+		//text for wake_up Time
 		btnSchedule.setOnClickListener(new View.OnClickListener(){
 			public void onClick(View v) {
 				Intent i = new Intent(getApplicationContext(), SurveyScheduler.class);

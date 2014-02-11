@@ -30,6 +30,6 @@
     android:id="@+id/btnStartTimer"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:text="Schedule Survey" />
+    android:text="Set Time" />
 
 </LinearLayout>
