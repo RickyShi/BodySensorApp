@@ -95,8 +95,11 @@ public class SurveyScheduler extends Activity {
 					editor.putString(BED_TIME_INFO, timeToWrite);
 					editor.commit();
 					//Log.d(BED_TIME, bedTime.getString(BED_TIME_INFO, "none"));
+					//If current time is before 6 A.M, set the alarm Day to be the current Day.
 					Calendar tT = Calendar.getInstance();
-					tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
+					if (tT.get(Calendar.HOUR_OF_DAY)>6) {
+						tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
+					}
 					tT.set(Calendar.HOUR_OF_DAY, StartHours);
 					tT.set(Calendar.MINUTE, StartMinutes);
 					

@@ -153,7 +153,8 @@ public class XMLSurveyActivity extends Activity {
         submitButton.setText("Submit");
         backButton.setText("Previous Question");
         
-        
+        //First cancel the all the alarms set in the SurveyPinCheck Activity
+        cancelAllTimerTask();
         /*
          * Here to alarm the user to complete the survey
          * Ricky 2013/12/14
