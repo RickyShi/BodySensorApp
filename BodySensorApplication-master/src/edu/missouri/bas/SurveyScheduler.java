@@ -33,16 +33,11 @@ public class SurveyScheduler extends Activity {
 	private boolean mIsRunning=false;
 	//private static final String USER_PATH = "sdcard/BSAUserData/";
 	public static final String BED_TIME_INFO = "BED_TIME_INFO";
+	public static final String BED_HOUR_INFO = "BED_HOUR_INFO";
+	public static final String BED_MIN_INFO = "BED_MIN_INFO";
 	public static final String BED_TIME = "BED_TIME";
 	public Context ctx = SurveyScheduler.this;
-	/*
-	 * Ricky 2/11
-	 * Alarm manager variables, for scheduling intents
-	 * start the Body Sensor App tomorrow and start the morning report
-	 */
-	public static AlarmManager bAlarmManager;
-	private PendingIntent morningWakeUp;
-	private PendingIntent morningReport;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +46,8 @@ public class SurveyScheduler extends Activity {
 		TimePicker tpStartTime=(TimePicker)findViewById(R.id.tpStartTime);
 		//TimePicker tpEndTime=(TimePicker)findViewById(R.id.tpEndTime);
 		Button btnStartTimer=(Button)findViewById(R.id.btnStartTimer);
+		
+		//set the default start time as current time.
 		Calendar c=Calendar.getInstance();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 		String t=dateFormat.format(c.getTime());
@@ -90,32 +87,20 @@ public class SurveyScheduler extends Activity {
 			public void onClick(View v) {
 				if (StartHours < 12){				
 					String timeToWrite = StartHours+":"+StartMinutes;
+					String hourToWrite = String.valueOf(StartHours);
+					String minuateToWrite = String.valueOf(StartMinutes);
 					SharedPreferences bedTime = ctx.getSharedPreferences(BED_TIME, MODE_PRIVATE);
 					Editor editor = bedTime.edit();
 					editor.putString(BED_TIME_INFO, timeToWrite);
+					editor.putString(BED_HOUR_INFO, hourToWrite);
+					editor.putString(BED_MIN_INFO, minuateToWrite);
 					editor.commit();
 					//Log.d(BED_TIME, bedTime.getString(BED_TIME_INFO, "none"));
-					//If current time is before 6 A.M, set the alarm Day to be the current Day.
-					Calendar tT = Calendar.getInstance();
-					if (tT.get(Calendar.HOUR_OF_DAY)>6) {
-						tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
-					}
-					tT.set(Calendar.HOUR_OF_DAY, StartHours);
-					tT.set(Calendar.MINUTE, StartMinutes);
+					//If current time is before 3 A.M, set the alarm Day to be the current Day.
 					
-					bAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-					Intent mIntent = new Intent(SensorService.serviceContext, MainActivity.class);
-					morningWakeUp = PendingIntent.getActivity(SensorService.serviceContext, 0,
-							mIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-					bAlarmManager.set(AlarmManager.RTC_WAKEUP,
-							tT.getTimeInMillis() , morningWakeUp);
-					Intent mRIntent = new Intent(SensorService.serviceContext, SurveyPinCheck.class);
-					mRIntent.putExtra("survey_name", "MORNING_REPORT");
-					mRIntent.putExtra("survey_file", "MorningReportParcel.xml");
-					morningReport = PendingIntent.getActivity(SensorService.serviceContext, 0, mRIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-					//trigger morning report 60 seconds later than MainActivity is restarted by bAlarmManager 
-					bAlarmManager.set(AlarmManager.RTC_WAKEUP,
-							tT.getTimeInMillis()+1000*60, morningReport);
+					//Send Broadcast. And SensorService will handle it in the onReceive function.
+					Intent startScheduler = new Intent(SensorService.ACTION_SCHEDULE_MORNING);
+					getApplicationContext().sendBroadcast(startScheduler);
 					Intent i=new Intent(getApplicationContext(), SurveyStatus.class);
 					startActivity(i);
 				} 

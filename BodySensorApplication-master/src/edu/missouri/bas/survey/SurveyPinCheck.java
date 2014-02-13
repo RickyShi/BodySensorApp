@@ -105,7 +105,6 @@ public class SurveyPinCheck extends Activity {
 		//ADD VOICE AND VIBRATE CONTROL TO THE MORNING REPORT
 		if(surveyName.equalsIgnoreCase("MORNING_REPORT") && surveyFile.equalsIgnoreCase("MorningReportParcel.xml"))
 		{	
-			SensorService.drinkUpFlag =true;
 			Timer t=new Timer();
 			t.schedule(new  StartSound(),1000*5);			
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
