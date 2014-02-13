@@ -442,91 +442,73 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,SystemClock.elapsedRealtime()+1000*60*5,1000*60*5,scheduleCheck);
 		mLocationClient = new LocationClient(this, this, this);
 		
-		//Ricky 2/11/14 start the random survey automatically
+		/* 
+		 * @author Ricky 
+		 * 2/11/14 start the random survey automatically
+		 * 2/12 start random survey just after the service is triggered; 
+		 * old design(reading the morning survey time as the beginning time) is commented.
+		 */
+		/*
 		SharedPreferences bedTime = this.getSharedPreferences(SurveyScheduler.BED_TIME, MODE_PRIVATE);
 		String wakeTime = bedTime.getString(SurveyScheduler.BED_TIME_INFO, "none");
 		String []Time=wakeTime.split(":");
 		int StartHour=Integer.parseInt(Time[0]);
-		int StartMin=Integer.parseInt(Time[1]);	
+		int StartMin=Integer.parseInt(Time[1]);*/
 		//END TIME 23:59
 		int EndHour=23;
 		int EndMin=59;
 		
 		//Compare Time part
-		//Begin of Compare Time part
 		Calendar c = Calendar.getInstance();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-		String currentTime=dateFormat.format(c.getTime());	
-		String selectedStartTime=String.valueOf(StartHour)+":"+String.valueOf(StartMin);
-		String selectedEndTime=String.valueOf(EndHour)+":"+String.valueOf(EndMin);
-		Date CurrentTime = null;
-		try {
-			CurrentTime = dateFormat.parse(currentTime);
+		String currentTime=dateFormat.format(c.getTime());
+		String []cTime=currentTime.split(":");
+		int StartHour=Integer.parseInt(cTime[0]);
+		int StartMin=Integer.parseInt(cTime[1]);
+		if (((EndHour-StartHour)*60+(EndMin-StartMin))<=60){
+			Toast.makeText(getApplicationContext(),"Difference between Start and End Time must be at least one hour. Random Survey is canceled",Toast.LENGTH_LONG).show();
+		}
+		else {
+			//Schedule part
+			int Interval=(((EndHour-StartHour)*60)+(EndMin-StartMin))/6;
+			int delay=Interval/2;
+			int Increment=Interval+delay;
+			int TriggerInterval=Interval-delay;
+			Log.d(TAG,String.valueOf(Interval));
 			
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Date dt1=new Date();				
+			dt1.setHours(StartHour);
+			dt1.setMinutes(StartMin+delay);
+			Date dt2=new Date();
+			dt2.setHours(StartHour);
+			dt2.setMinutes(StartMin+Increment);				
+			Date dt3=new Date();
+			dt3.setHours(StartHour);
+			dt3.setMinutes(StartMin+Increment+Interval);
+			Date dt4=new Date();
+			dt4.setHours(StartHour);
+			dt4.setMinutes(StartMin+Increment+(Interval*2));
+			Date dt5=new Date();
+			dt5.setHours(StartHour);
+			dt5.setMinutes(StartMin+Increment+(Interval*3));
+			Date dt6=new Date();
+			dt6.setHours(StartHour);
+			dt6.setMinutes(StartMin+Increment+(Interval*4));
+			rTask1 = new ScheduleSurvey(TriggerInterval);
+			rTask2 = new ScheduleSurvey(TriggerInterval);
+			rTask3 = new ScheduleSurvey(TriggerInterval);
+			rTask4 = new ScheduleSurvey(TriggerInterval);
+			rTask5 = new ScheduleSurvey(TriggerInterval);
+			rTask6 = new ScheduleSurvey(TriggerInterval);				
+			t1.schedule(rTask1,dt1);	
+			t2.schedule(rTask2,dt2);
+			t3.schedule(rTask3,dt3);
+			t4.schedule(rTask4,dt4);
+			t5.schedule(rTask5,dt5);
+			t6.schedule(rTask6,dt6);
+			setStatus(true);
+			//End of Schedule
 		}
-		Date StartTime = null;
-		Date EndTime = null;
-		try {
-			StartTime = dateFormat.parse(selectedStartTime);
-			EndTime=dateFormat.parse(selectedEndTime);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if ((EndTime.getHours()-StartTime.getHours())==1){
-			Toast.makeText(getApplicationContext(),"Difference between Start and End Time must be atleast one hour. Random Survey is canceled",Toast.LENGTH_LONG).show();
-		}
-		// Random Survey begin at the current time
-		else if(StartTime.before(CurrentTime))
-	    {	    	
-			String []cTime=wakeTime.split(":");
-			StartHour=Integer.parseInt(cTime[0]);
-			StartMin=Integer.parseInt(cTime[1]);
-	    }
-		//End of time comparison part
-		
-		//Schedule part
-		int Interval=(((EndHour-StartHour)*60)+(EndMin-StartMin))/6;
-		int delay=Interval/2;
-		int Increment=Interval+delay;
-		int TriggerInterval=Interval-delay;
-		Log.d(TAG,String.valueOf(Interval));
-		
-		Date dt1=new Date();				
-		dt1.setHours(StartHour);
-		dt1.setMinutes(StartMin+delay);
-		Date dt2=new Date();
-		dt2.setHours(StartHour);
-		dt2.setMinutes(StartMin+Increment);				
-		Date dt3=new Date();
-		dt3.setHours(StartHour);
-		dt3.setMinutes(StartMin+Increment+Interval);
-		Date dt4=new Date();
-		dt4.setHours(StartHour);
-		dt4.setMinutes(StartMin+Increment+(Interval*2));
-		Date dt5=new Date();
-		dt5.setHours(StartHour);
-		dt5.setMinutes(StartMin+Increment+(Interval*3));
-		Date dt6=new Date();
-		dt6.setHours(StartHour);
-		dt6.setMinutes(StartMin+Increment+(Interval*4));
-		rTask1 = new ScheduleSurvey(TriggerInterval);
-		rTask2 = new ScheduleSurvey(TriggerInterval);
-		rTask3 = new ScheduleSurvey(TriggerInterval);
-		rTask4 = new ScheduleSurvey(TriggerInterval);
-		rTask5 = new ScheduleSurvey(TriggerInterval);
-		rTask6 = new ScheduleSurvey(TriggerInterval);				
-		t1.schedule(rTask1,dt1);	
-		t2.schedule(rTask2,dt2);
-		t3.schedule(rTask3,dt3);
-		t4.schedule(rTask4,dt4);
-		t5.schedule(rTask5,dt5);
-		t6.schedule(rTask6,dt6);
-		setStatus(true);
-		//End of Schedule
 	}
 	
 	
