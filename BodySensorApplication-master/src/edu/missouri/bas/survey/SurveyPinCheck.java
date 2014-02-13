@@ -228,4 +228,22 @@ public class SurveyPinCheck extends Activity {
         }.start();
 	}
 	*/
+	 private static void cancelAllTimerTask()
+		{
+			if(SensorService.alarmTimer!=null)
+			{	
+				//Boolean rickytest = alarmTask1.cancel();
+				SensorService.alarmTask1.cancel();
+				SensorService.alarmTask2.cancel();
+				SensorService.alarmTask3.cancel();
+				SensorService.alarmTask4.cancel();
+				SensorService.alarmTimer.purge();
+				//Log.d(TAG, rickytest.toString());
+				//alarmTimer.cancel();
+			}
+		}	
+	  protected void onDestroy(){
+	    	cancelAllTimerTask();
+	    	super.onDestroy();
+	    }
 }
