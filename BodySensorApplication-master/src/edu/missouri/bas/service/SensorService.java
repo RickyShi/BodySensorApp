@@ -1328,8 +1328,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		Intent mIntent = new Intent(SensorService.serviceContext, MainActivity.class);
 		morningWakeUp = PendingIntent.getActivity(SensorService.serviceContext, 0,
 				mIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-		bAlarmManager.set(AlarmManager.RTC_WAKEUP,
-				tT.getTimeInMillis() , morningWakeUp);
+		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+				tT.getTimeInMillis() ,86400000, morningWakeUp);
 		Intent mRIntent = new Intent(SensorService.serviceContext, SurveyPinCheck.class);
 		mRIntent.putExtra("survey_name", "MORNING_REPORT");
 		mRIntent.putExtra("survey_file", "MorningReportParcel.xml");
