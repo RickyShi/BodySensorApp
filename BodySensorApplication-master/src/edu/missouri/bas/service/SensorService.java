@@ -115,6 +115,7 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
 //Ricky 2013/12/09
 import android.os.AsyncTask;
 
@@ -259,6 +260,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
     
     public static final String END_MIN = "END_MIN";
     
+    public static final String BED_TIME_INFO = "BED_TIME_INFO";
+	public static final String BED_HOUR_INFO = "BED_HOUR_INFO";
+	public static final String BED_MIN_INFO = "BED_MIN_INFO";
+	public static final String BED_TIME = "BED_TIME";
+    
     static String errMSG ="Please check your wifi or dataplan.\r\nThe phone is offline now.";
 	
     static boolean IsScheduled = false;	
@@ -354,6 +360,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	public static StartSound2 mSound2;*/
 	//static Timer mTimer;
 	int reconnectionAttempts=0;
+	
+	String wakeHour;
+	String wakeMin;
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * @see android.app.Service#onBind(android.content.Intent)
@@ -517,13 +528,10 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			setStatus(true);
 			//End of Random Survey Schedule
 			
-			//Start of Time processing for the morning trigger
-			
-			SharedPreferences bedTime = this.getSharedPreferences(SurveyScheduler.BED_TIME, MODE_PRIVATE);
-			String wakeHour = bedTime.getString(SurveyScheduler.BED_HOUR_INFO, "none");
-			String wakeMin = bedTime.getString(SurveyScheduler.BED_MIN_INFO, "none");
-			iWakeHour = Integer.parseInt(wakeHour);
-			iWakeMin = Integer.parseInt(wakeMin);
+			//Get Time for the morning trigger
+			SharedPreferences bedTime = this.getSharedPreferences(BED_TIME, MODE_PRIVATE);
+			wakeHour = bedTime.getString(BED_HOUR_INFO, "none");
+			wakeMin = bedTime.getString(BED_MIN_INFO, "none");
 			if (wakeHour.equals("none")||wakeMin.equals("none")){
 				setMorningSurveyAlarm(11, 59);
 			}
@@ -947,6 +955,13 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			*/
 			else if(action.equals(SensorService.ACTION_SCHEDULE_MORNING))
 			{
+				if (wakeHour.equals("none")||wakeMin.equals("none")){
+					iWakeHour = 11;
+					iWakeMin = 59;
+				} else {
+					iWakeHour = Integer.parseInt(wakeHour);
+					iWakeMin = Integer.parseInt(wakeMin);
+				}
 				bAlarmManager.cancel(morningReport);
 				bAlarmManager.cancel(morningWakeUp);
 				setMorningSurveyAlarm(iWakeHour,iWakeMin);

@@ -41,8 +41,8 @@ public class SurveyStatus extends Activity{
 			tvSetSurveyStatus.setText("Scheduled");
 		}
 		*/
-		SharedPreferences bedTime = this.getSharedPreferences(SurveyScheduler.BED_TIME, MODE_PRIVATE);
-		String wakeTime = bedTime.getString(SurveyScheduler.BED_TIME_INFO, "none")+" A.M.";
+		SharedPreferences bedTime = this.getSharedPreferences(SensorService.BED_TIME, MODE_PRIVATE);
+		String wakeTime = bedTime.getString(SensorService.BED_TIME_INFO, "none")+" A.M.";
 		//Log.d(SurveyScheduler.BED_TIME, bedTime.getString(SurveyScheduler.BED_TIME_INFO, "none"));
 		if (wakeTime.equals("none A.M.")){
 			tvSetSurveyStatus.setText("12:00 P.M.");

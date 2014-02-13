@@ -32,10 +32,7 @@ public class SurveyScheduler extends Activity {
 	//public int EndMinutes;
 	private boolean mIsRunning=false;
 	//private static final String USER_PATH = "sdcard/BSAUserData/";
-	public static final String BED_TIME_INFO = "BED_TIME_INFO";
-	public static final String BED_HOUR_INFO = "BED_HOUR_INFO";
-	public static final String BED_MIN_INFO = "BED_MIN_INFO";
-	public static final String BED_TIME = "BED_TIME";
+	
 	public Context ctx = SurveyScheduler.this;
 	
 	
@@ -89,11 +86,11 @@ public class SurveyScheduler extends Activity {
 					String timeToWrite = StartHours+":"+StartMinutes;
 					String hourToWrite = String.valueOf(StartHours);
 					String minuateToWrite = String.valueOf(StartMinutes);
-					SharedPreferences bedTime = ctx.getSharedPreferences(BED_TIME, MODE_PRIVATE);
+					SharedPreferences bedTime = ctx.getSharedPreferences(SensorService.BED_TIME, MODE_PRIVATE);
 					Editor editor = bedTime.edit();
-					editor.putString(BED_TIME_INFO, timeToWrite);
-					editor.putString(BED_HOUR_INFO, hourToWrite);
-					editor.putString(BED_MIN_INFO, minuateToWrite);
+					editor.putString(SensorService.BED_TIME_INFO, timeToWrite);
+					editor.putString(SensorService.BED_HOUR_INFO, hourToWrite);
+					editor.putString(SensorService.BED_MIN_INFO, minuateToWrite);
 					editor.commit();
 					//Log.d(BED_TIME, bedTime.getString(BED_TIME_INFO, "none"));
 					//If current time is before 3 A.M, set the alarm Day to be the current Day.
