@@ -535,6 +535,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			SharedPreferences bedTime = this.getSharedPreferences(BED_TIME, MODE_PRIVATE);
 			wakeHour = bedTime.getString(BED_HOUR_INFO, "none");
 			wakeMin = bedTime.getString(BED_MIN_INFO, "none");
+			bAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 			if (wakeHour.equals("none")||wakeMin.equals("none")){
 				setMorningSurveyAlarm(11, 59);
 			}
@@ -1342,7 +1343,6 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		tT.set(Calendar.HOUR_OF_DAY, h);
 		tT.set(Calendar.MINUTE, i);
 		
-		bAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		Intent mIntent = new Intent(SensorService.serviceContext, MainActivity.class);
 		morningWakeUp = PendingIntent.getActivity(SensorService.serviceContext, 0,
 				mIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -1355,6 +1355,26 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		//trigger morning report 60 seconds later than MainActivity is restarted by bAlarmManager 
 		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
 				tT.getTimeInMillis()+1000*60,86400000, morningReport);
+    }
+    
+    /*
+     * -----------Restart the morning alarm by detecting the System Boot to fix the System-shutSown-Clear-Alarm problem-----------
+     * Receiver is declared in the Manifest.XML 
+     */
+    public class  MyStartupIntentReceiver extends BroadcastReceiver{
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			if (wakeHour.equals("none")||wakeMin.equals("none")){
+				iWakeHour = 11;
+				iWakeMin = 59;
+			} else {
+				iWakeHour = Integer.parseInt(wakeHour);
+				iWakeMin = Integer.parseInt(wakeMin);
+			}
+			setMorningSurveyAlarm(iWakeHour,iWakeMin);
+		}
     }
  }
 

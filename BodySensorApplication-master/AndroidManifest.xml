@@ -104,6 +104,11 @@
             android:screenOrientation="portrait"
             >
         </activity>
+        <receiver android:name=".MyStartupIntentReceiver" android:enabled="true" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
         <service android:name=".service.SensorService"></service>       
         <service android:name=".service.ActivityRecognitionService" android:process=":remote"  ></service>
     </application>
