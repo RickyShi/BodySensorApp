@@ -100,7 +100,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
    				double ResultAcc = Math.sqrt(x*x+y*y+z*z);
    				if (compressAccelerometerData(ResultAcc)){
 		    		//String Accelerometer_Values = getTimeStamp()+","+event.values[0]+","+event.values[1]+","+event.values[2];
-   					String Accelerometer_Values = getTimeStamp()+ String.valueOf(avgAcc);
+   					String Accelerometer_Values = getTimeStamp()+","+String.valueOf(avgAcc);
    					String file_name="Accelerometer."+identifier+"."+getDate()+".txt";
 		            File f = new File(SensorService.BASE_PATH,file_name);
 		            //Log.d("wtest",avgAcc+"");

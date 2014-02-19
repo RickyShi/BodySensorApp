@@ -23,7 +23,7 @@
           android:id="@+id/btnSchedule"
           android:layout_width="fill_parent"
           android:layout_height="wrap_content"
-          android:text="Set Wake Up Time of Tomorrow" />
+          android:text="Set Wake Up Time for Tomorrow" />
         <Button
           android:id="@+id/btnReturn"
           android:layout_width="fill_parent"
