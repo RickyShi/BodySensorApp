@@ -42,6 +42,8 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	List<String> dataPoints=new ArrayList<String>();
 	Calendar c=Calendar.getInstance();
     SimpleDateFormat curFormater = new SimpleDateFormat("MMMMM_dd");
+    private List<Double> AccList = new ArrayList<Double>();
+    private double avgAcc = 0;
 
 	public InternalSensor(SensorManager sensorManager,int sensorType,int samplingRate,String uniqueIdentifier)
 	{
@@ -90,30 +92,39 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	public void onSensorChanged(SensorEvent event) {				
 		// TODO Auto-generated method stub
    		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) 
-	      {	
-	    		String Accelerometer_Values = getTimeStamp()+","+event.values[0]+","+event.values[1]+","+event.values[2];
-	    		String file_name="Accelerometer."+identifier+"."+getDate()+".txt";
-	            File f = new File(SensorService.BASE_PATH,file_name);
-	            /*
-                dataPoints.add(Accelerometer_Values+";");              
-	            if(dataPoints.size()==80)
-	            {
-	            	    List<String> subList = dataPoints.subList(0,41);
-	     	            String data=subList.toString();	     	            
-	     	            String formatedData=data.replaceAll("[\\[\\]]","");	
-	     	            //Ricky 2013/12/09
-	     	            //sendDatatoServer("Accelerometer."+identifier+"."+getDate(),formatedData);
-	     	            TransmitData transmitData=new TransmitData();
-	     	            transmitData.execute("Accelerometer."+identifier+"."+getDate(),formatedData);
-	     	            subList.clear(); 	     	            
-	     	    }
-	     	    */
-	    		try {
-					writeToFile(f,Accelerometer_Values);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+	      {		
+   				float x = event.values[0];
+   				float y = event.values[1];
+   				float z = event.values[2];
+   				//Log.d("wtest","x:"+x+"y:"+y+"x:"+z);
+   				double ResultAcc = Math.sqrt(x*x+y*y+z*z);
+   				if (compressAccelerometerData(ResultAcc)){
+		    		//String Accelerometer_Values = getTimeStamp()+","+event.values[0]+","+event.values[1]+","+event.values[2];
+   					String Accelerometer_Values = getTimeStamp()+ String.valueOf(avgAcc);
+   					String file_name="Accelerometer."+identifier+"."+getDate()+".txt";
+		            File f = new File(SensorService.BASE_PATH,file_name);
+		            //Log.d("wtest",avgAcc+"");
+		            /*
+	                dataPoints.add(Accelerometer_Values+";");              
+		            if(dataPoints.size()==80)
+		            {
+		            	    List<String> subList = dataPoints.subList(0,41);
+		     	            String data=subList.toString();	     	            
+		     	            String formatedData=data.replaceAll("[\\[\\]]","");	
+		     	            //Ricky 2013/12/09
+		     	            //sendDatatoServer("Accelerometer."+identifier+"."+getDate(),formatedData);
+		     	            TransmitData transmitData=new TransmitData();
+		     	            transmitData.execute("Accelerometer."+identifier+"."+getDate(),formatedData);
+		     	            subList.clear(); 	     	            
+		     	    }
+		     	    */
+		    		try {
+						writeToFile(f,Accelerometer_Values);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+   				}
 	      
 	      }
    			 else if (event.sensor.getType() == Sensor.TYPE_LIGHT) 
@@ -248,4 +259,25 @@ public class InternalSensor implements Runnable, SensorEventListener {
     	 }
     }
     */
+	/**
+	 * @author Ricky
+	 * @param rawAccelerometerData Resultant Value of three axis
+	 * @return True/False
+	 */
+	private Boolean compressAccelerometerData(Double rawAccelerometerData){		
+		if (AccList.size()<=15){
+			AccList.add(rawAccelerometerData);
+			return false;
+		}
+		else {
+			avgAcc = 0;
+			for (int i=0;i<AccList.size();i++){
+				avgAcc +=AccList.get(i); 
+			}
+			avgAcc /= AccList.size();
+			AccList.clear();
+			AccList.add(rawAccelerometerData);
+			return true;
+		}
+	}
 }

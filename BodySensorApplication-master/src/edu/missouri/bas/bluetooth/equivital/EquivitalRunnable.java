@@ -360,7 +360,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		}
 	}
 	
-	/*
+	/**
 	 * @author Ricky 2/6
 	 * Funtion to apply the median filter.
 	 * @param compressedAVGChestSensorAccelerometerData: Avg value of 1 second data
