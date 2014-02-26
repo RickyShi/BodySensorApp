@@ -1338,7 +1338,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
         Toast.makeText(this, "Disconnected. Please re-connect.",
                 Toast.LENGTH_SHORT).show();
     }
-    
+    /**
+     * @author Ricky
+     * @param h
+     * @param i
+     */
     private void setMorningSurveyAlarm(int h, int i){
     	Calendar tT = Calendar.getInstance();
     	/*
@@ -1366,24 +1370,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				tT.getTimeInMillis()+1000*60,86400000, morningReport);
     }
     
-    /*
-     * -----------Restart the morning alarm by detecting the System Boot to fix the System-shutSown-Clear-Alarm problem-----------
-     * Receiver is declared in the Manifest.XML 
-     */
-    public class  MyStartupIntentReceiver extends BroadcastReceiver{
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// TODO Auto-generated method stub
-			if (wakeHour.equals("none")||wakeMin.equals("none")){
-				iWakeHour = 11;
-				iWakeMin = 59;
-			} else {
-				iWakeHour = Integer.parseInt(wakeHour);
-				iWakeMin = Integer.parseInt(wakeMin);
-			}
-			setMorningSurveyAlarm(iWakeHour,iWakeMin);
-		}
-    }
+    
+    
  }
 
