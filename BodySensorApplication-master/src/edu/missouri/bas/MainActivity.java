@@ -564,7 +564,7 @@ public class MainActivity extends ListActivity {
 			        	mEdit = (EditText)DialogView.findViewById(R.id.edit_pin);
 			        	mText = (TextView)DialogView.findViewById(R.id.text_pin);
 			        	String pin = mEdit.getText().toString();
-			        	if (pin.equals("1234")){
+			        	if (pin.equals(SensorService.getPWD())){
 			        	//Send the intent and trigger new Survey Activity....
 			        	bedAlertDialog();			        	
 			        	dialog.cancel();

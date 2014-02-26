@@ -32,6 +32,7 @@ import edu.missouri.bas.R;
 import edu.missouri.bas.SensorConnections;
 import edu.missouri.bas.SurveyScheduler;
 import edu.missouri.bas.SurveyStatus;
+import edu.missouri.bas.activities.AdminManageActivity;
 import edu.missouri.bas.bluetooth.BluetoothRunnable;
 import edu.missouri.bas.bluetooth.affectiva.AffectivaPacket;
 import edu.missouri.bas.bluetooth.affectiva.AffectivaRunnable;
@@ -106,15 +107,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-
-
-
-
-
-
-
-
-
 
 //Ricky 2013/12/09
 import android.os.AsyncTask;
@@ -367,6 +359,18 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	private int EndHour=23;
 	private int EndMin=59;
 	
+	//Id and Password
+	//2014/2/25
+	private static String ID;
+	private static String PWD;	
+	
+	public static String getPWD() {
+		return PWD;
+	}
+	
+	public static String getID() {
+		return ID;
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see android.app.Service#onBind(android.content.Intent)
@@ -381,6 +385,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	public void onCreate(){
 		
 		super.onCreate();
+		//Get ID and PWD
+		SharedPreferences shp = getSharedPreferences("PINLOGIN", Context.MODE_PRIVATE);
+	    ID = shp.getString(AdminManageActivity.ASID, "");
+	    PWD = shp.getString(AdminManageActivity.ASPWD, "");
+	    
 		Log.d(TAG,"Starting sensor service");
 		mSoundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
         soundsMap = new HashMap<Integer, Integer>();
@@ -600,9 +609,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
         
 	private Runnable sensorThread = new Runnable() {
 	    public void run() {
-	    	Accelerometer=new InternalSensor(mSensorManager,Sensor.TYPE_ACCELEROMETER,SensorManager.SENSOR_DELAY_NORMAL,bluetoothMacAddress);
+	    	Accelerometer=new InternalSensor(mSensorManager,Sensor.TYPE_ACCELEROMETER,SensorManager.SENSOR_DELAY_NORMAL,ID);
 			Accelerometer.run();
-			LightSensor=new InternalSensor(mSensorManager,Sensor.TYPE_LIGHT,SensorManager.SENSOR_DELAY_NORMAL,bluetoothMacAddress);
+			LightSensor=new InternalSensor(mSensorManager,Sensor.TYPE_LIGHT,SensorManager.SENSOR_DELAY_NORMAL,ID);
 			LightSensor.run();
 	    }
 	};
@@ -1077,7 +1086,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		Calendar cl=Calendar.getInstance();
 		SimpleDateFormat curFormater = new SimpleDateFormat("MMMMM_dd"); 
 		String dateObj =curFormater.format(cl.getTime());
-		File f = new File(BASE_PATH,"locations."+bluetoothMacAddress+"."+dateObj+".txt");
+		File f = new File(BASE_PATH,"locations."+ID+"."+dateObj+".txt");
 		
 		Calendar cal=Calendar.getInstance();
 		cal.setTimeZone(TimeZone.getTimeZone("US/Central"));	
@@ -1090,7 +1099,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				//sendDatatoServer("locations."+bluetoothMacAddress+"."+dateObj,toWrite);
 				//Ricky
 				TransmitData transmitData=new TransmitData();
-				transmitData.execute("locations."+bluetoothMacAddress+"."+dateObj,toWrite);
+				transmitData.execute("locations."+ID+"."+dateObj,toWrite);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -1122,7 +1131,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		Calendar cl=Calendar.getInstance();
 		SimpleDateFormat curFormater = new SimpleDateFormat("MMMMM_dd"); 
 		String dateObj =curFormater.format(cl.getTime());
-		File f = new File(BASE_PATH,surveyName+"."+bluetoothMacAddress+"."+dateObj+".txt");
+		File f = new File(BASE_PATH,surveyName+"."+ID+"."+dateObj+".txt");
 		Log.d(TAG,"File: "+f.getName());
 		
 		StringBuilder sb = new StringBuilder(100);
@@ -1154,7 +1163,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		//sendDatatoServer(surveyName+"."+bluetoothMacAddress+"."+dateObj,sb.toString());
 		//Ricky 2013/12/09
 		TransmitData transmitData=new TransmitData();
-		transmitData.execute(surveyName+"."+bluetoothMacAddress+"."+dateObj,sb.toString());
+		transmitData.execute(surveyName+"."+ID+"."+dateObj,sb.toString());
 				writeToFile(f,sb.toString());
 		writeToFile(f,sb.toString());
 	}
@@ -1176,7 +1185,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				Toast.makeText(getApplicationContext(),"Intent Received",Toast.LENGTH_LONG).show();
 				String address=intent.getStringExtra(KEY_ADDRESS);
 				String deviceName=intent.getStringExtra("KEY_DEVICE_NAME");
-				equivitalThread=new EquivitalRunnable(address,deviceName,bluetoothMacAddress);
+				equivitalThread=new EquivitalRunnable(address,deviceName,ID);
 				equivitalThread.run();
 				Calendar c=Calendar.getInstance();
 				SimpleDateFormat curFormater = new SimpleDateFormat("MMMMM_dd"); 

@@ -98,8 +98,8 @@ public class SurveyScheduler extends Activity {
 					//Send Broadcast. And SensorService will handle it in the onReceive function.
 					Intent startScheduler = new Intent(SensorService.ACTION_SCHEDULE_MORNING);
 					getApplicationContext().sendBroadcast(startScheduler);
-					//Intent i=new Intent(getApplicationContext(), SurveyStatus.class);
-					//startActivity(i);
+					Intent i=new Intent(getApplicationContext(), SurveyStatus.class);
+					startActivity(i);
 					finish();
 				} 
 				else {
