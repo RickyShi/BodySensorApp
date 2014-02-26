@@ -98,8 +98,9 @@ public class SurveyScheduler extends Activity {
 					//Send Broadcast. And SensorService will handle it in the onReceive function.
 					Intent startScheduler = new Intent(SensorService.ACTION_SCHEDULE_MORNING);
 					getApplicationContext().sendBroadcast(startScheduler);
-					Intent i=new Intent(getApplicationContext(), SurveyStatus.class);
-					startActivity(i);
+					//Intent i=new Intent(getApplicationContext(), SurveyStatus.class);
+					//startActivity(i);
+					finish();
 				} 
 				else {
 					Toast.makeText(getApplicationContext(),"Start Time must be earlier than 12:00 P.M.",Toast.LENGTH_LONG).show();
@@ -189,8 +190,9 @@ public class SurveyScheduler extends Activity {
 					    		startScheduler.putExtra(SensorService.END_MIN,EndMinutes);
 								getApplicationContext().sendBroadcast(startScheduler);
 								Toast.makeText(getApplicationContext(),"Message sent to the service",Toast.LENGTH_LONG).show();								
-								Intent i=new Intent(getApplicationContext(), SurveyStatus.class);
-								startActivity(i);
+								//Intent i=new Intent(getApplicationContext(), SurveyStatus.class);
+								//startActivity(i);
+								finish();
 					    		
 					    		
 					 }
@@ -211,9 +213,9 @@ public class SurveyScheduler extends Activity {
 		    		startDrinkScheduler.putExtra(SensorService.END_MIN,EndMinutes);
 		    		getApplicationContext().sendBroadcast(startDrinkScheduler);
 					Toast.makeText(getApplicationContext(),"Message sent to the service",Toast.LENGTH_LONG).show();					
-					Intent i=new Intent(getApplicationContext(), SurveyStatus.class);
-					startActivity(i);
-			   }			     	
+					//Intent i=new Intent(getApplicationContext(), SurveyStatus.class);
+					//startActivity(i);
+					finish();
 			 */
 			}
         });

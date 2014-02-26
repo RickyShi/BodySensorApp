@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"   
+    android:orientation="vertical"    
+    android:layout_width="fill_parent"    
+    android:layout_height="fill_parent"    
+    >    
+
+    <LinearLayout 
+        android:id="@+id/tab_assign"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+            <TextView android:id="@+id/tab_demo_tv1"    
+	        android:layout_width="fill_parent"     
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="50dp"
+	        android:layout_marginLeft="50dp"
+	        android:layout_marginRight="50dp"
+	        android:textSize="24dip" 
+	        android:text="Please assign an ID:"    
+    		/>
+            <EditText 
+                android:id="@+id/assigned_ID"
+                android:layout_width="fill_parent"     
+	        	android:layout_height="wrap_content"
+	        	android:layout_marginTop="10dp"
+				android:layout_marginLeft="50dp"
+	        	android:layout_marginRight="50dp"
+	        	android:hint="Four-digit ID goes here"
+	        	android:textSize="24dip"
+	        	android:inputType="number"
+	        	android:focusable="true"
+	        	android:focusableInTouchMode="true"
+	        	android:maxLength="4"
+                />
+            <Button 
+                android:id="@+id/btn_assign"
+               	android:layout_width="fill_parent"     
+	        	android:layout_height="wrap_content" 
+	        	android:layout_marginTop="20dp"
+	        	android:layout_marginLeft="50dp"
+	        	android:layout_marginRight="50dp"
+	        	android:text="Assign ID"
+                /> 
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:id="@+id/tab_logoff"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+            <TextView android:id="@+id/tab_demo_tv1"    
+	        android:layout_width="fill_parent"     
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="50dp"
+	        android:layout_marginLeft="50dp"
+	        android:layout_marginRight="50dp"
+	        android:textSize="24dip" 
+	        android:text="Current ID on device:"    
+    		/>
+            <EditText 
+                android:id="@+id/deassigned_ID"
+                android:layout_width="fill_parent"     
+	        	android:layout_height="wrap_content"
+	        	android:layout_marginTop="10dp"
+				android:layout_marginLeft="50dp"
+	        	android:layout_marginRight="50dp"
+	        	android:hint="Not set yet"
+	        	android:textSize="24dip"
+	        	android:inputType="number"
+	        	android:enabled="false"
+                />
+            <Button 
+                android:id="@+id/btn_remove"
+               	android:layout_width="fill_parent"     
+	        	android:layout_height="wrap_content" 
+	        	android:layout_marginTop="20dp"
+	        	android:layout_marginLeft="50dp"
+	        	android:layout_marginRight="50dp"
+	        	android:text="Remove ID"
+                /> 
+
+    </LinearLayout>
+</FrameLayout>   

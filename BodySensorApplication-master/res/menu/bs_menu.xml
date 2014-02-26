@@ -3,4 +3,5 @@
         <item android:id="@+id/Connect" android:title="Connect to a device" ></item>
         <item android:id="@+id/Enable" android:title="Enable BT" ></item>
         <item android:id="@+id/Disable" android:title="Disable BT" ></item>
+        <item android:id="@+id/manage" android:title="Management"></item>"
     </menu>

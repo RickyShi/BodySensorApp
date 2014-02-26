@@ -1,51 +1,6 @@
 package edu.missouri.bas;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.AlarmManager;
-import android.app.AlertDialog;
-import android.app.ListActivity;
-import android.app.PendingIntent;
-import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.StrictMode;
-import android.os.SystemClock;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-import edu.missouri.bas.activities.DeviceListActivity;
-import edu.missouri.bas.bluetooth.BluetoothRunnable;
-import edu.missouri.bas.service.SensorService;
-import edu.missouri.bas.service.modules.location.ActivityRecognitionScan;
-import edu.missouri.bas.survey.SurveyPinCheck;
-import edu.missouri.bas.survey.XMLSurveyActivity;
-import edu.missouri.bas.survey.XMLSurveyMenu;
-
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -55,24 +10,62 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ListActivity;
+import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+import edu.missouri.bas.activities.AdminManageActivity;
+import edu.missouri.bas.activities.DeviceListActivity;
+import edu.missouri.bas.bluetooth.BluetoothRunnable;
+import edu.missouri.bas.service.SensorService;
+import edu.missouri.bas.survey.XMLSurveyMenu;
 
 public class MainActivity extends ListActivity {
 
-	private boolean mIsRunning=false;
+	private String TAG2 = "TAG~~~~~~~~~~~~~~~~~~~";
+	public static boolean mIsRunning=false;
 	
 	private BluetoothAdapter mAdapter= BluetoothAdapter.getDefaultAdapter();	
 	private final static String TAG = "SensorServiceActivity";	
+	public static final int INTENT_REQUEST_MAMAGE = 4;
 	public static final int REQUEST_ENABLE_BT = 3;
 	public static final int INTENT_SELECT_DEVICES = 0;
 	public static final int INTENT_DISCOVERY = 1;
@@ -117,6 +110,12 @@ public class MainActivity extends ListActivity {
 	private TextView mText;
 	private EditText mEdit;
 	
+	EditText userPin;
+	InputMethodManager imm;
+	SharedPreferences shp;
+	Editor editor;
+	String ID;
+	
 
 	//action URL
 	
@@ -128,6 +127,7 @@ public class MainActivity extends ListActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
        
+        Log.d(TAG2, "OnCreate~~~~~~~~~~~~~~~~~~~");
         
     	String[] options = {"Start Service", "Stop Service", "Survey Menu",
 		"External Sensor Connections","Bed Report"};
@@ -176,9 +176,128 @@ public class MainActivity extends ListActivity {
         }
         
         
-        startSService();
-                
+        ////startSService();
+        // startServer? into check       
+        //
+        //check if device is assigned with an ID
+        shp = getSharedPreferences("PINLOGIN", Context.MODE_PRIVATE);
+        ID = shp.getString(AdminManageActivity.ASID, "");
+        String PWD = shp.getString(AdminManageActivity.ASPWD, "");
+        editor = shp.edit();
         
+        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        
+        Log.d(TAG2,"id is "+ID);
+        
+        if(ID.equals("")){
+        	Intent serverIntent = new Intent(this, AdminManageActivity.class);
+            startActivityForResult(serverIntent, MainActivity.INTENT_REQUEST_MAMAGE);
+            
+            
+            imm.toggleSoftInput(0, InputMethodManager.RESULT_HIDDEN);
+        	
+        }else if(PWD.equals("")){
+        	//set password
+        	
+        	UserSetPinDialog(this, ID).show();
+        	
+        }else{
+        	Log.d(TAG2,"pwd is "+shp.getString(AdminManageActivity.ASPWD, "get fail?"));
+        	startSService();
+        }
+        
+    }
+    
+    private Dialog UserSetPinDialog(Context context, final String ID) {  
+        LayoutInflater inflater = LayoutInflater.from(this);  
+        final View textEntryView = inflater.inflate(  
+                R.layout.pin_login, null);  
+        TextView alert_text = (TextView) textEntryView.findViewById(R.id.pin_text);
+        alert_text.setText("Please input 4-digit PIN for User: "+ID);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);  
+        builder.setCancelable(false);
+        builder.setTitle("Set User PIN");  
+        //builder.setMessage("Please input 4-digit PIN for User: "+ID);
+        builder.setView(textEntryView);  
+        builder.setPositiveButton("OK",  
+                new DialogInterface.OnClickListener() {  
+                    public void onClick(DialogInterface dialog, int whichButton) {  
+                    	
+                    	//check networking
+                    	
+                    	userPin = (EditText) textEntryView.findViewById(R.id.pin_edit);
+                    	String newPin = userPin.getText().toString();
+                    	Log.d(TAG2, "get from edittext is "+newPin);
+                    	
+                    	HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/validateUser.php");
+         		        
+         		        List<NameValuePair> params = new ArrayList<NameValuePair>();
+         		        
+         		        //file_name 
+         		        params.add(new BasicNameValuePair("userID",ID));        
+         		        //function
+         		        params.add(new BasicNameValuePair("pre","3"));
+         		        //data                       
+         		        params.add(new BasicNameValuePair("password",newPin));
+
+         		        	        	
+         		        try {
+         					request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+         				
+         		        
+         		        HttpResponse response = new DefaultHttpClient().execute(request);
+         		        if(response.getStatusLine().getStatusCode() == 200){
+         		            String result = EntityUtils.toString(response.getEntity());
+         		            Log.d("~~~~~~~~~~http post result3 ",result);     
+         		            
+         		            if(result.equals("NewUserIsCreated")){
+         		            	//new pwd created
+         		 				//format check
+         		 				
+         		 				editor.putString(AdminManageActivity.ASPWD, newPin);
+         		 				editor.commit();
+         		            	
+         		 				startSService();
+         		            }else{
+         		            	
+         		            	//imm.toggleSoftInput(0, InputMethodManager.RESULT_SHOWN);
+         	 					//imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+         	 					
+         		            	Toast toast = Toast.makeText(getApplicationContext(), "Set PIN failed. Please try again.", Toast.LENGTH_SHORT);
+         		            	toast.show();
+         		            	//set return code
+         		            	
+         		            	finish();
+         		            }
+         		            
+         		        } 
+         		        } catch (Exception e) {
+         					// TODO Auto-generated catch block
+         		        	
+         		        	imm.toggleSoftInput(0, InputMethodManager.RESULT_SHOWN);
+     	 					imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+     	 					
+     	 					Toast toast = Toast.makeText(getApplicationContext(), "Set PIN failed. Please try again.", Toast.LENGTH_SHORT);
+     		            	toast.show();
+     		            	//set return code
+     		            	
+     		            	finish();
+         					e.printStackTrace();
+         				}
+ 
+         		        
+                    }  
+                });  
+        builder.setNegativeButton("Cancel",  
+                new DialogInterface.OnClickListener() {  
+                    public void onClick(DialogInterface dialog, int whichButton) {  
+                    	
+                    	imm.toggleSoftInput(0, InputMethodManager.RESULT_SHOWN);
+ 	 					imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                        finish(); 
+                    }  
+                });  
+        return builder.create();  
     }
     
     
@@ -288,9 +407,41 @@ public class MainActivity extends ListActivity {
         }
     }
     
+    
+    
+    
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("SensorServiceActivity", "onActivityResult " + resultCode);
+        Log.d(TAG2, "OnActivityResult~~~~~~~~~~~ "+ resultCode);
+        
         switch (requestCode) {
+        case INTENT_REQUEST_MAMAGE:
+        	/*if(resultCode == Activity.RESULT_CANCELED){
+        		
+        		
+        		
+        	}else if(resultCode == Activity.RESULT_OK){
+        		
+        		
+        	}else */
+        	if(resultCode == 8){//set user PIN
+        		
+        		ID = shp.getString(AdminManageActivity.ASID, "");
+        		UserSetPinDialog(this, ID).show();
+
+        	
+        	}else if(resultCode == 9){//regular management
+        		
+        		stopSService();
+        		finish();
+        		
+        	}else{
+        		
+        		
+        	}
+        	
+        	
+        	break;
         case REQUEST_ENABLE_BT:
             // When the request to enable Bluetooth returns
             if (resultCode == Activity.RESULT_OK) {
@@ -374,6 +525,12 @@ public class MainActivity extends ListActivity {
 			Toast.makeText(getApplicationContext(),"Bluetooth is disabled",Toast.LENGTH_LONG).show();			
             return true;
 		}
+		else if(item.getItemId() == R.id.manage){
+			Intent serverIntent = new Intent(this, AdminManageActivity.class);
+            startActivityForResult(serverIntent, MainActivity.INTENT_REQUEST_MAMAGE);
+		}
+		else 
+			return false;
 		return false;
 	}
 	
@@ -388,6 +545,7 @@ public class MainActivity extends ListActivity {
 
 	@Override
 	public void onDestroy(){
+	
 		super.onDestroy();
 	}
 	
