@@ -4,16 +4,15 @@
  * Receiver is declared in the Manifest.XML 
  */
 package edu.missouri.bas;
-
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.util.Log;
 
 public class  MyStartupIntentReceiver extends BroadcastReceiver{
-
+	
+	private String action="android.intent.action.MAIN";  
+	private String category="android.intent.category.LAUNCHER";
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		// TODO Auto-generated method stub
@@ -27,8 +26,11 @@ public class  MyStartupIntentReceiver extends BroadcastReceiver{
 		}
 		setMorningSurveyAlarm(iWakeHour,iWakeMin);
 		*/
-		MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.voice_notification);
-		mediaPlayer.start();
-		Log.d("M1","onCreate");
+		
+		Intent s = new Intent(context,MainActivity.class);
+		s.setAction(action);
+		s.addCategory(category);
+		s.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		context.startActivity(s);
 	}
 }

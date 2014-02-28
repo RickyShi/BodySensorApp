@@ -30,7 +30,7 @@ public class SurveyScheduler extends Activity {
 	//Ricky 2/10
 	//public int EndHours;
 	//public int EndMinutes;
-	private boolean mIsRunning=false;
+	
 	//private static final String USER_PATH = "sdcard/BSAUserData/";
 	
 	public Context ctx = SurveyScheduler.this;

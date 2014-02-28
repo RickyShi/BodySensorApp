@@ -25,7 +25,6 @@ import edu.missouri.bas.service.SensorService;
 
 public class SurveyPinCheck extends Activity {
 	
-	private ProgressDialog mydialog;
 	private TextView mText;
 	private EditText mEdit;
 	private Button pButton;
