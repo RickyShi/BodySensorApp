@@ -2,6 +2,7 @@ package edu.missouri.bas.survey;
 
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,8 +26,10 @@ import android.widget.Toast;
 import edu.missouri.bas.R;
 import edu.missouri.bas.service.SensorService;
 
-//Here Change the Activity to FragmentActivity to enable the use of AlertDialog 
-//Ricky 2013/12/14
+/**
+ * @author Ricky 2013/12/14
+ * Here Change the Activity to FragmentActivity to enable the use of AlertDialog 
+ */
 public class XMLSurveyMenu extends FragmentActivity{
 	
 	Button morningButton;
@@ -117,30 +120,48 @@ public class XMLSurveyMenu extends FragmentActivity{
 							FireMissilesDialogFragment TestDialog = new FireMissilesDialogFragment();
 							TestDialog.setCancelable(false);
 							TestDialog.show(getSupportFragmentManager(), "drink_check");
+						} else if(temp.getDisplayName().equals("Morning Report")) {
+							Calendar mT = Calendar.getInstance();
+							Calendar noonT = Calendar.getInstance();
+							noonT.set(Calendar.HOUR_OF_DAY, 12);
+							noonT.set(Calendar.MINUTE, 0);
+							noonT.set(Calendar.SECOND, 0);
+							if (mT.after(noonT)){
+								moringCheck();
+							}
+							else {
+								launchSurvey(temp.getFileName(),temp.getName());
+							}
 						}
 						else {
-							Intent launchSurvey = 
-									new Intent(getApplicationContext(), SurveyPinCheck.class);
-							launchSurvey.putExtra("survey_file", temp.getFileName());
-							launchSurvey.putExtra("survey_name", temp.getName());
-							startActivity(launchSurvey);
+							launchSurvey(temp.getFileName(),temp.getName());
 						}
 					}
 				});
 				buttonMap.put(b, survey);
 			}
 		}
-		setContentView(scrollView);
-		/*morningButton = (Button) findViewById(R.id.morningSurvey);
-		
-		morningButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent i = new Intent(getApplicationContext(), XMLSurveyActivity.class);
-				i.putExtra("file_name", "morningReport");
-				startActivity(i);	
-			}
-		});*/
+		setContentView(scrollView);				
 	}
+	private void moringCheck(){
+	    new AlertDialog.Builder(this)
+	        .setTitle("It's too late to do the Morning Survey.")
+	        .setMessage("You should do the morning survey before 12:00 P.M.")
+	        .setCancelable(false)
+	        .setPositiveButton(android.R.string.yes, new android.content.DialogInterface.OnClickListener() {
 
+	            public void onClick(DialogInterface arg0, int arg1) {
+	            	arg0.cancel();
+	            }
+	        }).create().show();
+	
+	return;
+	}
+	private void launchSurvey(String FileName, String Name){
+		Intent launchSurvey = 
+				new Intent(getApplicationContext(), SurveyPinCheck.class);
+		launchSurvey.putExtra("survey_file", FileName);
+		launchSurvey.putExtra("survey_name", Name);
+		startActivity(launchSurvey);
+	}
 }

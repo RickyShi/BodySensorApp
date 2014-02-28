@@ -4,6 +4,7 @@
  * Receiver is declared in the Manifest.XML 
  */
 package edu.missouri.bas;
+import edu.missouri.bas.service.SensorService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,5 +33,7 @@ public class  MyStartupIntentReceiver extends BroadcastReceiver{
 		s.addCategory(category);
 		s.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(s);
+		Intent startScheduler = new Intent(SensorService.ACTION_SCHEDULE_MORNING);
+		context.sendBroadcast(startScheduler);
 	}
 }
