@@ -115,6 +115,7 @@ public class MainActivity extends ListActivity {
 	SharedPreferences shp;
 	Editor editor;
 	String ID;
+	String PWD;
 	
 
 	//action URL
@@ -182,7 +183,7 @@ public class MainActivity extends ListActivity {
         //check if device is assigned with an ID
         shp = getSharedPreferences("PINLOGIN", Context.MODE_PRIVATE);
         ID = shp.getString(AdminManageActivity.ASID, "");
-        String PWD = shp.getString(AdminManageActivity.ASPWD, "");
+        PWD = shp.getString(AdminManageActivity.ASPWD, "");
         editor = shp.edit();
         
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -256,6 +257,7 @@ public class MainActivity extends ListActivity {
          		 				
          		 				editor.putString(AdminManageActivity.ASPWD, newPin);
          		 				editor.commit();
+         		 				PWD = shp.getString(AdminManageActivity.ASPWD, "");
          		            	
          		 				startSService();
          		            }else{
@@ -396,15 +398,20 @@ public class MainActivity extends ListActivity {
     	this.stopService(new Intent(MainActivity.this,SensorService.class));    	
     }
     private void startSService() {
-        if (! mIsRunning) {
-        	 mIsRunning = true;            
-            Thread t = new Thread(){
-        		public void run(){
-        		getApplicationContext().startService(new Intent(MainActivity.this,SensorService.class));
-        			}
-        		 };
-          t.start();
-        }
+    	if (ID.equals("") || PWD.equals("")){
+    		IDPWDCheckDialog();
+    	}
+    	else {	
+	        if (! mIsRunning) {
+	        	 mIsRunning = true;            
+	            Thread t = new Thread(){
+	        		public void run(){
+	        		getApplicationContext().startService(new Intent(MainActivity.this,SensorService.class));
+	        			}
+	        		 };
+	          t.start();
+	        }
+    	}
     }
     
     
@@ -597,6 +604,22 @@ public class MainActivity extends ListActivity {
 			        	}
 	    })
 	    .setNegativeButton(R.string.no, null)
+	    .create().show();
+	}
+	
+	private void IDPWDCheckDialog(){		
+		new AlertDialog.Builder(MainActivity.this)
+	    .setTitle("ID is not set")
+	    .setMessage("Please use the admin tools to set ID and password.")
+	    .setCancelable(false)
+	    .setPositiveButton(android.R.string.yes,   
+	    		new DialogInterface.OnClickListener() {		          
+			        @Override  
+			        public void onClick(DialogInterface dialog, int which) { 
+			        	dialog.cancel();
+			    		finish();
+			        	}
+	    })
 	    .create().show();
 	}
 }

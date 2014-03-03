@@ -66,7 +66,9 @@ public class AdminManageActivity extends TabActivity {
 	String RmIdHint; 
 	String currentAssID;
 	SharedPreferences shp;
+	SharedPreferences bedTime;
 	Editor editor;
+	Editor editor2;
 	EditText asID;
     EditText deasID;
     Button AssignButton;
@@ -103,7 +105,8 @@ public class AdminManageActivity extends TabActivity {
 
         shp = getSharedPreferences("PINLOGIN", Context.MODE_PRIVATE);
         editor = shp.edit();
-        
+        bedTime = ctx.getSharedPreferences(SensorService.BED_TIME, MODE_PRIVATE);
+        editor2 = bedTime.edit();
         asID = (EditText) findViewById(R.id.assigned_ID);
         deasID = (EditText) findViewById(R.id.deassigned_ID);
         AssignButton = (Button) findViewById(R.id.btn_assign);
@@ -418,15 +421,19 @@ public class AdminManageActivity extends TabActivity {
  	                    @Override 
  	                    public void onClick(DialogInterface dialog, int which) { 
  	                        // TODO Auto-generated method stub  
- 	        				editor.putString(ASID, "");
- 	        				
+ 	        				editor.putString(ASID, "");	        				
  	        				editor.putString(ASPWD, "");
  	        				editor.commit();
+ 	        				editor2.putString(SensorService.BED_TIME_INFO, "none");	        				
+ 	        				editor2.putString(SensorService.BED_HOUR_INFO, "none");
+ 	        				editor2.putString(SensorService.BED_MIN_INFO, "none");
+ 	        				editor2.commit();
  	        				
  	        				setHints();
  	        				MainActivity.mIsRunning = false;     	
  	        		    	ctx.stopService(new Intent(AdminManageActivity.this,SensorService.class)); 
  	        				setResult(9);
+ 	        				finish();
  	                    } 
  	                })
  	                . setNegativeButton("Cancel", new DialogInterface.OnClickListener() { 

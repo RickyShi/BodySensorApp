@@ -54,6 +54,7 @@ public class SurveyStatus extends Activity{
 			public void onClick(View v) {
 				Intent i = new Intent(getApplicationContext(), SurveyScheduler.class);
 				startActivity(i);
+				finish();
 			}
         });
 		
@@ -63,21 +64,13 @@ public class SurveyStatus extends Activity{
 				startActivity(i);
 				finish();
 			}
-        });
-		
-		
-		
+        });		
 	}
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
-	
-	
-	
-	
-	
 	
 
 }
