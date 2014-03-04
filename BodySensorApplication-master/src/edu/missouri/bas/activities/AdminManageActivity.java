@@ -67,8 +67,8 @@ public class AdminManageActivity extends TabActivity {
 	String currentAssID;
 	SharedPreferences shp;
 	SharedPreferences bedTime;
-	Editor editor;
-	Editor editor2;
+	private Editor editor;
+	private Editor editor2;
 	EditText asID;
     EditText deasID;
     Button AssignButton;
@@ -427,6 +427,9 @@ public class AdminManageActivity extends TabActivity {
  	        				editor2.putString(SensorService.BED_TIME_INFO, "none");	        				
  	        				editor2.putString(SensorService.BED_HOUR_INFO, "none");
  	        				editor2.putString(SensorService.BED_MIN_INFO, "none");
+ 	        				editor2.putInt("RandomSurveyStartHour", 11);
+ 	        				editor2.putInt("RandomSurveyStartMin", 59);
+ 	        				editor2.putBoolean("MornReportDone", false);
  	        				editor2.commit();
  	        				
  	        				setHints();

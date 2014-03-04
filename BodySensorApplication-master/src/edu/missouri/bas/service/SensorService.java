@@ -60,6 +60,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -107,6 +108,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+
+
 
 //Ricky 2013/12/09
 import android.os.AsyncTask;
@@ -358,6 +361,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	//END TIME 23:59
 	private int EndHour=23;
 	private int EndMin=59;
+	private SharedPreferences bedTime;
+	private Editor bedEditor;
 	
 	//Id and Password
 	//2014/2/25
@@ -477,15 +482,12 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,SystemClock.elapsedRealtime()+1000*60*5,1000*60*5,scheduleCheck);
 		mLocationClient = new LocationClient(this, this, this);
 		
-		/* 
+		/** 
 		 * @author Ricky 
 		 * 2/11/14 start the random survey automatically
 		 * 2/12 start random survey just after the service is triggered; 
 		 * old design(reading the morning survey time as the beginning time) is commented.
-		 */
-		
-		
-		
+		 */		
 		//Compare Time part
 		if (!getStatus()){
 			Calendar c = Calendar.getInstance();
@@ -541,7 +543,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			//End of Random Survey Schedule
 			
 			//Get Time for the morning trigger
-			SharedPreferences bedTime = this.getSharedPreferences(BED_TIME, MODE_PRIVATE);
+			bedTime = this.getSharedPreferences(BED_TIME, MODE_PRIVATE);
 			wakeHour = bedTime.getString(BED_HOUR_INFO, "none");
 			wakeMin = bedTime.getString(BED_MIN_INFO, "none");
 			bAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -1041,7 +1043,36 @@ GooglePlayServicesClient.OnConnectionFailedListener
 					Log.e(TAG,"ERROR: Failed to write survey to file!");
 				}
 				Log.d(TAG,"Done writing file");
-				
+				/**
+				 * @author Ricky 
+				 * 2014/3/3
+				 * 1st check whether survey is morning report
+				 * 2nd store random survey start time
+				 * 3rd call random survey functions
+				 */
+				if (surveyName.equals("MORNING_REPORT")){
+					Log.d("wtest","Morning trigger time");
+					Calendar c = Calendar.getInstance();
+					SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+					String currentTime=dateFormat.format(c.getTime());
+					String []cTime=currentTime.split(":");
+					int StartHour=Integer.parseInt(cTime[0]);
+					int StartMin=Integer.parseInt(cTime[1]);		
+					if (((EndHour-StartHour)*60+(EndMin-StartMin))<=60){
+						Toast.makeText(getApplicationContext(),"Difference between Start and End Time must be at least one hour. Random Survey is canceled",Toast.LENGTH_LONG).show();
+					}
+					else {
+						//2nd part
+						bedEditor = bedTime.edit();
+						bedEditor.putInt("RandomSurveyStartHour", StartHour);
+						bedEditor.putInt("RandomSurveyStartMin", StartMin);
+						bedEditor.putBoolean("MornReportDone", true);
+						bedEditor.commit();
+						//3rd part
+						triggerRandomSurvey(StartHour,StartMin);
+					}
+					
+				}
 			}
 		}
 	};
@@ -1051,21 +1082,17 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	}
 	public static void CancelTimers(Timer t)
 	{
-		//if(t1!=null&&t2!=null&&t3!=null&&t4!=null&&t5!=null&&t6!=null&&mTimer!=null)
 		if(t!=null)
 		{
 		t.cancel();
 		t.purge();	
-		//mTimer.cancel();
 		}
 	}
 	public static void PurgeTimers(Timer t)
 	{
-		//if(t1!=null&&t2!=null&&t3!=null&&t4!=null&&t5!=null&&t6!=null&&mTimer!=null)
 		if(t!=null)
 		{
 		t.purge();	
-		//mTimer.cancel();
 		}
 	}
 	
@@ -1369,8 +1396,61 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
 				tT.getTimeInMillis()+1000*60,86400000, morningReport);
     }
-    
-    
+    /**
+     * @author Ricky
+     * @param startH
+     * @param startM
+     */
+    @SuppressWarnings("deprecation")
+	private void triggerRandomSurvey(int startH, int startM){
+    	if (!getStatus()){
+	    	int Interval=(((EndHour-startH)*60)+(EndMin-startM))/6;
+			int delay=Interval/2;
+			int Increment=Interval+delay;
+			int TriggerInterval=Interval-delay;
+			Log.d(TAG,String.valueOf(Interval));
+			
+			Date dt1=new Date();				
+			dt1.setHours(startH);
+			dt1.setMinutes(startM+delay);
+			Date dt2=new Date();
+			dt2.setHours(startH);
+			dt2.setMinutes(startM+Increment);				
+			Date dt3=new Date();
+			dt3.setHours(startH);
+			dt3.setMinutes(startM+Increment+Interval);
+			Date dt4=new Date();
+			dt4.setHours(startM);
+			dt4.setMinutes(startM+Increment+(Interval*2));
+			Date dt5=new Date();
+			dt5.setHours(startH);
+			dt5.setMinutes(startM+Increment+(Interval*3));
+			Date dt6=new Date();
+			dt6.setHours(startH);
+			dt6.setMinutes(startM+Increment+(Interval*4));
+			rTask1 = new ScheduleSurvey(TriggerInterval);
+			rTask2 = new ScheduleSurvey(TriggerInterval);
+			rTask3 = new ScheduleSurvey(TriggerInterval);
+			rTask4 = new ScheduleSurvey(TriggerInterval);
+			rTask5 = new ScheduleSurvey(TriggerInterval);
+			rTask6 = new ScheduleSurvey(TriggerInterval);				
+			t1.schedule(rTask1,dt1);	
+			t2.schedule(rTask2,dt2);
+			t3.schedule(rTask3,dt3);
+			t4.schedule(rTask4,dt4);
+			t5.schedule(rTask5,dt5);
+			t6.schedule(rTask6,dt6);
+			setStatus(true);
+    	}
+    }
+    /**
+     * @author Ricky
+     * @param Ttask
+     * @param t
+     */
+    private void setRandomSchedule(TimerTask Ttask, Date t){
+    	
+    }
     
  }
 
