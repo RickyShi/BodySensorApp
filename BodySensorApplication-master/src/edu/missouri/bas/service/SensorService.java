@@ -363,6 +363,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	private int EndMin=59;
 	private SharedPreferences bedTime;
 	private Editor bedEditor;
+	int StartHour;
+	int StartMin;
+	boolean MornReportIsDone; 
 	
 	//Id and Password
 	//2014/2/25
@@ -482,76 +485,30 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,SystemClock.elapsedRealtime()+1000*60*5,1000*60*5,scheduleCheck);
 		mLocationClient = new LocationClient(this, this, this);
 		
+		//Get Time for the morning trigger
+		//Only trigger the morning-surveyAlarm when wakeTime is never set.
+		bedTime = this.getSharedPreferences(BED_TIME, MODE_PRIVATE);
+		wakeHour = bedTime.getString(BED_HOUR_INFO, "none");
+		wakeMin = bedTime.getString(BED_MIN_INFO, "none");
+		bAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		if (wakeHour.equals("none")||wakeMin.equals("none")){
+			setMorningSurveyAlarm(11, 59);			
+		}
+		
+		MornReportIsDone = bedTime.getBoolean("MornReportDone", false);
+		
 		/** 
 		 * @author Ricky 
-		 * 2/11/14 start the random survey automatically
-		 * 2/12 start random survey just after the service is triggered; 
-		 * old design(reading the morning survey time as the beginning time) is commented.
+		 * 3/4/14 
+		 * set the random survey start time at 11:59 if morning survey is never set. 
 		 */		
-		//Compare Time part
+		//Schedule part
 		if (!getStatus()){
-			Calendar c = Calendar.getInstance();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-			String currentTime=dateFormat.format(c.getTime());
-			String []cTime=currentTime.split(":");
-			int StartHour=Integer.parseInt(cTime[0]);
-			int StartMin=Integer.parseInt(cTime[1]);		
-			if (((EndHour-StartHour)*60+(EndMin-StartMin))<=60){
-				Toast.makeText(getApplicationContext(),"Difference between Start and End Time must be at least one hour. Random Survey is canceled",Toast.LENGTH_LONG).show();
-			}
-			else {
-				//Schedule part
-				int Interval=(((EndHour-StartHour)*60)+(EndMin-StartMin))/6;
-				int delay=Interval/2;
-				int Increment=Interval+delay;
-				int TriggerInterval=Interval-delay;
-				Log.d(TAG,String.valueOf(Interval));
-				
-				Date dt1=new Date();				
-				dt1.setHours(StartHour);
-				dt1.setMinutes(StartMin+delay);
-				Date dt2=new Date();
-				dt2.setHours(StartHour);
-				dt2.setMinutes(StartMin+Increment);				
-				Date dt3=new Date();
-				dt3.setHours(StartHour);
-				dt3.setMinutes(StartMin+Increment+Interval);
-				Date dt4=new Date();
-				dt4.setHours(StartHour);
-				dt4.setMinutes(StartMin+Increment+(Interval*2));
-				Date dt5=new Date();
-				dt5.setHours(StartHour);
-				dt5.setMinutes(StartMin+Increment+(Interval*3));
-				Date dt6=new Date();
-				dt6.setHours(StartHour);
-				dt6.setMinutes(StartMin+Increment+(Interval*4));
-				rTask1 = new ScheduleSurvey(TriggerInterval);
-				rTask2 = new ScheduleSurvey(TriggerInterval);
-				rTask3 = new ScheduleSurvey(TriggerInterval);
-				rTask4 = new ScheduleSurvey(TriggerInterval);
-				rTask5 = new ScheduleSurvey(TriggerInterval);
-				rTask6 = new ScheduleSurvey(TriggerInterval);				
-				t1.schedule(rTask1,dt1);	
-				t2.schedule(rTask2,dt2);
-				t3.schedule(rTask3,dt3);
-				t4.schedule(rTask4,dt4);
-				t5.schedule(rTask5,dt5);
-				t6.schedule(rTask6,dt6);
-				setStatus(true);
-				//Log.d("random","random survey is scheduled");
-			}
-			//End of Random Survey Schedule
-			
-			//Get Time for the morning trigger
-			bedTime = this.getSharedPreferences(BED_TIME, MODE_PRIVATE);
-			wakeHour = bedTime.getString(BED_HOUR_INFO, "none");
-			wakeMin = bedTime.getString(BED_MIN_INFO, "none");
-			bAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-			if (wakeHour.equals("none")||wakeMin.equals("none")){
-				setMorningSurveyAlarm(11, 59);
-			}
-			
+			if (!MornReportIsDone){
+				triggerRandomSurvey(11,59);
+			}							
 		}
+		
 	}
 	
 	
@@ -1049,6 +1006,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				 * 1st check whether survey is morning report
 				 * 2nd store random survey start time
 				 * 3rd call random survey functions
+				 * 4th store morningReoprtIsDone flag to local file
 				 */
 				if (surveyName.equals("MORNING_REPORT")){
 					Log.d("wtest","Morning trigger time");
@@ -1056,8 +1014,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 					SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 					String currentTime=dateFormat.format(c.getTime());
 					String []cTime=currentTime.split(":");
-					int StartHour=Integer.parseInt(cTime[0]);
-					int StartMin=Integer.parseInt(cTime[1]);		
+					StartHour=Integer.parseInt(cTime[0]);
+					StartMin=Integer.parseInt(cTime[1]);		
 					if (((EndHour-StartHour)*60+(EndMin-StartMin))<=60){
 						Toast.makeText(getApplicationContext(),"Difference between Start and End Time must be at least one hour. Random Survey is canceled",Toast.LENGTH_LONG).show();
 					}
@@ -1404,12 +1362,29 @@ GooglePlayServicesClient.OnConnectionFailedListener
     @SuppressWarnings("deprecation")
 	private void triggerRandomSurvey(int startH, int startM){
     	if (!getStatus()){
+    		//first cancel the old setting before apply the new settings.
+    		CancelTask(rTask1);
+    		CancelTask(rTask2);
+    		CancelTask(rTask3);
+    		CancelTask(rTask4);
+    		CancelTask(rTask5);
+    		CancelTask(rTask6);
+    		PurgeTimers(t1);
+    		PurgeTimers(t2);
+    		PurgeTimers(t3);
+    		PurgeTimers(t4);
+    		PurgeTimers(t5);
+    		PurgeTimers(t6);
+    		PurgeTimers(t7);
+    		//end of canceling part
+    		
 	    	int Interval=(((EndHour-startH)*60)+(EndMin-startM))/6;
 			int delay=Interval/2;
 			int Increment=Interval+delay;
 			int TriggerInterval=Interval-delay;
-			Log.d(TAG,String.valueOf(Interval));
+			//Log.d(TAG,String.valueOf(Interval));
 			
+			Date currentT = new Date();
 			Date dt1=new Date();				
 			dt1.setHours(startH);
 			dt1.setMinutes(startM+delay);
@@ -1433,24 +1408,28 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			rTask3 = new ScheduleSurvey(TriggerInterval);
 			rTask4 = new ScheduleSurvey(TriggerInterval);
 			rTask5 = new ScheduleSurvey(TriggerInterval);
-			rTask6 = new ScheduleSurvey(TriggerInterval);				
-			t1.schedule(rTask1,dt1);	
-			t2.schedule(rTask2,dt2);
-			t3.schedule(rTask3,dt3);
-			t4.schedule(rTask4,dt4);
-			t5.schedule(rTask5,dt5);
-			t6.schedule(rTask6,dt6);
+			rTask6 = new ScheduleSurvey(TriggerInterval);
+			setRandomSchedule(t1,rTask1,dt1,currentT);
+			setRandomSchedule(t2,rTask2,dt2,currentT);
+			setRandomSchedule(t3,rTask3,dt3,currentT);
+			setRandomSchedule(t4,rTask4,dt4,currentT);
+			setRandomSchedule(t5,rTask5,dt5,currentT);
+			setRandomSchedule(t6,rTask6,dt6,currentT);
 			setStatus(true);
     	}
     }
+    
     /**
      * @author Ricky
-     * @param Ttask
-     * @param t
+     * @param t Timer
+     * @param rT TimerTask
+     * @param dt TriggerTimeMin
+     * @param currentT current Date
      */
-    private void setRandomSchedule(TimerTask Ttask, Date t){
-    	
+    private void setRandomSchedule(Timer t, TimerTask rT, Date dt, Date currentT){
+    	if (dt.after(currentT)){
+    		t.schedule(rT,dt);
+    	}
     }
-    
  }
 

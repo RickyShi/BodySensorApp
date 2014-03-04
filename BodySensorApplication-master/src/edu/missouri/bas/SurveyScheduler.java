@@ -91,6 +91,7 @@ public class SurveyScheduler extends Activity {
 					editor.putString(SensorService.BED_TIME_INFO, timeToWrite);
 					editor.putString(SensorService.BED_HOUR_INFO, hourToWrite);
 					editor.putString(SensorService.BED_MIN_INFO, minuateToWrite);
+					editor.putBoolean("MornReportDone", false);
 					editor.commit();
 					//Log.d(BED_TIME, bedTime.getString(BED_TIME_INFO, "none"));
 					//If current time is before 3 A.M, set the alarm Day to be the current Day.
