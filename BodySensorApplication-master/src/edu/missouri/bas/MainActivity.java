@@ -12,6 +12,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -141,6 +142,7 @@ public class MainActivity extends ListActivity {
         listView.setOnItemClickListener(new OnItemClickListener() {
 
 			
+			@SuppressWarnings("deprecation")
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 		    	switch(position){
@@ -159,7 +161,15 @@ public class MainActivity extends ListActivity {
 	    			startConnections();	    			
 	    			break;
 	    		case BED_STATUS:
-	    			createPinAlertDialog();	    				
+	    			Date t = new Date();
+	    			Date eT = new Date();
+	    			eT.setHours(21);
+	    			eT.setMinutes(0);
+	    			if (t.after(eT)){
+	    				createPinAlertDialog();
+	    			} else {
+	    				bedTimeCheckDialog();
+	    			}
 	    			break;
 		    	}
 			}
@@ -618,6 +628,21 @@ public class MainActivity extends ListActivity {
 			        public void onClick(DialogInterface dialog, int which) { 
 			        	dialog.cancel();
 			    		finish();
+			        	}
+	    })
+	    .create().show();
+	}
+	
+	private void bedTimeCheckDialog(){		
+		new AlertDialog.Builder(MainActivity.this)
+	    .setTitle("Bed Report")
+	    .setMessage("You should do bed report after 9:00 P.M.")
+	    .setCancelable(false)
+	    .setPositiveButton(android.R.string.yes,   
+	    		new DialogInterface.OnClickListener() {		          
+			        @Override  
+			        public void onClick(DialogInterface dialog, int which) { 
+			        	dialog.cancel();
 			        	}
 	    })
 	    .create().show();
