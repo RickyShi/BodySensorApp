@@ -496,17 +496,24 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		}
 		
 		MornReportIsDone = bedTime.getBoolean("MornReportDone", false);
+		StartHour = bedTime.getInt("RandomSurveyStartHour", 11);
+		StartMin = bedTime.getInt("RandomSurveyStartMin", 59);
 		
 		/** 
 		 * @author Ricky 
 		 * 3/4/14 
-		 * set the random survey start time at 11:59 if morning survey is never set. 
+		 * First Check whether random survey is already triggered.
+		 * set the random survey start time at 11:59 if morning survey is never set.
+		 * Otherwise use old settings stored in the local storage.
+		 * (for the case when App is revoked from unexpected crash)
 		 */		
 		//Schedule part
 		if (!getStatus()){
 			if (!MornReportIsDone){
 				triggerRandomSurvey(11,59);
-			}							
+			} else {
+				triggerRandomSurvey(StartHour,StartMin);
+			}
 		}
 		
 	}
@@ -1004,32 +1011,36 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				 * @author Ricky 
 				 * 2014/3/3
 				 * 1st check whether survey is morning report
+				 * then check whether mornReport was submitted today
+				 * If not, do the following thing. Otherwise, do nothing. 
 				 * 2nd store random survey start time
 				 * 3rd call random survey functions
 				 * 4th store morningReoprtIsDone flag to local file
 				 */
 				if (surveyName.equals("MORNING_REPORT")){
-					Log.d("wtest","Morning trigger time");
-					Calendar c = Calendar.getInstance();
-					SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-					String currentTime=dateFormat.format(c.getTime());
-					String []cTime=currentTime.split(":");
-					StartHour=Integer.parseInt(cTime[0]);
-					StartMin=Integer.parseInt(cTime[1]);		
-					if (((EndHour-StartHour)*60+(EndMin-StartMin))<=60){
-						Toast.makeText(getApplicationContext(),"Difference between Start and End Time must be at least one hour. Random Survey is canceled",Toast.LENGTH_LONG).show();
+					if (!MornReportIsDone){
+						Log.d("wtest","Morning trigger time");
+						Calendar c = Calendar.getInstance();
+						SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+						String currentTime=dateFormat.format(c.getTime());
+						String []cTime=currentTime.split(":");
+						StartHour=Integer.parseInt(cTime[0]);
+						StartMin=Integer.parseInt(cTime[1]);		
+						if (((EndHour-StartHour)*60+(EndMin-StartMin))<=60){
+							Toast.makeText(getApplicationContext(),"Difference between Start and End Time must be at least one hour. Random Survey is canceled",Toast.LENGTH_LONG).show();
+						}
+						else {
+							//2nd part
+							bedEditor = bedTime.edit();
+							bedEditor.putInt("RandomSurveyStartHour", StartHour);
+							bedEditor.putInt("RandomSurveyStartMin", StartMin);
+							bedEditor.putBoolean("MornReportDone", true);
+							bedEditor.commit();
+							//3rd part														
+							triggerRandomSurvey(StartHour,StartMin);
+							
+						}
 					}
-					else {
-						//2nd part
-						bedEditor = bedTime.edit();
-						bedEditor.putInt("RandomSurveyStartHour", StartHour);
-						bedEditor.putInt("RandomSurveyStartMin", StartMin);
-						bedEditor.putBoolean("MornReportDone", true);
-						bedEditor.commit();
-						//3rd part
-						triggerRandomSurvey(StartHour,StartMin);
-					}
-					
 				}
 			}
 		}
