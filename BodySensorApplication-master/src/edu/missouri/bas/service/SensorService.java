@@ -1403,18 +1403,12 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			Date dt6=new Date();
 			dt6.setHours(startH);
 			dt6.setMinutes(startM+Increment+(Interval*4));
-			rTask1 = new ScheduleSurvey(TriggerInterval);
-			rTask2 = new ScheduleSurvey(TriggerInterval);
-			rTask3 = new ScheduleSurvey(TriggerInterval);
-			rTask4 = new ScheduleSurvey(TriggerInterval);
-			rTask5 = new ScheduleSurvey(TriggerInterval);
-			rTask6 = new ScheduleSurvey(TriggerInterval);
-			setRandomSchedule(t1,rTask1,dt1,currentT);
-			setRandomSchedule(t2,rTask2,dt2,currentT);
-			setRandomSchedule(t3,rTask3,dt3,currentT);
-			setRandomSchedule(t4,rTask4,dt4,currentT);
-			setRandomSchedule(t5,rTask5,dt5,currentT);
-			setRandomSchedule(t6,rTask6,dt6,currentT);
+			setRandomSchedule(t1,rTask1,dt1,currentT,TriggerInterval);
+			setRandomSchedule(t2,rTask2,dt2,currentT,TriggerInterval);
+			setRandomSchedule(t3,rTask3,dt3,currentT,TriggerInterval);
+			setRandomSchedule(t4,rTask4,dt4,currentT,TriggerInterval);
+			setRandomSchedule(t5,rTask5,dt5,currentT,TriggerInterval);
+			setRandomSchedule(t6,rTask6,dt6,currentT,TriggerInterval);
 			setStatus(true);
     	}
     }
@@ -1425,9 +1419,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
      * @param rT TimerTask
      * @param dt TriggerTimeMin
      * @param currentT current Date
+     * @param TriggerInterval triggerInterval Time
      */
-    private void setRandomSchedule(Timer t, TimerTask rT, Date dt, Date currentT){
+    private void setRandomSchedule(Timer t, TimerTask rT, Date dt, Date currentT,int TriggerInterval){
     	if (dt.after(currentT)){
+    		rT = new ScheduleSurvey(TriggerInterval);
     		t.schedule(rT,dt);
     	}
     }
