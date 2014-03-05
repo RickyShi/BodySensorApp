@@ -272,6 +272,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	public static final String ACTION_DRINK_FOLLOWUP = "INTENT_ACTION_DRINK_FOLLOWUP";
 	
 	public static final String ACTION_SCHEDULE_MORNING = "INTENT_ACTION_SCHEDULE_MORNING";
+	public static final String ACTION_SCHEDULE_MORNING_RESTART = "INTENT_ACTION_SCHEDULE_MORNING_RESTART";
 	
 	public static Timer t1=new Timer();
 	public static Timer t2=new Timer();
@@ -660,6 +661,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		//ADD INTENTFILTER FOR DRINKING-FOLLOWUP
 		IntentFilter followUpFilter = new IntentFilter(ACTION_DRINK_FOLLOWUP);
 		IntentFilter MorningFilter = new IntentFilter(ACTION_SCHEDULE_MORNING);
+		IntentFilter RestartMorningFilter = new IntentFilter(ACTION_SCHEDULE_MORNING_RESTART);
 
 	/*	Intent scheduleLocationIntent = new Intent(SensorService.ACTION_SCHEDULE_LOCATION);
 		scheduleLocation = PendingIntent.getBroadcast(
@@ -679,6 +681,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		//SensorService.this.registerReceiver(alarmReceiver, surveyScheduleFilter);
 		SensorService.this.registerReceiver(alarmReceiver, surveyTest);
 		SensorService.this.registerReceiver(alarmReceiver, MorningFilter);
+		SensorService.this.registerReceiver(alarmReceiver, RestartMorningFilter);
 		//Register the drink-followup to the alarmReceiver
 		SensorService.this.registerReceiver(alarmReceiver, followUpFilter);
 		SensorService.this.registerReceiver(soundRequestReceiver,soundRequest);
@@ -777,9 +780,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	 * @see android.app.Service#onDestroy()
 	 */
 	@Override
-	public void onDestroy(){
-	
-		
+	public void onDestroy(){			
 		File f = new File(BASE_PATH,"SensorServiceEvents.txt");
 		Calendar cal=Calendar.getInstance();
 		try {
@@ -941,8 +942,27 @@ GooglePlayServicesClient.OnConnectionFailedListener
 					iWakeHour = Integer.parseInt(wakeHour);
 					iWakeMin = Integer.parseInt(wakeMin);
 				}
+				//STOP ALL SENSORS & RANDOM SURVEY
+				stopPartialService();
 				bAlarmManager.cancel(morningReport);
 				bAlarmManager.cancel(morningWakeUp);
+				setMorningSurveyAlarm(iWakeHour,iWakeMin);
+			}
+			else if(action.equals(SensorService.ACTION_SCHEDULE_MORNING_RESTART))
+			{
+				if (wakeHour.equals("none")||wakeMin.equals("none")){
+					iWakeHour = 11;
+					iWakeMin = 59;
+				} else {
+					iWakeHour = Integer.parseInt(wakeHour);
+					iWakeMin = Integer.parseInt(wakeMin);
+				}
+				
+				//TODO: STOP SENSOR SERVICE 
+				
+				bAlarmManager.cancel(morningReport);
+				bAlarmManager.cancel(morningWakeUp);
+				
 				setMorningSurveyAlarm(iWakeHour,iWakeMin);
 			}
 		  	//ADD THE PROCESSING AFTER THE RECEIVER RECEIVE THE FOLLOWUP MSG
@@ -1437,6 +1457,58 @@ GooglePlayServicesClient.OnConnectionFailedListener
     		rT = new ScheduleSurvey(TriggerInterval);
     		t.schedule(rT,dt);
     	}
+    }
+    
+    private void stopPartialService(){
+    	File f = new File(BASE_PATH,"SensorServiceEvents.txt");
+		Calendar cal=Calendar.getInstance();
+		try {
+			writeToFile(f,"Partially Destroyed at "+String.valueOf(cal.getTime()));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+    	if(affectivaRunnable != null){
+			affectivaRunnable.stop();
+			try {
+				bluetoothThread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(equivitalThread != null){
+			equivitalThread.stop();
+		}
+				
+		//If canceled, it will have some problems. Need to be handled later.
+		mAlarmManager.cancel(scheduleSurvey);
+		//mAlarmManager.cancel(scheduleLocation);	
+		mLocationClient.disconnect();
+		activityRecognition.stopActivityRecognitionScan();		
+		Accelerometer.stop();
+		LightSensor.stop();
+		
+		CancelTask(rTask1);
+		CancelTask(rTask2);
+		CancelTask(rTask3);
+		CancelTask(rTask4);
+		CancelTask(rTask5);
+		CancelTask(rTask6);
+
+		PurgeTimers(t1);
+		PurgeTimers(t2);
+		PurgeTimers(t3);
+		PurgeTimers(t4);
+		PurgeTimers(t5);
+		PurgeTimers(t6);
+				
+		Log.d(TAG,"Service Partially Stopped.");
+		
+		if(device!=null){
+		device.stop();
+		}
     }
  }
 

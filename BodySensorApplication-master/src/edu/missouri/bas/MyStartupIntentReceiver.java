@@ -33,7 +33,7 @@ public class  MyStartupIntentReceiver extends BroadcastReceiver{
 		s.addCategory(category);
 		s.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(s);
-		Intent startScheduler = new Intent(SensorService.ACTION_SCHEDULE_MORNING);
+		Intent startScheduler = new Intent(SensorService.ACTION_SCHEDULE_MORNING_RESTART);
 		context.sendBroadcast(startScheduler);
 	}
 }
