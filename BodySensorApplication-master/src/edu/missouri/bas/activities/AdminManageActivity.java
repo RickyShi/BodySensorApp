@@ -433,7 +433,7 @@ public class AdminManageActivity extends TabActivity {
  	        				editor2.commit();
  	        				
  	        				setHints();
- 	        				MainActivity.mIsRunning = false;     	
+ 	        				SensorService.mIsRunning = false;     	
  	        		    	ctx.stopService(new Intent(AdminManageActivity.this,SensorService.class)); 
  	        				setResult(9);
  	        				finish();

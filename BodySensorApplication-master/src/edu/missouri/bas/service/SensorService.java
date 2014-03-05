@@ -118,7 +118,7 @@ public class SensorService extends Service implements
 GooglePlayServicesClient.ConnectionCallbacks,
 GooglePlayServicesClient.OnConnectionFailedListener
 { 
-
+	public static boolean mIsRunning=false;
     private final String TAG = "SensorService";   
 	/*
 	 * Android component variables used by the service
@@ -170,6 +170,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	public static AlarmManager bAlarmManager;
 	private PendingIntent morningWakeUp;
 	private PendingIntent morningReport;
+	// Ricky 3/5/14
+	private PendingIntent AccLightRestart;
 	private int iWakeHour;
 	private int iWakeMin;
 	//private static PendingIntent scheduleLocation;
@@ -569,6 +571,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			else if(action.equals(SensorService.ACTION_START_SENSORS))
 			{
 				sensorThread.run();
+				Log.d(TAG,"Sensor Start");
 			}
 		}
 		
@@ -821,8 +824,12 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		mAlarmManager.cancel(triggerSound2);
 		mLocationClient.disconnect();
 		activityRecognition.stopActivityRecognitionScan();		
-		Accelerometer.stop();
-		LightSensor.stop();
+		if(Accelerometer != null){
+			Accelerometer.stop();
+		}
+		if(LightSensor != null){
+			LightSensor.stop();
+		}
 		
 		CancelTask(alarmTask1);
 		CancelTask(alarmTask2);
@@ -942,11 +949,14 @@ GooglePlayServicesClient.OnConnectionFailedListener
 					iWakeHour = Integer.parseInt(wakeHour);
 					iWakeMin = Integer.parseInt(wakeMin);
 				}
-				//STOP ALL SENSORS & RANDOM SURVEY
-				stopPartialService();
 				bAlarmManager.cancel(morningReport);
 				bAlarmManager.cancel(morningWakeUp);
+				bAlarmManager.cancel(AccLightRestart);
+				//PARTIALLY STOP ALL SENSORS & RANDOM SURVEY
+				stopPartialService();
+				//TODO: STOP ALL SERVICE FIRST
 				setMorningSurveyAlarm(iWakeHour,iWakeMin);
+				
 			}
 			else if(action.equals(SensorService.ACTION_SCHEDULE_MORNING_RESTART))
 			{
@@ -957,12 +967,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 					iWakeHour = Integer.parseInt(wakeHour);
 					iWakeMin = Integer.parseInt(wakeMin);
 				}
-				
-				//TODO: STOP SENSOR SERVICE 
-				
 				bAlarmManager.cancel(morningReport);
 				bAlarmManager.cancel(morningWakeUp);
-				
+				bAlarmManager.cancel(AccLightRestart);
 				setMorningSurveyAlarm(iWakeHour,iWakeMin);
 			}
 		  	//ADD THE PROCESSING AFTER THE RECEIVER RECEIVE THE FOLLOWUP MSG
@@ -1356,15 +1363,22 @@ GooglePlayServicesClient.OnConnectionFailedListener
     }
     /**
      * @author Ricky
-     * @param h
-     * @param i
+     * @param h wakeHour
+     * @param i wakeMin
+     * Not using {@link #bAlarmManager.setRepeating} 
+     * Instead, Call the {@link #bAlarmManager.set} function everyday.
      */
     private void setMorningSurveyAlarm(int h, int i){
     	Calendar tT = Calendar.getInstance();
-    	/*
+    	/**
+    	 * @author Ricky
+    	 *	1st
     	 *	If current time is before 3 A.M, it means the user maybe overnight. 
     	 *	Keep alarm triggered at the same day.
     	 *	Otherwise set trigger time to tomorrow.
+    	 *	2nd wakeUp App	
+    	 *	3rd set Morning Report/30 seconds delay
+    	 *	4th start phone build-in sensor Collection part if they are null/30 seconds delay
     	 */
 		if (tT.get(Calendar.HOUR_OF_DAY)>3) {
 			tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
@@ -1375,15 +1389,25 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		Intent mIntent = new Intent(SensorService.serviceContext, MainActivity.class);
 		morningWakeUp = PendingIntent.getActivity(SensorService.serviceContext, 0,
 				mIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-				tT.getTimeInMillis() ,86400000, morningWakeUp);
+		//bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis() ,86400000, morningWakeUp);
+		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis(),morningWakeUp);
 		Intent mRIntent = new Intent(SensorService.serviceContext, SurveyPinCheck.class);
 		mRIntent.putExtra("survey_name", "MORNING_REPORT");
 		mRIntent.putExtra("survey_file", "MorningReportParcel.xml");
 		morningReport = PendingIntent.getActivity(SensorService.serviceContext, 0, mRIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-		//trigger morning report 60 seconds later than MainActivity is restarted by bAlarmManager 
-		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-				tT.getTimeInMillis()+1000*60,86400000, morningReport);
+		
+		//trigger morning report 30 seconds later than MainActivity is restarted by bAlarmManager 
+		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,morningReport);
+		
+		//trigger Acc/Light Sensors 60 seconds later than MainActivity is restarted by bAlarmManager 
+		Intent startACCLightSensors=new Intent(SensorService.ACTION_START_SENSORS);
+		AccLightRestart = PendingIntent.getBroadcast(serviceContext, 0, startACCLightSensors, Intent.FLAG_ACTIVITY_NEW_TASK);
+		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*60,AccLightRestart);
+		//Test
+		//Calendar testT = Calendar.getInstance();
+		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,testT.getTimeInMillis()+1000*60,AccLightRestart);
+		Log.d(TAG,"restart Acc/Light Recording");
+		
     }
     /**
      * @author Ricky
@@ -1486,9 +1510,14 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		mAlarmManager.cancel(scheduleSurvey);
 		//mAlarmManager.cancel(scheduleLocation);	
 		mLocationClient.disconnect();
-		activityRecognition.stopActivityRecognitionScan();		
-		Accelerometer.stop();
-		LightSensor.stop();
+		activityRecognition.stopActivityRecognitionScan();
+		
+		if(Accelerometer != null){
+			Accelerometer.stop();
+		}
+		if(LightSensor != null){
+			LightSensor.stop();
+		}
 		
 		CancelTask(rTask1);
 		CancelTask(rTask2);

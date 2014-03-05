@@ -62,7 +62,7 @@ import edu.missouri.bas.survey.XMLSurveyMenu;
 public class MainActivity extends ListActivity {
 
 	private String TAG2 = "TAG~~~~~~~~~~~~~~~~~~~";
-	public static boolean mIsRunning=false;
+	
 	
 	private BluetoothAdapter mAdapter= BluetoothAdapter.getDefaultAdapter();	
 	private final static String TAG = "SensorServiceActivity";	
@@ -161,11 +161,10 @@ public class MainActivity extends ListActivity {
 	    			startConnections();	    			
 	    			break;
 	    		case BED_STATUS:
-	    			Date t = new Date();
-	    			Date eT = new Date();
-	    			eT.setHours(21);
-	    			eT.setMinutes(0);
-	    			if (t.after(eT)){
+	    			Calendar cTime = Calendar.getInstance();
+	    			int cHour = cTime.get(Calendar.HOUR_OF_DAY);
+	    			//if (cHour>=21 || cHour<3){
+	    			if (cHour!=0){
 	    				createPinAlertDialog();
 	    			} else {
 	    				bedTimeCheckDialog();
@@ -404,7 +403,7 @@ public class MainActivity extends ListActivity {
     }
     
     private void stopSService() {
-    	mIsRunning = false;     	
+    	SensorService.mIsRunning = false;     	
     	this.stopService(new Intent(MainActivity.this,SensorService.class));    	
     }
     private void startSService() {
@@ -412,8 +411,8 @@ public class MainActivity extends ListActivity {
     		IDPWDCheckDialog();
     	}
     	else {	
-	        if (! mIsRunning) {
-	        	 mIsRunning = true;            
+	        if (! SensorService.mIsRunning) {
+	        	SensorService.mIsRunning = true;            
 	            Thread t = new Thread(){
 	        		public void run(){
 	        		getApplicationContext().startService(new Intent(MainActivity.this,SensorService.class));
@@ -636,7 +635,7 @@ public class MainActivity extends ListActivity {
 	private void bedTimeCheckDialog(){		
 		new AlertDialog.Builder(MainActivity.this)
 	    .setTitle("Bed Report")
-	    .setMessage("You should do bed report after 9:00 P.M.")
+	    .setMessage("You should do bed report after 9:00 P.M. or ealier than 3:00 A.M.")
 	    .setCancelable(false)
 	    .setPositiveButton(android.R.string.yes,   
 	    		new DialogInterface.OnClickListener() {		          

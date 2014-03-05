@@ -179,6 +179,7 @@ public class SurveyPinCheck extends Activity {
 						launchSurvey.putExtra("survey_file", surveyFile);
 						launchSurvey.putExtra("survey_name", surveyName);
 						startActivity(launchSurvey);
+						finish();
 			        	}
 			        	else {
 			        		//New AlertDialog to show instruction.
