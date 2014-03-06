@@ -163,8 +163,8 @@ public class MainActivity extends ListActivity {
 	    		case BED_STATUS:
 	    			Calendar cTime = Calendar.getInstance();
 	    			int cHour = cTime.get(Calendar.HOUR_OF_DAY);
-	    			//if (cHour>=21 || cHour<3){
-	    			if (cHour!=0){
+	    			if (cHour>=21 || cHour<3){
+	    			//if (cHour!=0){
 	    				createPinAlertDialog();
 	    			} else {
 	    				bedTimeCheckDialog();

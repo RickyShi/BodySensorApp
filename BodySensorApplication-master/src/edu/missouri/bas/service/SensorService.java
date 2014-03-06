@@ -176,6 +176,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	private int iWakeMin;
 	//private static PendingIntent scheduleLocation;
 	private static PendingIntent scheduleCheck;
+	private static PendingIntent activityRecogRestart;
 	private static PendingIntent triggerSound;
 	private static PendingIntent triggerSound2;
 	//private PendingIntent surveyIntent;
@@ -345,7 +346,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	public static int currentUserActivity=9;
 	public static boolean IsRetrievingUpdates=false;
 	LocationClient mLocationClient;
-	
+	public static final String ACTION_ACTIVITY_RECOG_RESTART = "ACTION_ACTIVITY_RECOG_RESTART";
 	
 		
 	private SoundPool mSoundPool;
@@ -573,6 +574,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				sensorThread.run();
 				Log.d(TAG,"Sensor Start");
 			}
+			else if(action.equals(SensorService.ACTION_ACTIVITY_RECOG_RESTART)){
+				activityRecognition=new ActivityRecognitionScan(getApplicationContext());
+				activityRecognition.startActivityRecognitionScan();
+				mLocationClient = new LocationClient(SensorService.this, SensorService.this, SensorService.this);
+			}
 		}
 		
 	};
@@ -678,6 +684,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		IntentFilter locationFoundFilter = new IntentFilter(LocationControl.INTENT_ACTION_LOCATION);
 		IntentFilter sound1=new IntentFilter(ACTION_TRIGGER_SOUND);
 		IntentFilter sound2=new IntentFilter(ACTION_TRIGGER_SOUND2);
+		IntentFilter activityRecognizationRequest =new IntentFilter(ACTION_ACTIVITY_RECOG_RESTART);
 		SensorService.this.registerReceiver(alarmReceiver, locationFoundFilter);
 		SensorService.this.registerReceiver(alarmReceiver, locationSchedulerFilter);		
 		SensorService.this.registerReceiver(alarmReceiver, locationInterruptSchedulerFilter);
@@ -692,6 +699,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		SensorService.this.registerReceiver(soundRequestReceiver,sound2);
 		SensorService.this.registerReceiver(checkRequestReceiver,checkRequest);
 		SensorService.this.registerReceiver(checkRequestReceiver,startSensors);
+		SensorService.this.registerReceiver(checkRequestReceiver,activityRecognizationRequest);
 		IntentFilter chestSensorData = new IntentFilter(ACTION_CONNECT_CHEST);
 		SensorService.this.registerReceiver(chestSensorReceiver,chestSensorData);
 		}
@@ -1408,6 +1416,13 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,testT.getTimeInMillis()+1000*60,AccLightRestart);
 		Log.d(TAG,"restart Acc/Light Recording");
 		
+		//trigger mLocationClient
+		mLocationClient = new LocationClient(this, this, this);
+		
+		//Trigger ActivityReconization 70 seconds later than MainActivity is restarted by bAlarmManager 
+		Intent activityRecogR =new Intent(SensorService.ACTION_ACTIVITY_RECOG_RESTART);
+		activityRecogRestart = PendingIntent.getBroadcast(serviceContext, 0, activityRecogR , 0);
+		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*70,activityRecogRestart);
     }
     /**
      * @author Ricky
