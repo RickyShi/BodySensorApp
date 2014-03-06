@@ -369,7 +369,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	private Editor bedEditor;
 	int StartHour;
 	int StartMin;
-	boolean MornReportIsDone; 
+	//boolean MornReportIsDone; 
 	
 	//Id and Password
 	//2014/2/25
@@ -499,7 +499,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			setMorningSurveyAlarm(11, 59);			
 		}
 		
-		MornReportIsDone = bedTime.getBoolean("MornReportDone", false);
+		//MornReportIsDone = bedTime.getBoolean("MornReportDone", false);
 		StartHour = bedTime.getInt("RandomSurveyStartHour", 11);
 		StartMin = bedTime.getInt("RandomSurveyStartMin", 59);
 		
@@ -513,11 +513,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		 */		
 		//Schedule part
 		if (!getStatus()){
-			if (!MornReportIsDone){
-				triggerRandomSurvey(11,59);
-			} else {
+			//if (!MornReportIsDone){
+			//	triggerRandomSurvey(11,59);
+			//} else {			
 				triggerRandomSurvey(StartHour,StartMin);
-			}
+			//}
 		}
 		
 	}
@@ -577,7 +577,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			else if(action.equals(SensorService.ACTION_ACTIVITY_RECOG_RESTART)){
 				activityRecognition=new ActivityRecognitionScan(getApplicationContext());
 				activityRecognition.startActivityRecognitionScan();
-				mLocationClient = new LocationClient(SensorService.this, SensorService.this, SensorService.this);
+				//mLocationClient = new LocationClient(SensorService.this, SensorService.this, SensorService.this);
+				mLocationClient.connect();
+				Log.d(TAG,"Location Start");
 			}
 		}
 		
@@ -1053,7 +1055,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				 * 4th store morningReoprtIsDone flag to local file
 				 */
 				if (surveyName.equals("MORNING_REPORT")){
-					if (!MornReportIsDone){
+					//if (!MornReportIsDone){
 						Log.d("wtest","Morning trigger time");
 						Calendar c = Calendar.getInstance();
 						SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
@@ -1069,13 +1071,13 @@ GooglePlayServicesClient.OnConnectionFailedListener
 							bedEditor = bedTime.edit();
 							bedEditor.putInt("RandomSurveyStartHour", StartHour);
 							bedEditor.putInt("RandomSurveyStartMin", StartMin);
-							bedEditor.putBoolean("MornReportDone", true);
+							//bedEditor.putBoolean("MornReportDone", true);
 							bedEditor.commit();
 							//3rd part														
 							triggerRandomSurvey(StartHour,StartMin);
 							
 						}
-					}
+					//}
 				}
 			}
 		}
@@ -1413,7 +1415,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*60,AccLightRestart);
 		//Test
 		//Calendar testT = Calendar.getInstance();
-		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,testT.getTimeInMillis()+1000*60,AccLightRestart);
+		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,testT.getTimeInMillis()+1000*20,AccLightRestart);
 		Log.d(TAG,"restart Acc/Light Recording");
 		
 		//trigger mLocationClient
@@ -1421,6 +1423,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		Intent activityRecogR =new Intent(SensorService.ACTION_ACTIVITY_RECOG_RESTART);
 		activityRecogRestart = PendingIntent.getBroadcast(serviceContext, 0, activityRecogR , 0);
 		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*70,activityRecogRestart);
+		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,testT.getTimeInMillis()+1000*30,activityRecogRestart);
 		
     }
     /**
