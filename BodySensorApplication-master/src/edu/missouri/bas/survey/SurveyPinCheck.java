@@ -12,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,9 +32,14 @@ public class SurveyPinCheck extends Activity {
 	private Button bButton;
 	private String surveyName;
 	private String surveyFile;
-	
 	private MediaPlayer mp;
-    
+	// Ricky 3/6/14
+	// number of milliseconds to wait (14 min and 45 seconds, in this setting to close the diaLog).
+	public static final int DELAYED_RESPONSE = 885000;
+	// define a handler as a private instance variable in your Activity.
+	private Handler handler = new Handler();
+	// define a dialog for future force close
+	private AlertDialog diaLog;
     
 
     private class StartSound extends TimerTask {
@@ -63,8 +69,19 @@ public class SurveyPinCheck extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.survey_pincheck);
 		//call pin-Dialog function
-		createPinAlertDialog();	     
-	    	     
+		createPinAlertDialog();	   
+		/**
+		 * @author Ricky
+		 * Using a handler to cancel the alertDiaLog before SuveyPinCheck was closed
+		 * to prevent window leak
+		 */
+		handler.postDelayed(new Runnable() {
+		    @Override
+		    public void run() {
+		        cancelDialog();
+		    }
+		}, DELAYED_RESPONSE);
+		
 	    bButton = (Button)findViewById(R.id.button_exit);
 	    pButton = (Button)findViewById(R.id.button_pin);
 	    
@@ -140,6 +157,11 @@ public class SurveyPinCheck extends Activity {
 	    
 	}
 	
+	protected void cancelDialog() {
+		// TODO Auto-generated method stub
+		diaLog.cancel();
+	}
+
 	public void onBackPressed(){
 		    new AlertDialog.Builder(this)
 		        .setTitle("Are you sure you want to exit?")
@@ -160,8 +182,8 @@ public class SurveyPinCheck extends Activity {
 		LayoutInflater factory=LayoutInflater.from(SurveyPinCheck.this);  
 	    //get view from my settings pin_number
 	    final View DialogView=factory.inflate(R.layout.pin_number, null);  
-		new AlertDialog.Builder(SurveyPinCheck.this)
-	    .setTitle("Checking identity")  
+	    AlertDialog.Builder alertDialogBuilder  =new AlertDialog.Builder(SurveyPinCheck.this);
+	    alertDialogBuilder.setTitle("Checking identity")  
 	    .setCancelable(false)
 	    .setView(DialogView)//using user defined view
 	    .setPositiveButton(android.R.string.yes,   
@@ -189,7 +211,7 @@ public class SurveyPinCheck extends Activity {
 			        		.setPositiveButton("OK", null)
 			        		.create().show();
 			        	}			        	
-			        	dialog.cancel();
+			        	dialog.cancel(); 
 			        }  
 	    })
 	    .setNegativeButton(android.R.string.no, 
@@ -201,8 +223,9 @@ public class SurveyPinCheck extends Activity {
 				dialog.cancel();
 			}
 	    }
-	    		)
-	    .create().show();
+	    		);
+	    diaLog = alertDialogBuilder.create();
+	    diaLog.show();
 	}
 	
 	// ProgressDialog designed to show better UI. Not used now.

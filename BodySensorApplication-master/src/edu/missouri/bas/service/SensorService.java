@@ -1409,7 +1409,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		
 		//trigger Acc/Light Sensors 60 seconds later than MainActivity is restarted by bAlarmManager 
 		Intent startACCLightSensors=new Intent(SensorService.ACTION_START_SENSORS);
-		AccLightRestart = PendingIntent.getBroadcast(serviceContext, 0, startACCLightSensors, Intent.FLAG_ACTIVITY_NEW_TASK);
+		AccLightRestart = PendingIntent.getBroadcast(serviceContext, 0, startACCLightSensors, 0);
 		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*60,AccLightRestart);
 		//Test
 		//Calendar testT = Calendar.getInstance();
@@ -1417,12 +1417,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		Log.d(TAG,"restart Acc/Light Recording");
 		
 		//trigger mLocationClient
-		mLocationClient = new LocationClient(this, this, this);
-		
 		//Trigger ActivityReconization 70 seconds later than MainActivity is restarted by bAlarmManager 
 		Intent activityRecogR =new Intent(SensorService.ACTION_ACTIVITY_RECOG_RESTART);
 		activityRecogRestart = PendingIntent.getBroadcast(serviceContext, 0, activityRecogR , 0);
 		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*70,activityRecogRestart);
+		
     }
     /**
      * @author Ricky
