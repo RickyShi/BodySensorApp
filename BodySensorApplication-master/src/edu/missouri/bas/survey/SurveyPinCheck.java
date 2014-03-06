@@ -34,10 +34,6 @@ public class SurveyPinCheck extends Activity {
 	private String surveyFile;
 	private MediaPlayer mp;
 	// Ricky 3/6/14
-	// number of milliseconds to wait (14 min and 45 seconds, in this setting to close the diaLog).
-	public static final int DELAYED_RESPONSE = 885000;
-	// define a handler as a private instance variable in your Activity.
-	private Handler handler = new Handler();
 	// define a dialog for future force close
 	private AlertDialog diaLog;
     
@@ -56,6 +52,7 @@ public class SurveyPinCheck extends Activity {
 		public void run() {
 			// TODO Auto-generated method stub
 			Log.d("PINAlarm","Final ALarm");
+			diaLog.cancel();
 			finish();
 			this.cancel();
 			
@@ -70,17 +67,8 @@ public class SurveyPinCheck extends Activity {
 		setContentView(R.layout.survey_pincheck);
 		//call pin-Dialog function
 		createPinAlertDialog();	   
-		/**
-		 * @author Ricky
-		 * Using a handler to cancel the alertDiaLog before SuveyPinCheck was closed
-		 * to prevent window leak
-		 */
-		handler.postDelayed(new Runnable() {
-		    @Override
-		    public void run() {
-		        cancelDialog();
-		    }
-		}, DELAYED_RESPONSE);
+		
+		
 		
 	    bButton = (Button)findViewById(R.id.button_exit);
 	    pButton = (Button)findViewById(R.id.button_pin);
@@ -181,7 +169,7 @@ public class SurveyPinCheck extends Activity {
 	private void createPinAlertDialog(){
 		LayoutInflater factory=LayoutInflater.from(SurveyPinCheck.this);  
 	    //get view from my settings pin_number
-	    final View DialogView=factory.inflate(R.layout.pin_number, null);  
+	    final View DialogView=factory.inflate(R.layout.pin_number, null); 
 	    AlertDialog.Builder alertDialogBuilder  =new AlertDialog.Builder(SurveyPinCheck.this);
 	    alertDialogBuilder.setTitle("Checking identity")  
 	    .setCancelable(false)
@@ -250,22 +238,30 @@ public class SurveyPinCheck extends Activity {
         }.start();
 	}
 	*/
-	 private static void cancelAllTimerTask()
+	private void cancelAllTimerTask()
+	{	
+		if(SensorService.alarmTimer!=null)
 		{
-			if(SensorService.alarmTimer!=null)
-			{	
-				//Boolean rickytest = alarmTask1.cancel();
-				SensorService.alarmTask1.cancel();
-				SensorService.alarmTask2.cancel();
-				SensorService.alarmTask3.cancel();
-				SensorService.alarmTask4.cancel();
-				SensorService.alarmTimer.purge();
-				//Log.d(TAG, rickytest.toString());
-				//alarmTimer.cancel();
-			}
-		}	
-	  protected void onDestroy(){
-	    	cancelAllTimerTask();
-	    	super.onDestroy();
-	    }
+	    	CancelTask(SensorService.alarmTask1);
+			CancelTask(SensorService.alarmTask2);
+			CancelTask(SensorService.alarmTask3);
+			CancelTask(SensorService.alarmTask4);
+			PurgeTimers(SensorService.alarmTimer);
+		}		
+	}
+	public void CancelTask(TimerTask tTask){
+		if  (tTask!=null)
+		tTask.cancel();
+	}
+	public void PurgeTimers(Timer t)
+	{
+		if(t!=null)
+		{
+		t.purge();	
+		}
+	}
+	protected void onDestroy(){
+    	cancelAllTimerTask();
+    	super.onDestroy();
+    }
 }

@@ -1080,11 +1080,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			}
 		}
 	};
-	public static void CancelTask(TimerTask tTask){
+	public void CancelTask(TimerTask tTask){
 		if  (tTask!=null)
 		tTask.cancel();
 	}
-	public static void CancelTimers(Timer t)
+	public void CancelTimers(Timer t)
 	{
 		if(t!=null)
 		{
@@ -1092,7 +1092,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		t.purge();	
 		}
 	}
-	public static void PurgeTimers(Timer t)
+	public void PurgeTimers(Timer t)
 	{
 		if(t!=null)
 		{

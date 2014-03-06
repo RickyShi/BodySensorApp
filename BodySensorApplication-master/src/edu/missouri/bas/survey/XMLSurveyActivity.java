@@ -372,21 +372,28 @@ public class XMLSurveyActivity extends Activity {
     	finish();
     }
     
-    public static void cancelAllTimerTask()
-	{
-		if(SensorService.alarmTimer!=null)
-		{	
-			//Boolean rickytest = alarmTask1.cancel();
-			SensorService.alarmTask1.cancel();
-			SensorService.alarmTask2.cancel();
-			SensorService.alarmTask3.cancel();
-			SensorService.alarmTask4.cancel();
-			SensorService.alarmTimer.purge();
-			//Log.d(TAG, rickytest.toString());
-			//alarmTimer.cancel();
+    public  void cancelAllTimerTask()
+	{	
+    	if(SensorService.alarmTimer!=null)
+		{
+	    	CancelTask(SensorService.alarmTask1);
+			CancelTask(SensorService.alarmTask2);
+			CancelTask(SensorService.alarmTask3);
+			CancelTask(SensorService.alarmTask4);
+			PurgeTimers(SensorService.alarmTimer);
 		}
 	}	
-    
+    public void CancelTask(TimerTask tTask){
+		if  (tTask!=null)
+		tTask.cancel();
+	}
+	public void PurgeTimers(Timer t)
+	{
+		if(t!=null)
+		{
+		t.purge();	
+		}
+	}
     //Get the next question to be displayed
     protected LinearLayout nextQuestion(){
     	SurveyQuestion temp = null;
