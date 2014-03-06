@@ -144,11 +144,6 @@ public class SurveyPinCheck extends Activity {
 		});
 	    
 	}
-	
-	protected void cancelDialog() {
-		// TODO Auto-generated method stub
-		diaLog.cancel();
-	}
 
 	public void onBackPressed(){
 		    new AlertDialog.Builder(this)
