@@ -977,10 +977,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 					iWakeHour = Integer.parseInt(wakeHour);
 					iWakeMin = Integer.parseInt(wakeMin);
 				}
-				bAlarmManager.cancel(morningReport);
-				bAlarmManager.cancel(morningWakeUp);
-				bAlarmManager.cancel(AccLightRestart);
+				
 				setMorningSurveyAlarm(iWakeHour,iWakeMin);
+				Log.d(TAG,"BOOT BROADCAST RECEIVED");
 			}
 		  	//ADD THE PROCESSING AFTER THE RECEIVER RECEIVE THE FOLLOWUP MSG
 			else if(action.equals(SensorService.ACTION_DRINK_FOLLOWUP)){
@@ -1416,7 +1415,6 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		//Test
 		//Calendar testT = Calendar.getInstance();
 		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,testT.getTimeInMillis()+1000*20,AccLightRestart);
-		Log.d(TAG,"restart Acc/Light Recording");
 		
 		//trigger mLocationClient
 		//Trigger ActivityReconization 70 seconds later than MainActivity is restarted by bAlarmManager 

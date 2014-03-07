@@ -4,36 +4,36 @@
  * Receiver is declared in the Manifest.XML 
  */
 package edu.missouri.bas;
-import edu.missouri.bas.service.SensorService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import android.os.Handler;
+import edu.missouri.bas.service.SensorService;
 
 public class  MyStartupIntentReceiver extends BroadcastReceiver{
 	
 	private String action="android.intent.action.MAIN";  
 	private String category="android.intent.category.LAUNCHER";
+	private final int DELAY_TIME = 30000;
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		// TODO Auto-generated method stub
-		/*
-		if (wakeHour.equals("none")||wakeMin.equals("none")){
-			iWakeHour = 11;
-			iWakeMin = 59;
-		} else {
-			iWakeHour = Integer.parseInt(wakeHour);
-			iWakeMin = Integer.parseInt(wakeMin);
-		}
-		setMorningSurveyAlarm(iWakeHour,iWakeMin);
-		*/
-		
+		final Context t = context;
 		Intent s = new Intent(context,MainActivity.class);
 		s.setAction(action);
 		s.addCategory(category);
 		s.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(s);
-		Intent startScheduler = new Intent(SensorService.ACTION_SCHEDULE_MORNING_RESTART);
-		context.sendBroadcast(startScheduler);
+		Handler h = new Handler();
+		h.postDelayed(new Runnable(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Intent startScheduler = new Intent(SensorService.ACTION_SCHEDULE_MORNING_RESTART);
+				t.sendBroadcast(startScheduler);
+			}
+			
+		}, DELAY_TIME);		
 	}
 }
