@@ -1447,7 +1447,6 @@ GooglePlayServicesClient.OnConnectionFailedListener
     		PurgeTimers(t4);
     		PurgeTimers(t5);
     		PurgeTimers(t6);
-    		PurgeTimers(t7);
     		//end of canceling part
     		
 	    	int Interval=(((EndHour-startH)*60)+(EndMin-startM))/6;
