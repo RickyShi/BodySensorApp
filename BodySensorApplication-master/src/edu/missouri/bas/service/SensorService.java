@@ -962,11 +962,14 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				bAlarmManager.cancel(morningReport);
 				bAlarmManager.cancel(morningWakeUp);
 				bAlarmManager.cancel(AccLightRestart);
-				//PARTIALLY STOP ALL SENSORS & RANDOM SURVEY
-				stopPartialService();
-				//TODO: STOP ALL SERVICE FIRST
+				Calendar bRT = Calendar.getInstance();
 				setMorningSurveyAlarm(iWakeHour,iWakeMin);
-				
+				if (bRT.get(Calendar.HOUR_OF_DAY)>=21){
+				//PARTIALLY STOP ALL SENSORS & RANDOM SURVEY
+				stopPartialService();				
+				//Schedule partially sensor restart
+				setMorningSensorRestart(iWakeHour,iWakeMin);
+				}
 			}
 			else if(action.equals(SensorService.ACTION_SCHEDULE_MORNING_RESTART))
 			{
@@ -1387,7 +1390,6 @@ GooglePlayServicesClient.OnConnectionFailedListener
     	 *	Otherwise set trigger time to tomorrow.
     	 *	2nd wakeUp App	
     	 *	3rd set Morning Report/30 seconds delay
-    	 *	4th start phone build-in sensor Collection part if they are null/30 seconds delay
     	 */
 		if (tT.get(Calendar.HOUR_OF_DAY)>3) {
 			tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
@@ -1406,15 +1408,31 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		morningReport = PendingIntent.getActivity(SensorService.serviceContext, 0, mRIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
 		
 		//trigger morning report 30 seconds later than MainActivity is restarted by bAlarmManager 
-		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,morningReport);
-		
+		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,morningReport);				
+    }
+    /**
+     * @author Ricky
+     * @param h
+     * @param i
+     */
+    private void setMorningSensorRestart(int h, int i){
+    	Calendar tT = Calendar.getInstance();
+    	/**
+    	 * @author Ricky
+    	 *	4th start phone build-in sensor Collection part if they are null/30 seconds delay
+    	 */
+		if (tT.get(Calendar.HOUR_OF_DAY)>3) {
+			tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
+		}
+		tT.set(Calendar.HOUR_OF_DAY, h);
+		tT.set(Calendar.MINUTE, i);				
 		//trigger Acc/Light Sensors 60 seconds later than MainActivity is restarted by bAlarmManager 
 		Intent startACCLightSensors=new Intent(SensorService.ACTION_START_SENSORS);
 		AccLightRestart = PendingIntent.getBroadcast(serviceContext, 0, startACCLightSensors, 0);
 		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*60,AccLightRestart);
 		//Test
 		//Calendar testT = Calendar.getInstance();
-		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,testT.getTimeInMillis()+1000*20,AccLightRestart);
+		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,testT.getTimeInMillis()+1000*20,AccLightRestart);		
 		
 		//trigger mLocationClient
 		//Trigger ActivityReconization 70 seconds later than MainActivity is restarted by bAlarmManager 
@@ -1422,7 +1440,6 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		activityRecogRestart = PendingIntent.getBroadcast(serviceContext, 0, activityRecogR , 0);
 		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*70,activityRecogRestart);
 		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,testT.getTimeInMillis()+1000*30,activityRecogRestart);
-		
     }
     /**
      * @author Ricky
