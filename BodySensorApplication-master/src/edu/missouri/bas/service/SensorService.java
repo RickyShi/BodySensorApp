@@ -111,6 +111,8 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
+
 //Ricky 2013/12/09
 import android.os.AsyncTask;
 
@@ -390,7 +392,25 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return mBinder;
-			}
+	}
+	//Ricky 3/14 midNightCheck Timer Task Part
+	public static boolean bedFlag = false;
+	public static TimerTask midNightCheckTask;
+	public static Timer midNightCheckTimer = new Timer();
+	public class midNightCheck extends TimerTask {
+    	@Override    	
+    	public void run(){ 
+	    	Log.d(TAG,"midNightCheck");
+	    	if (!bedFlag){
+		    	//PARTIALLY STOP ALL SENSORS & RANDOM SURVEY
+				stopPartialService();				
+				//Schedule partially sensor restart
+				setMorningSensorRestart(Integer.parseInt(wakeHour),Integer.parseInt(wakeMin));
+				Log.d("wtest",wakeHour+":"+wakeMin);
+	    	}
+    	}
+	}
+	//end of midNightCheckTimer Task Part
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -497,6 +517,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		bAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		if (wakeHour.equals("none")||wakeMin.equals("none")){
 			setMorningSurveyAlarm(11, 59);			
+		} else {
+			//set MorningAlarm for tomorrow once App started
+			setMorningSurveyAlarm(Integer.valueOf(wakeHour), Integer.valueOf(wakeMin));	
 		}
 		
 		//MornReportIsDone = bedTime.getBoolean("MornReportDone", false);
@@ -520,7 +543,14 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			//}
 		}
 		
-	}
+		//Ricky 3/14 Midnight Timer schedule part
+		Date midNightT = new Date();
+		midNightT.setHours(23);
+		midNightT.setMinutes(59);
+		midNightCheckTask = new midNightCheck();
+		midNightCheckTimer.schedule(midNightCheckTask, midNightT);
+    }
+	
 	
 	
 	
