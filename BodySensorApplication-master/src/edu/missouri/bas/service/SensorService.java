@@ -882,6 +882,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		CancelTask(rTask4);
 		CancelTask(rTask5);
 		CancelTask(rTask6);
+		//Ricky 3/14
+		CancelTask(midNightCheckTask);
+		
 		/*
 		 * If we try to cancel the timer, when we reuse the timer
 		 * the system will show error msg
@@ -902,6 +905,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		PurgeTimers(t6);
 		PurgeTimers(t7);
 		PurgeTimers(alarmTimer);
+		//Ricky 3/14
+		PurgeTimers(midNightCheckTimer);
 		setStatus(false);
 		
 		serviceWakeLock.release();
@@ -1586,14 +1591,16 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		CancelTask(rTask4);
 		CancelTask(rTask5);
 		CancelTask(rTask6);
-
+		CancelTask(midNightCheckTask);
+		//Ricky 3/14
 		PurgeTimers(t1);
 		PurgeTimers(t2);
 		PurgeTimers(t3);
 		PurgeTimers(t4);
 		PurgeTimers(t5);
 		PurgeTimers(t6);
-				
+		//Ricky 3/14
+		PurgeTimers(midNightCheckTimer);
 		Log.d(TAG,"Service Partially Stopped.");
 		
 		if(device!=null){
