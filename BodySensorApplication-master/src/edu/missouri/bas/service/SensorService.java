@@ -1597,7 +1597,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		CancelTask(rTask4);
 		CancelTask(rTask5);
 		CancelTask(rTask6);
-		CancelTask(midNightCheckTask);
+		//CancelTask(midNightCheckTask);
 		//Ricky 3/14
 		PurgeTimers(t1);
 		PurgeTimers(t2);
@@ -1606,7 +1606,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		PurgeTimers(t5);
 		PurgeTimers(t6);
 		//Ricky 3/14
-		PurgeTimers(midNightCheckTimer);
+		//PurgeTimers(midNightCheckTimer);
 		Log.d(TAG,"Service Partially Stopped.");
 		
 		if(device!=null){
