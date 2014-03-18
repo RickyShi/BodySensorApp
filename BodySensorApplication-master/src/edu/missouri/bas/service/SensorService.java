@@ -400,7 +400,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	public class midNightCheck extends TimerTask {
     	@Override    	
     	public void run(){ 
-	    	Log.d(TAG,"midNightCheck");
+	    	Log.d("wtest","midNightCheck");
 	    	if (!bedFlag){
 		    	//PARTIALLY STOP ALL SENSORS & RANDOM SURVEY
 				stopPartialService();				
@@ -408,6 +408,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				setMorningSensorRestart(Integer.parseInt(wakeHour),Integer.parseInt(wakeMin));
 				Log.d("wtest",wakeHour+":"+wakeMin);
 	    	}
+	    	bedFlag = false;
     	}
 	}
 	//end of midNightCheckTimer Task Part
@@ -547,6 +548,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		Date midNightT = new Date();
 		midNightT.setHours(23);
 		midNightT.setMinutes(59);
+		//for testing
+		//midNightT.setMinutes(midNightT.getMinutes()+1);
+		Log.d("wtest",wakeHour+":"+wakeMin);
 		midNightCheckTask = new midNightCheck();
 		midNightCheckTimer.schedule(midNightCheckTask, midNightT);
     }
@@ -986,7 +990,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			}
 			*/
 			else if(action.equals(SensorService.ACTION_SCHEDULE_MORNING))
-			{
+			{	
+				wakeHour = bedTime.getString(BED_HOUR_INFO, "none");
+				wakeMin = bedTime.getString(BED_MIN_INFO, "none");
 				if (wakeHour.equals("none")||wakeMin.equals("none")){
 					iWakeHour = 11;
 					iWakeMin = 59;
