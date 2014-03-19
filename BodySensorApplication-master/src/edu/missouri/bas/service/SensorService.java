@@ -113,6 +113,7 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
 //Ricky 2013/12/09
 import android.os.AsyncTask;
 
@@ -1002,14 +1003,15 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				}
 				bAlarmManager.cancel(morningReport);
 				bAlarmManager.cancel(morningWakeUp);
-				bAlarmManager.cancel(AccLightRestart);
 				Calendar bRT = Calendar.getInstance();
 				setMorningSurveyAlarm(iWakeHour,iWakeMin);
 				if (bRT.get(Calendar.HOUR_OF_DAY)>=21){
-				//PARTIALLY STOP ALL SENSORS & RANDOM SURVEY
-				stopPartialService();				
-				//Schedule partially sensor restart
-				setMorningSensorRestart(iWakeHour,iWakeMin);
+					bAlarmManager.cancel(AccLightRestart);
+					//PARTIALLY STOP ALL SENSORS & RANDOM SURVEY
+					stopPartialService();				
+					//Schedule partially sensor restart
+					setMorningSensorRestart(iWakeHour,iWakeMin);
+					SensorService.bedFlag = true;
 				}
 			}
 			else if(action.equals(SensorService.ACTION_SCHEDULE_MORNING_RESTART))
