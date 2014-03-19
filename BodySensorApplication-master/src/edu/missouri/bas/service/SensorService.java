@@ -548,7 +548,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		//Ricky 3/14 Midnight Timer schedule part
 		Date midNightT = new Date();
 		midNightT.setHours(23);
-		midNightT.setMinutes(59);
+		midNightT.setMinutes(58);
 		//for testing
 		//midNightT.setMinutes(midNightT.getMinutes()+1);
 		Log.d("wtest",wakeHour+":"+wakeMin);
@@ -1428,13 +1428,13 @@ GooglePlayServicesClient.OnConnectionFailedListener
     	/**
     	 * @author Ricky
     	 *	1st
-    	 *	If current time is before 3 A.M, it means the user maybe overnight. 
+    	 *	If current time is in [0,3] A.M, it means the user maybe overnight. 
     	 *	Keep alarm triggered at the same day.
-    	 *	Otherwise set trigger time to tomorrow.
+    	 *	Otherwise[21:00,23:59] set trigger time to tomorrow.
     	 *	2nd wakeUp App	
     	 *	3rd set Morning Report/30 seconds delay
     	 */
-		if (tT.get(Calendar.HOUR_OF_DAY)>3) {
+		if (tT.get(Calendar.HOUR_OF_DAY)>=21) {
 			tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
 		}
 		tT.set(Calendar.HOUR_OF_DAY, h);
@@ -1464,7 +1464,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
     	 * @author Ricky
     	 *	4th start phone build-in sensor Collection part if they are null/30 seconds delay
     	 */
-		if (tT.get(Calendar.HOUR_OF_DAY)>3) {
+		if (tT.get(Calendar.HOUR_OF_DAY)>=21) {
 			tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
 		}
 		tT.set(Calendar.HOUR_OF_DAY, h);
