@@ -1302,8 +1302,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	         String dataToSend=strings[1];
 	         if(checkDataConnectivity())
 	 		{
-	         //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
-	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
+	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
+	         //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
 	         List<NameValuePair> params = new ArrayList<NameValuePair>();
 	         //file_name 
 	         params.add(new BasicNameValuePair("file_name",fileName));        
@@ -1434,7 +1434,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
     	 *	2nd wakeUp App	
     	 *	3rd set Morning Report/30 seconds delay
     	 */
-		if (tT.get(Calendar.HOUR_OF_DAY)>=21) {
+		if (tT.get(Calendar.HOUR_OF_DAY)>3) {
 			tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
 		}
 		tT.set(Calendar.HOUR_OF_DAY, h);
@@ -1464,7 +1464,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
     	 * @author Ricky
     	 *	4th start phone build-in sensor Collection part if they are null/30 seconds delay
     	 */
-		if (tT.get(Calendar.HOUR_OF_DAY)>=21) {
+		if (tT.get(Calendar.HOUR_OF_DAY)>3) {
 			tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
 		}
 		tT.set(Calendar.HOUR_OF_DAY, h);
