@@ -407,6 +407,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				stopPartialService();				
 				//Schedule partially sensor restart
 				setMorningSensorRestart(Integer.parseInt(wakeHour),Integer.parseInt(wakeMin));
+				setMorningSurveyAlarm(Integer.parseInt(wakeHour),Integer.parseInt(wakeMin));
 				Log.d("wtest",wakeHour+":"+wakeMin);
 	    	}
 	    	bedFlag = false;
@@ -519,9 +520,6 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		bAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		if (wakeHour.equals("none")||wakeMin.equals("none")){
 			setMorningSurveyAlarm(11, 59);			
-		} else {
-			//set MorningAlarm for tomorrow once App started
-			setMorningSurveyAlarm(Integer.valueOf(wakeHour), Integer.valueOf(wakeMin));	
 		}
 		
 		//MornReportIsDone = bedTime.getBoolean("MornReportDone", false);
@@ -1434,7 +1432,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
     	 *	2nd wakeUp App	
     	 *	3rd set Morning Report/30 seconds delay
     	 */
-		if (tT.get(Calendar.HOUR_OF_DAY)>3) {
+		if (tT.get(Calendar.HOUR_OF_DAY)>=3) {
 			tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
 		}
 		tT.set(Calendar.HOUR_OF_DAY, h);
@@ -1443,15 +1441,16 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		Intent mIntent = new Intent(SensorService.serviceContext, MainActivity.class);
 		morningWakeUp = PendingIntent.getActivity(SensorService.serviceContext, 0,
 				mIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-		//bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis() ,86400000, morningWakeUp);
-		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis(),morningWakeUp);
+		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis() ,86400000, morningWakeUp);
+		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis(),morningWakeUp);
 		Intent mRIntent = new Intent(SensorService.serviceContext, SurveyPinCheck.class);
 		mRIntent.putExtra("survey_name", "MORNING_REPORT");
 		mRIntent.putExtra("survey_file", "MorningReportParcel.xml");
 		morningReport = PendingIntent.getActivity(SensorService.serviceContext, 0, mRIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
 		
 		//trigger morning report 30 seconds later than MainActivity is restarted by bAlarmManager 
-		bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,morningReport);				
+		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,morningReport);
+		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,86400000,morningReport);
     }
     /**
      * @author Ricky
@@ -1464,7 +1463,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
     	 * @author Ricky
     	 *	4th start phone build-in sensor Collection part if they are null/30 seconds delay
     	 */
-		if (tT.get(Calendar.HOUR_OF_DAY)>3) {
+		if (tT.get(Calendar.HOUR_OF_DAY)>=3) {
 			tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
 		}
 		tT.set(Calendar.HOUR_OF_DAY, h);
@@ -1532,12 +1531,38 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			Date dt6=new Date();
 			dt6.setHours(startH);
 			dt6.setMinutes(startM+Increment+(Interval*4));
+			/*
 			setRandomSchedule(t1,rTask1,dt1,currentT,TriggerInterval);
 			setRandomSchedule(t2,rTask2,dt2,currentT,TriggerInterval);
 			setRandomSchedule(t3,rTask3,dt3,currentT,TriggerInterval);
 			setRandomSchedule(t4,rTask4,dt4,currentT,TriggerInterval);
 			setRandomSchedule(t5,rTask5,dt5,currentT,TriggerInterval);
 			setRandomSchedule(t6,rTask6,dt6,currentT,TriggerInterval);
+			*/
+			if (dt1.after(currentT)){
+				rTask1 = new ScheduleSurvey(TriggerInterval);
+	    		t1.schedule(rTask1,dt1);
+	    	}
+			if (dt2.after(currentT)){
+				rTask2 = new ScheduleSurvey(TriggerInterval);
+	    		t2.schedule(rTask2,dt2);
+	    	}
+			if (dt3.after(currentT)){
+				rTask3 = new ScheduleSurvey(TriggerInterval);
+	    		t3.schedule(rTask3,dt3);
+	    	}
+			if (dt4.after(currentT)){
+				rTask4 = new ScheduleSurvey(TriggerInterval);
+	    		t4.schedule(rTask4,dt4);
+	    	}
+			if (dt5.after(currentT)){
+				rTask5 = new ScheduleSurvey(TriggerInterval);
+	    		t5.schedule(rTask5,dt5);
+	    	}
+			if (dt6.after(currentT)){
+				rTask6 = new ScheduleSurvey(TriggerInterval);
+	    		t6.schedule(rTask6,dt6);
+	    	}
 			setStatus(true);
     	}
     }

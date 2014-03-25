@@ -256,7 +256,7 @@ public class SurveyPinCheck extends Activity {
 		}
 	}
 	protected void onDestroy(){
-    	cancelAllTimerTask();
+    	//cancelAllTimerTask();
     	super.onDestroy();
     }
 }
