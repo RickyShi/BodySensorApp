@@ -744,13 +744,20 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	private class ScheduleSurvey extends TimerTask
 	{
 		int TriggerInterval;
-
+		//Random Sequence
+		int RandomID = 0;
+		
 		public ScheduleSurvey(int Time)
 		{
 			TriggerInterval=Time;			
 		}
 		
-		
+		public ScheduleSurvey(int Time, int ID)
+		{
+			TriggerInterval=Time;
+			RandomID=ID;
+		}
+
 		@Override
 		public void run() {					
 		// TODO Auto-generated method stub
@@ -760,7 +767,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			  int TriggerTime=rand.nextInt(TriggerInterval)+1;		 
 			  Intent i = new Intent(serviceContext, SurveyPinCheck.class);
 			  i.putExtra("survey_name", "RANDOM_ASSESSMENT");
-			  i.putExtra("survey_file", "RandomAssessmentParcel.xml");	
+			  i.putExtra("survey_file", "RandomAssessmentParcel.xml");
+			  if (RandomID!=0)
+				  i.putExtra("random_sequence", RandomID);
 			  scheduleSurvey = PendingIntent.getActivity(SensorService.this, 0,
 					                i, Intent.FLAG_ACTIVITY_NEW_TASK);
 			  mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
@@ -1542,27 +1551,27 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			setRandomSchedule(t6,rTask6,dt6,currentT,TriggerInterval);
 			*/
 			if (dt1.after(currentT)){
-				rTask1 = new ScheduleSurvey(TriggerInterval);
+				rTask1 = new ScheduleSurvey(TriggerInterval,1);
 	    		t1.schedule(rTask1,dt1);
 	    	}
 			if (dt2.after(currentT)){
-				rTask2 = new ScheduleSurvey(TriggerInterval);
+				rTask2 = new ScheduleSurvey(TriggerInterval,2);
 	    		t2.schedule(rTask2,dt2);
 	    	}
 			if (dt3.after(currentT)){
-				rTask3 = new ScheduleSurvey(TriggerInterval);
+				rTask3 = new ScheduleSurvey(TriggerInterval,3);
 	    		t3.schedule(rTask3,dt3);
 	    	}
 			if (dt4.after(currentT)){
-				rTask4 = new ScheduleSurvey(TriggerInterval);
+				rTask4 = new ScheduleSurvey(TriggerInterval,4);
 	    		t4.schedule(rTask4,dt4);
 	    	}
 			if (dt5.after(currentT)){
-				rTask5 = new ScheduleSurvey(TriggerInterval);
+				rTask5 = new ScheduleSurvey(TriggerInterval,5);
 	    		t5.schedule(rTask5,dt5);
 	    	}
 			if (dt6.after(currentT)){
-				rTask6 = new ScheduleSurvey(TriggerInterval);
+				rTask6 = new ScheduleSurvey(TriggerInterval,6);
 	    		t6.schedule(rTask6,dt6);
 	    	}
 			setStatus(true);
