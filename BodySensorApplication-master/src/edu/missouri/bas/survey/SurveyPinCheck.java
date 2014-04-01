@@ -36,6 +36,9 @@ public class SurveyPinCheck extends Activity {
 	// Ricky 3/6/14
 	// define a dialog for future force close
 	private AlertDialog diaLog;
+	//Ricky 4/1/14
+	private int randomSeq;
+	
     
 
     private class StartSound extends TimerTask {
@@ -101,6 +104,7 @@ public class SurveyPinCheck extends Activity {
 		// Alarm when the following two kind of survey is triggered
 		if(surveyName.equalsIgnoreCase("RANDOM_ASSESSMENT") && surveyFile.equalsIgnoreCase("RandomAssessmentParcel.xml"))
 		{
+			randomSeq = getIntent().getIntExtra("random_sequence", 0);
 			Timer t=new Timer();
 			t.schedule(new  StartSound(),1000*5);			
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -184,6 +188,8 @@ public class SurveyPinCheck extends Activity {
 								new Intent(getApplicationContext(), XMLSurveyActivity.class);
 						launchSurvey.putExtra("survey_file", surveyFile);
 						launchSurvey.putExtra("survey_name", surveyName);
+						if (surveyName.equalsIgnoreCase("RANDOM_ASSESSMENT"))
+							launchSurvey.putExtra("random_sequence", randomSeq);
 						startActivity(launchSurvey);
 						finish();
 			        	}

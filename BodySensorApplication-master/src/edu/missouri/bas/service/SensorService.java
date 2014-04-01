@@ -158,7 +158,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	
 	PowerManager mPowerManager;
 	WakeLock serviceWakeLock;
-	
+	//Ricky 2014/4/1
+	private int randomSeq = -1;
 	/*
 	 * Alarm manager variables, for scheduling intents
 	 */
@@ -761,7 +762,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		@Override
 		public void run() {					
 		// TODO Auto-generated method stub
-			Log.d("TAG",drinkUpFlag.toString());
+			Log.d(TAG,"drinkUpFlag: "+drinkUpFlag.toString());
+			Log.d("wtest","random is running: "+RandomID);
 		  if (drinkUpFlag==false){
 			  Random rand=new Random();
 			  int TriggerTime=rand.nextInt(TriggerInterval)+1;		 
@@ -1090,6 +1092,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
 						(HashMap<String, List<String>>) intent.getSerializableExtra(XMLSurveyActivity.INTENT_EXTRA_SURVEY_RESULTS);
 				String surveyName = 
 						intent.getStringExtra(XMLSurveyActivity.INTENT_EXTRA_SURVEY_NAME);
+				//Ricky 4/1
+				//dealing with random sequence
+				if (surveyName.equalsIgnoreCase("RANDOM_ASSESSMENT")){
+					randomSeq = intent.getIntExtra("random_sequence", 0);
+				}
 				
 				try {
 					writeSurveyToFile(surveyName, results, intent.getLongExtra(XMLSurveyActivity.INTENT_EXTRA_COMPLETION_TIME,0L));
@@ -1246,7 +1253,13 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			}
 			if(i != sorted.size()-1) sb.append(",");
 		}
+		//Ricky 2014/4/1
+		//dealing with the random sequence
+		if (surveyName.equalsIgnoreCase("RANDOM_ASSESSMENT")) {
+			sb.append(",seq:"+randomSeq);
+		}
 		sb.append("\n");
+		
 		//sendDatatoServer(surveyName+"."+bluetoothMacAddress+"."+dateObj,sb.toString());
 		//Ricky 2013/12/09
 		TransmitData transmitData=new TransmitData();
@@ -1521,7 +1534,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			int delay=Interval/2;
 			int Increment=Interval+delay;
 			int TriggerInterval=Interval-delay;
-			//Log.d(TAG,String.valueOf(Interval));
+			Log.d("wtest","random triggered");
 			
 			Date currentT = new Date();
 			Date dt1=new Date();				

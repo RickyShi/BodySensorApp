@@ -96,7 +96,9 @@ public class XMLSurveyActivity extends Activity {
         
     String surveyName;
     String surveyFile;
-    
+  //Ricky 4/1/14
+  	private int randomSeq;
+  	
     private static final String TAG = "XMLSurveyActivity";
     /*
      * Putting a serializable in an intent seems to default to the class
@@ -357,6 +359,11 @@ public class XMLSurveyActivity extends Activity {
     	surveyResultsIntent.putExtra(INTENT_EXTRA_SURVEY_NAME, surveyName);
     	surveyResultsIntent.putExtra(INTENT_EXTRA_SURVEY_RESULTS, answerMap);
     	surveyResultsIntent.putExtra(INTENT_EXTRA_COMPLETION_TIME, System.currentTimeMillis());
+    	if (surveyName.equalsIgnoreCase("RANDOM_ASSESSMENT")){
+    		randomSeq = getIntent().getIntExtra("random_sequence", 0);
+    		surveyResultsIntent.putExtra("random_sequence",randomSeq);
+    		Log.d("wtest","random's seq in SurveyActivity: "+randomSeq);
+    	}
     	this.sendBroadcast(surveyResultsIntent);    	
     	//Alert user
     	Toast.makeText(this, "Survey Complete.", Toast.LENGTH_LONG).show();
