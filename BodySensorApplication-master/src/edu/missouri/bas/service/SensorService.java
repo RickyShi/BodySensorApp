@@ -744,11 +744,13 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	private class ScheduleSurvey extends TimerTask
 	{
 		int TriggerInterval;
+
 		public ScheduleSurvey(int Time)
 		{
 			TriggerInterval=Time;			
 		}
-
+		
+		
 		@Override
 		public void run() {					
 		// TODO Auto-generated method stub
@@ -1444,7 +1446,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis() ,86400000, morningWakeUp);
 		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis(),morningWakeUp);
 		Intent mRIntent = new Intent(SensorService.serviceContext, SurveyPinCheck.class);
-		mRIntent.putExtra("survey_name", "MORNING_REPORT");
+		mRIntent.putExtra("survey_name", "MORNING_REPORT_ALARM");
 		mRIntent.putExtra("survey_file", "MorningReportParcel.xml");
 		morningReport = PendingIntent.getActivity(SensorService.serviceContext, 0, mRIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
 		
