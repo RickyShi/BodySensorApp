@@ -1264,7 +1264,6 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		//Ricky 2013/12/09
 		TransmitData transmitData=new TransmitData();
 		transmitData.execute(surveyName+"."+ID+"."+dateObj,sb.toString());
-				writeToFile(f,sb.toString());
 		writeToFile(f,sb.toString());
 	}
 	
