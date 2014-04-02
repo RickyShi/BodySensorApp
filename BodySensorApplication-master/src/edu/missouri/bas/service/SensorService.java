@@ -412,6 +412,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				Log.d("wtest",wakeHour+":"+wakeMin);
 	    	}
 	    	bedFlag = false;
+	    	//Random Survey is all done
+	    	//set RandomIsScheduled flag to false
+	    	setStatus(false);
     	}
 	}
 	//end of midNightCheckTimer Task Part
