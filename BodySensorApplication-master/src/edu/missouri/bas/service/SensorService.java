@@ -1516,7 +1516,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
      */
     @SuppressWarnings("deprecation")
 	private void triggerRandomSurvey(int startH, int startM){
-    	if (!getStatus()){
+    	//if (!getStatus()){
     		//first cancel the old setting before apply the new settings.
     		CancelTask(rTask1);
     		CancelTask(rTask2);
@@ -1590,7 +1590,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	    		t6.schedule(rTask6,dt6);
 	    	}
 			setStatus(true);
-    	}
+    	//}
     }
     
     /**
