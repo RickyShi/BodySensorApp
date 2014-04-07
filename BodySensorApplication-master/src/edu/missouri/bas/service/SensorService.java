@@ -1019,7 +1019,6 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				bAlarmManager.cancel(morningWakeUp);
 				Calendar bRT = Calendar.getInstance();
 				setMorningSurveyAlarm(iWakeHour,iWakeMin);
-				setStatus(false);
 				if (bRT.get(Calendar.HOUR_OF_DAY)>=21){
 					bAlarmManager.cancel(AccLightRestart);
 					//PARTIALLY STOP ALL SENSORS & RANDOM SURVEY
@@ -1568,6 +1567,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			if (dt1.after(currentT)){
 				rTask1 = new ScheduleSurvey(TriggerInterval,1);
 	    		t1.schedule(rTask1,dt1);
+	    		Log.d("wtest", "status: "+getStatus()+" rTask1 is scheduled.");
 	    	}
 			if (dt2.after(currentT)){
 				rTask2 = new ScheduleSurvey(TriggerInterval,2);
@@ -1588,9 +1588,10 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			if (dt6.after(currentT)){
 				rTask6 = new ScheduleSurvey(TriggerInterval,6);
 	    		t6.schedule(rTask6,dt6);
+	    		Log.d("wtest", "rTask6 is scheduled.");
 	    	}
 			setStatus(true);
-			Log.d("wtest","Random Survey is Scheduled");
+			Log.d("wtest","status: "+getStatus()+" Random Survey is Scheduled");
     	//}
     }
     
