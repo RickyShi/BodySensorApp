@@ -1019,6 +1019,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				bAlarmManager.cancel(morningWakeUp);
 				Calendar bRT = Calendar.getInstance();
 				setMorningSurveyAlarm(iWakeHour,iWakeMin);
+				setStatus(false);
 				if (bRT.get(Calendar.HOUR_OF_DAY)>=21){
 					bAlarmManager.cancel(AccLightRestart);
 					//PARTIALLY STOP ALL SENSORS & RANDOM SURVEY
@@ -1138,8 +1139,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 							//bedEditor.putBoolean("MornReportDone", true);
 							bedEditor.commit();
 							//3rd part														
-							triggerRandomSurvey(StartHour,StartMin);
-							
+							triggerRandomSurvey(StartHour,StartMin);							
 						}
 					//}
 				}
@@ -1590,6 +1590,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	    		t6.schedule(rTask6,dt6);
 	    	}
 			setStatus(true);
+			Log.d("wtest","Random Survey is Scheduled");
     	//}
     }
     
