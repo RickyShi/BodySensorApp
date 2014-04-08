@@ -1019,7 +1019,6 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				bAlarmManager.cancel(morningWakeUp);
 				Calendar bRT = Calendar.getInstance();
 				setMorningSurveyAlarm(iWakeHour,iWakeMin);
-				setStatus(false);
 				if (bRT.get(Calendar.HOUR_OF_DAY)>=21){
 					bAlarmManager.cancel(AccLightRestart);
 					//PARTIALLY STOP ALL SENSORS & RANDOM SURVEY
@@ -1449,6 +1448,14 @@ GooglePlayServicesClient.OnConnectionFailedListener
      */
     private void setMorningSurveyAlarm(int h, int i){
     	Calendar tT = Calendar.getInstance();
+    	//test
+    	File f = new File(BASE_PATH,"Trigger.txt");
+		try {
+			writeToFile(f,"Morning Alarm re-schedules at "+String.valueOf(tT.getTime()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	/**
     	 * @author Ricky
     	 *	1st
@@ -1485,6 +1492,14 @@ GooglePlayServicesClient.OnConnectionFailedListener
      */
     private void setMorningSensorRestart(int h, int i){
     	Calendar tT = Calendar.getInstance();
+    	//test
+    	File f = new File(BASE_PATH,"Trigger.txt");
+		try {
+			writeToFile(f,"Sensor Service re-schedules at "+String.valueOf(tT.getTime()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	/**
     	 * @author Ricky
     	 *	4th start phone build-in sensor Collection part if they are null/30 seconds delay
@@ -1536,9 +1551,17 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			int delay=Interval/2;
 			int Increment=Interval+delay;
 			int TriggerInterval=Interval-delay;
-			Log.d("wtest","random triggered");
 			
 			Date currentT = new Date();
+			//test
+			Calendar test = Calendar.getInstance();
+	    	File f = new File(BASE_PATH,"Trigger.txt");
+			try {
+				writeToFile(f,"Random Survey re-schedules at "+String.valueOf(test));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Date dt1=new Date();				
 			dt1.setHours(startH);
 			dt1.setMinutes(startM+delay);
