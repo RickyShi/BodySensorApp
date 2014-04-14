@@ -1557,7 +1557,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			Calendar test = Calendar.getInstance();
 	    	File f = new File(BASE_PATH,"Trigger.txt");
 			try {
-				writeToFile(f,"Random Survey re-schedules at "+String.valueOf(test));
+				writeToFile(f,"Random Survey re-schedules at "+String.valueOf(test.toString()));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
