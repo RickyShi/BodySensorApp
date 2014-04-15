@@ -114,6 +114,7 @@ import org.apache.http.util.EntityUtils;
 
 
 
+
 //Ricky 2013/12/09
 import android.os.AsyncTask;
 
@@ -1449,6 +1450,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
     private void setMorningSurveyAlarm(int h, int i){
     	Calendar tT = Calendar.getInstance();
     	//test
+    	Calendar nowT = Calendar.getInstance();
     	File f = new File(BASE_PATH,"Trigger.txt");
 		try {
 			writeToFile(f,"Morning Alarm re-schedules at "+String.valueOf(tT.getTime()));
@@ -1484,6 +1486,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		//trigger morning report 30 seconds later than MainActivity is restarted by bAlarmManager 
 		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,morningReport);
 		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,86400000,morningReport);
+		TransmitData transmitData=new TransmitData();
+		transmitData.execute("Trigger."+ID+"."+nowT.get(Calendar.MONTH)+"_"+nowT.get(Calendar.DAY_OF_MONTH),
+				nowT.getTime().toString()+",Schduleing Morning Survey which will be called at "+tT.get(Calendar.HOUR_OF_DAY)+":"+tT.get(Calendar.MINUTE));
     }
     /**
      * @author Ricky
