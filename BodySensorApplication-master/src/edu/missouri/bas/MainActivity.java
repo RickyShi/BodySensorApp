@@ -534,41 +534,57 @@ public class MainActivity extends ListActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		if(item.getItemId() == R.id.Connect){
-			if(mAdapter.isEnabled())
-			{			
-			Intent serverIntent = new Intent(this, DeviceListActivity.class);
-            startActivityForResult(serverIntent, MainActivity.INTENT_SELECT_DEVICES);
-            return true;
-            }
-			else
-			{			    
-				Toast.makeText(getApplicationContext(),"Enable BT before connecting",Toast.LENGTH_LONG).show();			
-			}					
+			if (SensorService.suspendFlag)
+				SuspensionHint();
+			else {
+				if(mAdapter.isEnabled())
+				{			
+				Intent serverIntent = new Intent(this, DeviceListActivity.class);
+	            startActivityForResult(serverIntent, MainActivity.INTENT_SELECT_DEVICES);
+	            return true;
+	            }
+				else
+				{			    
+					Toast.makeText(getApplicationContext(),"Enable BT before connecting",Toast.LENGTH_LONG).show();			
+				}
+			}
 		}
 		
 		else if (item.getItemId() == R.id.Enable){
-			if(mAdapter.isEnabled())
-			{
-				Toast.makeText(getApplicationContext(),"Bluetooth is already enabled ",Toast.LENGTH_LONG).show();
+			if (SensorService.suspendFlag)
+				SuspensionHint();
+			else {
+				if(mAdapter.isEnabled())
+				{
+					Toast.makeText(getApplicationContext(),"Bluetooth is already enabled ",Toast.LENGTH_LONG).show();
+					
+				}
+				else
+				{
+					
+					turnOnBt();				
+				}
 				
+	            return true;
 			}
-			else
-			{
-				
-				turnOnBt();				
-			}
-			
-            return true;
 		}
 		
 		else if (item.getItemId() == R.id.Disable){
-			mAdapter.disable();
-			Toast.makeText(getApplicationContext(),"Bluetooth is disabled",Toast.LENGTH_LONG).show();			
-            return true;
+			if (SensorService.suspendFlag)
+				SuspensionHint();
+			else {
+				mAdapter.disable();
+				Toast.makeText(getApplicationContext(),"Bluetooth is disabled",Toast.LENGTH_LONG).show();			
+	            return true;
+			}
 		}
 		else if(item.getItemId() == R.id.manage){
-			Intent serverIntent = new Intent(this, AdminManageActivity.class);
-            startActivityForResult(serverIntent, MainActivity.INTENT_REQUEST_MAMAGE);
+			if (SensorService.suspendFlag)
+				SuspensionHint();
+			else {
+				Intent serverIntent = new Intent(this, AdminManageActivity.class);
+	            startActivityForResult(serverIntent, MainActivity.INTENT_REQUEST_MAMAGE);
+			}
 		}
 		else 
 			return false;
