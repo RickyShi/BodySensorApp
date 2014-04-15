@@ -364,6 +364,15 @@ GooglePlayServicesClient.OnConnectionFailedListener
     	@Override    	
     	public void run(){ 
 	    	Log.d("wtest","midNightCheck");
+	    	//---------------log--------------------
+	    	File f = new File(BASE_PATH,"Trigger.txt");
+			try {
+				writeToFile(f,"MidNIght is Checking "+String.valueOf(Calendar.getInstance().getTime())+" Flag: "+String.valueOf(bedFlag));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//----------end log---------------------
 	    	if (!bedFlag){
 		    	//PARTIALLY STOP ALL SENSORS & RANDOM SURVEY
 				stopPartialService();				
@@ -1523,7 +1532,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			Calendar test = Calendar.getInstance();
 	    	File f = new File(BASE_PATH,"Trigger.txt");
 			try {
-				writeToFile(f,"Random Survey re-schedules at "+String.valueOf(test.toString()));
+				writeToFile(f,"Random Survey re-schedules at "+String.valueOf(test.getTime().toString()));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

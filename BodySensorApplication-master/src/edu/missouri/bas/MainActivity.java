@@ -149,41 +149,50 @@ public class MainActivity extends ListActivity {
 					int position, long id) {
 		    	switch(position){
 	    		case START:
-	    			startSService();
+	    			if (SensorService.suspendFlag) {
+		    			SuspensionHint();
+	    			} else
+		    			startSService();
 	    			break;
 	    		case STOP:
-	    			stopSService();
+	    			if (SensorService.suspendFlag)
+	    				SuspensionHint();
+	    			else
+	    				stopSService();
 	    			//uploadFiles(urlServer,chestsensorFilePath);	    			
 	    			//Toast.makeText(getApplicationContext(), "Successfully uploaded files.", Toast.LENGTH_LONG).show();
 	    			break;
-	    		case SURVEY: 
-	    			startSurveyMenu();
+	    		case SURVEY:
+	    			if (SensorService.suspendFlag)
+	    				SuspensionHint();
+	    			else
+	    				startSurveyMenu();
 	    			break;	    		
 	    		case CONNECTIONS:
-	    			startConnections();	    			
+	    			if (SensorService.suspendFlag)
+	    				SuspensionHint();
+	    			else
+	    				startConnections();	    			
 	    			break;
 	    		case BED_STATUS:
-	    			Calendar cTime = Calendar.getInstance();
-	    			int cHour = cTime.get(Calendar.HOUR_OF_DAY);
-	    			if (cHour>=21 || cHour<3){
-	    			//if (cHour!=0){
-	    				createPinAlertDialog();
-	    			} else {
-	    				bedTimeCheckDialog();
+	    			if (SensorService.suspendFlag)
+	    				SuspensionHint();
+	    			else {
+		    			Calendar cTime = Calendar.getInstance();
+		    			int cHour = cTime.get(Calendar.HOUR_OF_DAY);
+		    			if (cHour>=21 || cHour<3){
+		    			//if (cHour!=0){
+		    				createPinAlertDialog();
+		    			} else {
+		    				bedTimeCheckDialog();
+		    			}
 	    			}
 	    			break;
 	    		case SUSPENSION:
 	    			if (!SensorService.suspendFlag) {
-	    				SensorService.adapter.remove("Suspension");
-	    				SensorService.adapter.add("Break Suspension");
-		    			//TODO: In the future, this flag need to be reset in the broadcast receiver.
-		    			SensorService.suspendFlag = true;
-		    			Intent i=new Intent(getApplicationContext(), SuspesionTimePicker.class);
-						startActivity(i);
+	    				SuspensionCheck();
 	    			} else {
-	    				SensorService.adapter.remove("Break Suspension");
-	    				SensorService.adapter.add("Suspension");
-		    			SensorService.suspendFlag = false;
+	    				breakSuspensionCheck();
 	    			}
 	    			break;
 		    	}
@@ -661,6 +670,77 @@ public class MainActivity extends ListActivity {
 			        	}
 	    })
 	    .create().show();
+	}
+	
+	private void SuspensionHint(){		
+		new AlertDialog.Builder(MainActivity.this)
+	    .setTitle("The App is in suspension state.")
+	    .setMessage("You should break suspension first before you click this button.")
+	    .setCancelable(false)
+	    .setPositiveButton(android.R.string.yes,   
+	    		new DialogInterface.OnClickListener() {		          
+			        @Override  
+			        public void onClick(DialogInterface dialog, int which) { 
+			        	dialog.cancel();
+			        	}
+	    })
+	    .create().show();
+	}
+	
+	private void SuspensionCheck(){
+	    new AlertDialog.Builder(this)
+	        .setTitle("Are you sure to do the suspension?")
+	        .setCancelable(false)
+	        .setPositiveButton(android.R.string.yes, new android.content.DialogInterface.OnClickListener() {
+
+	            public void onClick(DialogInterface arg0, int arg1) {
+	            	SensorService.adapter.remove("Suspension");
+    				SensorService.adapter.add("Break Suspension");
+	    			//TODO: In the future, this flag need to be reset in the broadcast receiver.
+	    			SensorService.suspendFlag = true;
+	    			arg0.cancel();
+	    			Intent i=new Intent(getApplicationContext(), SuspesionTimePicker.class);
+					startActivity(i);	            	
+	            }
+	        })
+	        .setNegativeButton(android.R.string.no, new android.content.DialogInterface.OnClickListener(){
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					dialog.cancel();
+				}
+	        	
+	        })
+	        .create().show();
+	
+	return;
+	}
+	
+	private void breakSuspensionCheck(){
+	    new AlertDialog.Builder(this)
+	        .setTitle("Are you sure to break the suspension?")
+	        .setCancelable(false)
+	        .setPositiveButton(android.R.string.yes, new android.content.DialogInterface.OnClickListener() {
+
+	            public void onClick(DialogInterface arg0, int arg1) {
+    				SensorService.adapter.remove("Break Suspension");
+    				SensorService.adapter.add("Suspension");
+	    			SensorService.suspendFlag = false;
+	    			arg0.cancel();
+	            }
+	        })
+	        .setNegativeButton(android.R.string.no, new android.content.DialogInterface.OnClickListener(){
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+	        	
+	        })
+	        .create().show();
+	
+	return;
 	}
 }
 
