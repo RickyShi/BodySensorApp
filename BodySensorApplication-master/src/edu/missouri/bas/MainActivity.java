@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -76,6 +77,7 @@ public class MainActivity extends ListActivity {
 	protected static final int SURVEY = 2;	
 	protected static final int CONNECTIONS = 3;
 	protected static final int BED_STATUS = 4;
+	protected static final int SUSPENSION = 5;
 	public  final MainActivity thisActivity = this;
 	//private final static String urlServer = "http://babbage.cs.missouri.edu/~rs79c/Android/upload.php";
 	HttpURLConnection connection = null;
@@ -117,9 +119,7 @@ public class MainActivity extends ListActivity {
 	Editor editor;
 	String ID;
 	String PWD;
-	
-
-	//action URL
+	boolean suspendFlag = false;
 	
 	
     @Override
@@ -132,10 +132,12 @@ public class MainActivity extends ListActivity {
         Log.d(TAG2, "OnCreate~~~~~~~~~~~~~~~~~~~");
         
     	String[] options = {"Start Service", "Stop Service", "Survey Menu",
-		"External Sensor Connections","Bed Report"};
+		"External Sensor Connections","Bed Report","Suspension"};
     	
-    	ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-    			android.R.layout.simple_list_item_1, options);
+    	ArrayList<String> buttons = new ArrayList<String>();
+    	buttons.addAll(Arrays.asList(options));
+    	final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+    			android.R.layout.simple_list_item_1, buttons);
     	
     	setListAdapter(adapter);    
         ListView listView = getListView();        
@@ -168,6 +170,17 @@ public class MainActivity extends ListActivity {
 	    				createPinAlertDialog();
 	    			} else {
 	    				bedTimeCheckDialog();
+	    			}
+	    			break;
+	    		case SUSPENSION:
+	    			if (!suspendFlag) {
+		    			adapter.remove("Suspension");
+		    			adapter.add("Break Suspension");
+		    			suspendFlag = true;
+	    			} else {
+	    				adapter.remove("Break Suspension");
+		    			adapter.add("Suspension");
+		    			suspendFlag = false;
 	    			}
 	    			break;
 		    	}
