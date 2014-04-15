@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="app_name" translatable="false">Body Sensor Application</string>
@@ -15,5 +16,7 @@
     <string name="back">Back</string>
     <string name="retry_text">If you input a wrong PIN number or accidentally cancel the survey before finishing it, please press Retry Button.</string>
     <string name="back_text">If you have completed the Survey, please press Back Button.</string>
+    <string name="title_activity_t">MainActivity</string>
+    <string name="action_settings">Settings</string>
 
 </resources>

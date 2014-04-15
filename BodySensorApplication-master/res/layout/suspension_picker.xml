@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tableview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+<TextView  android:id="@+id/tvSuspension"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Enter suspension time:"
+            android:textSize="20sp" />    
+<TimePicker
+        android:id="@+id/tpSuspension"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+<Button
+    android:id="@+id/btnSuspension"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="Set Suspension Time" />
+
+</LinearLayout>

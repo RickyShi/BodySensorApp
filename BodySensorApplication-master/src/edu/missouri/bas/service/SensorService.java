@@ -87,6 +87,7 @@ import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -108,6 +109,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+
 
 
 
@@ -375,7 +377,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	int StartHour;
 	int StartMin;
 	//boolean MornReportIsDone; 
-	
+	public static boolean suspendFlag = false;
+	public static  ArrayAdapter<String> adapter;
 	//Id and Password
 	//2014/2/25
 	private static String ID;

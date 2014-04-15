@@ -119,7 +119,7 @@ public class MainActivity extends ListActivity {
 	Editor editor;
 	String ID;
 	String PWD;
-	boolean suspendFlag = false;
+	
 	
 	
     @Override
@@ -136,10 +136,10 @@ public class MainActivity extends ListActivity {
     	
     	ArrayList<String> buttons = new ArrayList<String>();
     	buttons.addAll(Arrays.asList(options));
-    	final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+    	SensorService.adapter = new ArrayAdapter<String>(this,
     			android.R.layout.simple_list_item_1, buttons);
     	
-    	setListAdapter(adapter);    
+    	setListAdapter(SensorService.adapter);    
         ListView listView = getListView();        
         listView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -173,14 +173,17 @@ public class MainActivity extends ListActivity {
 	    			}
 	    			break;
 	    		case SUSPENSION:
-	    			if (!suspendFlag) {
-		    			adapter.remove("Suspension");
-		    			adapter.add("Break Suspension");
-		    			suspendFlag = true;
+	    			if (!SensorService.suspendFlag) {
+	    				SensorService.adapter.remove("Suspension");
+	    				SensorService.adapter.add("Break Suspension");
+		    			//TODO: In the future, this flag need to be reset in the broadcast receiver.
+		    			SensorService.suspendFlag = true;
+		    			Intent i=new Intent(getApplicationContext(), SuspesionTimePicker.class);
+						startActivity(i);
 	    			} else {
-	    				adapter.remove("Break Suspension");
-		    			adapter.add("Suspension");
-		    			suspendFlag = false;
+	    				SensorService.adapter.remove("Break Suspension");
+	    				SensorService.adapter.add("Suspension");
+		    			SensorService.suspendFlag = false;
 	    			}
 	    			break;
 		    	}
