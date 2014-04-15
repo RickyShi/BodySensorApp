@@ -196,6 +196,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	
 	public static final String INTENT_EXTRA_BT_STATE = "EXTRA_BLUETOOTH_STATE";
 	
+	//Ricky 2014/4/15 for suspension
+	public static final String INTENT_SUSPENSION = "INTENT_SUSPENSION";
+	//break suspesion
+	public static final String INTENT_BREAK_SUSPENSION = "INTENT_BREAK_SUSPENSION";
+	
 	public static final String INTENT_EXTRA_BT_DEVICE_NAME = null;
 
 	public static final String INTENT_EXTRA_BT_DEVICE_ADDRESS = null;
@@ -694,6 +699,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		IntentFilter sound1=new IntentFilter(ACTION_TRIGGER_SOUND);
 		IntentFilter sound2=new IntentFilter(ACTION_TRIGGER_SOUND2);
 		IntentFilter activityRecognizationRequest =new IntentFilter(ACTION_ACTIVITY_RECOG_RESTART);
+		//Ricky 2014/4/15 IntentFilter for suspension & break_suspension
+		IntentFilter suspension =new IntentFilter(INTENT_SUSPENSION);
+		IntentFilter breakSuspension =new IntentFilter(INTENT_BREAK_SUSPENSION);
 		SensorService.this.registerReceiver(alarmReceiver, locationFoundFilter);
 		SensorService.this.registerReceiver(alarmReceiver, locationSchedulerFilter);		
 		SensorService.this.registerReceiver(alarmReceiver, locationInterruptSchedulerFilter);
@@ -703,6 +711,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		SensorService.this.registerReceiver(alarmReceiver, RestartMorningFilter);
 		//Register the drink-followup to the alarmReceiver
 		SensorService.this.registerReceiver(alarmReceiver, followUpFilter);
+		//Ricky 2014/4/15 register suspension in the alarmReceiver
+		SensorService.this.registerReceiver(alarmReceiver, suspension);
+		SensorService.this.registerReceiver(alarmReceiver, breakSuspension);
 		SensorService.this.registerReceiver(soundRequestReceiver,soundRequest);
 		SensorService.this.registerReceiver(soundRequestReceiver,sound1);
 		SensorService.this.registerReceiver(soundRequestReceiver,sound2);
@@ -1090,28 +1101,54 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				 */
 				if (surveyName.equals("MORNING_REPORT")){
 					//if (!MornReportIsDone){
-						Log.d("wtest","Morning trigger time");
-						Calendar c = Calendar.getInstance();
-						SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-						String currentTime=dateFormat.format(c.getTime());
-						String []cTime=currentTime.split(":");
-						StartHour=Integer.parseInt(cTime[0]);
-						StartMin=Integer.parseInt(cTime[1]);		
-						if (((EndHour-StartHour)*60+(EndMin-StartMin))<=60){
-							Toast.makeText(getApplicationContext(),"Difference between Start and End Time must be at least one hour. Random Survey is canceled",Toast.LENGTH_LONG).show();
-						}
-						else {
-							//2nd part
-							bedEditor = bedTime.edit();
-							bedEditor.putInt("RandomSurveyStartHour", StartHour);
-							bedEditor.putInt("RandomSurveyStartMin", StartMin);
-							//bedEditor.putBoolean("MornReportDone", true);
-							bedEditor.commit();
-							//3rd part														
-							triggerRandomSurvey(StartHour,StartMin);							
-						}
+					Log.d("wtest","Morning trigger time");
+					Calendar c = Calendar.getInstance();
+					SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+					String currentTime=dateFormat.format(c.getTime());
+					String []cTime=currentTime.split(":");
+					StartHour=Integer.parseInt(cTime[0]);
+					StartMin=Integer.parseInt(cTime[1]);		
+					if (((EndHour-StartHour)*60+(EndMin-StartMin))<=60){
+						Toast.makeText(getApplicationContext(),"Difference between Start and End Time must be at least one hour. Random Survey is canceled",Toast.LENGTH_LONG).show();
+					}
+					else {
+						//2nd part
+						bedEditor = bedTime.edit();
+						bedEditor.putInt("RandomSurveyStartHour", StartHour);
+						bedEditor.putInt("RandomSurveyStartMin", StartMin);
+						//bedEditor.putBoolean("MornReportDone", true);
+						bedEditor.commit();
+						//3rd part														
+						triggerRandomSurvey(StartHour,StartMin);							
+					}
 					//}
 				}
+			}
+			else if (action.equals(SensorService.INTENT_SUSPENSION)){
+				adapter.remove("Suspension");
+				adapter.add("Break Suspension");
+    			suspendFlag = true;
+    			CancelTask(rTask1);
+    			CancelTask(rTask2);
+    			CancelTask(rTask3);
+    			CancelTask(rTask4);
+    			CancelTask(rTask5);
+    			CancelTask(rTask6);
+    			PurgeTimers(t1);
+    			PurgeTimers(t2);
+    			PurgeTimers(t3);
+    			PurgeTimers(t4);
+    			PurgeTimers(t5);
+    			PurgeTimers(t6);
+			}
+			else if (action.equals(SensorService.INTENT_BREAK_SUSPENSION)){
+				adapter.remove("Break Suspension");
+				adapter.add("Suspension");
+    			suspendFlag = false;
+    			StartHour = bedTime.getInt("RandomSurveyStartHour", 11);
+    			StartMin = bedTime.getInt("RandomSurveyStartMin", 59);
+    			triggerRandomSurvey(StartHour,StartMin);
+				Toast.makeText(getApplicationContext(),"Break SUSPENSION",Toast.LENGTH_LONG).show();
 			}
 		}
 	};

@@ -710,10 +710,8 @@ public class MainActivity extends ListActivity {
 	        .setPositiveButton(android.R.string.yes, new android.content.DialogInterface.OnClickListener() {
 
 	            public void onClick(DialogInterface arg0, int arg1) {
-	            	SensorService.adapter.remove("Suspension");
-    				SensorService.adapter.add("Break Suspension");
-	    			//TODO: In the future, this flag need to be reset in the broadcast receiver.
-	    			SensorService.suspendFlag = true;
+	    			Intent startScheduler = new Intent(SensorService.INTENT_SUSPENSION);
+					getApplicationContext().sendBroadcast(startScheduler);
 	    			arg0.cancel();
 	    			Intent i=new Intent(getApplicationContext(), SuspesionTimePicker.class);
 					startActivity(i);	            	
@@ -740,9 +738,8 @@ public class MainActivity extends ListActivity {
 	        .setPositiveButton(android.R.string.yes, new android.content.DialogInterface.OnClickListener() {
 
 	            public void onClick(DialogInterface arg0, int arg1) {
-    				SensorService.adapter.remove("Break Suspension");
-    				SensorService.adapter.add("Suspension");
-	    			SensorService.suspendFlag = false;
+	    			Intent startScheduler = new Intent(SensorService.INTENT_BREAK_SUSPENSION);
+					getApplicationContext().sendBroadcast(startScheduler);
 	    			arg0.cancel();
 	            }
 	        })
