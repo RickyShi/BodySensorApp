@@ -1490,8 +1490,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,morningReport);
 		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,86400000,morningReport);
 		TransmitData transmitData=new TransmitData();
-		transmitData.execute("Trigger."+ID+"."+nowT.get(Calendar.MONTH)+"_"+nowT.get(Calendar.DAY_OF_MONTH),
-				nowT.getTime().toString()+",Schduleing Morning Survey which will be called at "+tT.get(Calendar.HOUR_OF_DAY)+":"+tT.get(Calendar.MINUTE));
+//		transmitData.execute("Trigger."+ID+"."+nowT.get(Calendar.MONTH)+"_"+nowT.get(Calendar.DAY_OF_MONTH),
+//				nowT.getTime().toString()+",Schduleing Morning Survey which will be called at "+tT.get(Calendar.HOUR_OF_DAY)+":"+tT.get(Calendar.MINUTE));
+		transmitData.execute("Trigger."+ID,nowT.getTime().toString()+",Schduleing Morning Survey which will be called at "+tT.get(Calendar.HOUR_OF_DAY)+":"+tT.get(Calendar.MINUTE));
     }
     /**
      * @author Ricky
