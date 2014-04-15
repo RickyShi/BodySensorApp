@@ -41,7 +41,7 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	String identifier;
 	List<String> dataPoints=new ArrayList<String>();
 	Calendar c=Calendar.getInstance();
-    SimpleDateFormat curFormater = new SimpleDateFormat("MMMMM_dd");
+    SimpleDateFormat curFormater;
     private List<Double> AccList = new ArrayList<Double>();
     private double avgAcc = 0;
 
@@ -76,7 +76,8 @@ public class InternalSensor implements Runnable, SensorEventListener {
 	}
 	
 	public String getDate()
-	{ 
+	{ 	
+		curFormater = new SimpleDateFormat("MMMMM_dd");
    		String dateObj =curFormater.format(c.getTime()); 
    		return dateObj;
 	}

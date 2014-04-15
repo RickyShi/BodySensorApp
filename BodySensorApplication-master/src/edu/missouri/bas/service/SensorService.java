@@ -1,14 +1,9 @@
 package edu.missouri.bas.service;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,90 +11,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-
-import edu.missouri.bas.MainActivity;
-import edu.missouri.bas.R;
-import edu.missouri.bas.SensorConnections;
-import edu.missouri.bas.SurveyScheduler;
-import edu.missouri.bas.SurveyStatus;
-import edu.missouri.bas.activities.AdminManageActivity;
-import edu.missouri.bas.bluetooth.BluetoothRunnable;
-import edu.missouri.bas.bluetooth.affectiva.AffectivaPacket;
-import edu.missouri.bas.bluetooth.affectiva.AffectivaRunnable;
-import edu.missouri.bas.bluetooth.equivital.EquivitalRunnable;
-import edu.missouri.bas.datacollection.InternalSensor;
-import edu.missouri.bas.service.modules.location.ActivityRecognitionScan;
-import edu.missouri.bas.service.modules.location.DetectionRemover;
-import edu.missouri.bas.service.modules.location.LocationControl;
-import edu.missouri.bas.service.modules.sensors.SensorControl;
-import edu.missouri.bas.survey.SurveyPinCheck;
-import edu.missouri.bas.survey.XMLSurveyActivity;
-import edu.missouri.bas.survey.XMLSurveyActivity.StartSound;
-import edu.missouri.bas.survey.answer.SurveyAnswer;
-import android.R.string;
-import android.app.ActivityManager;
-import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.SoundPool;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Bundle;
-import android.os.Debug;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
-import android.os.SystemClock;
-import android.os.Vibrator;
-import android.provider.Settings;
-import android.util.Log;
-import android.view.WindowManager;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.equivital.sdk.connection.SemBluetoothConnection;
-import com.equivital.sdk.decoder.SDKLicense;
-import com.equivital.sdk.decoder.SemDevice;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.ActivityRecognitionClient;
-import com.google.android.gms.location.DetectedActivity;
-import com.google.android.gms.location.LocationClient;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -110,15 +25,57 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-
-
-
-
-
-
-
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.hardware.Sensor;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 //Ricky 2013/12/09
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+import android.os.SystemClock;
+import android.os.Vibrator;
+import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
+
+import com.equivital.sdk.decoder.SemDevice;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.DetectedActivity;
+import com.google.android.gms.location.LocationClient;
+
+import edu.missouri.bas.MainActivity;
+import edu.missouri.bas.R;
+import edu.missouri.bas.activities.AdminManageActivity;
+import edu.missouri.bas.bluetooth.affectiva.AffectivaRunnable;
+import edu.missouri.bas.bluetooth.equivital.EquivitalRunnable;
+import edu.missouri.bas.datacollection.InternalSensor;
+import edu.missouri.bas.service.modules.location.ActivityRecognitionScan;
+import edu.missouri.bas.service.modules.location.DetectionRemover;
+import edu.missouri.bas.service.modules.location.LocationControl;
+import edu.missouri.bas.service.modules.sensors.SensorControl;
+import edu.missouri.bas.survey.SurveyPinCheck;
+import edu.missouri.bas.survey.XMLSurveyActivity;
 
 public class SensorService extends Service implements
 GooglePlayServicesClient.ConnectionCallbacks,
@@ -910,7 +867,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		
 		/*
 		 * If we try to cancel the timer, when we reuse the timer
-		 * the system will show error msg
+		 * the system will show error MSG
 		CancelTimers(t1);
 		CancelTimers(t2);
 		CancelTimers(t3);
@@ -1492,7 +1449,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		TransmitData transmitData=new TransmitData();
 //		transmitData.execute("Trigger."+ID+"."+nowT.get(Calendar.MONTH)+"_"+nowT.get(Calendar.DAY_OF_MONTH),
 //				nowT.getTime().toString()+",Schduleing Morning Survey which will be called at "+tT.get(Calendar.HOUR_OF_DAY)+":"+tT.get(Calendar.MINUTE));
-		transmitData.execute("Trigger."+ID,nowT.getTime().toString()+",Schduleing Morning Survey which will be called at "+tT.get(Calendar.HOUR_OF_DAY)+":"+tT.get(Calendar.MINUTE));
+		transmitData.execute("Event."+ID,nowT.getTime().toString()+",Schduling Morning Survey which will be called at "+tT.get(Calendar.HOUR_OF_DAY)+":"+tT.get(Calendar.MINUTE));
     }
     /**
      * @author Ricky
