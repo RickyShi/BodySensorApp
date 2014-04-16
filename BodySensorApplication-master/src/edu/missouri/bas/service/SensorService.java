@@ -394,6 +394,17 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	}
 	//end of midNightCheckTimer Task Part
 	
+	//Ricky 4/15 Suspension TimerTask Part
+	public static Timer suspendTimer = new Timer();
+	public static TimerTask suspendTimerTask;
+	private class StopSuspension extends TimerTask {
+    	@Override    	
+    	public void run(){ 
+    		Intent breakSuspension = new Intent(SensorService.INTENT_BREAK_SUSPENSION);
+			getApplicationContext().sendBroadcast(breakSuspension);
+    	}
+    }
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(){
@@ -908,7 +919,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		//Ricky 3/14
 		PurgeTimers(midNightCheckTimer);
 		setStatus(false);
-		
+		CancelTask(suspendTimerTask);
+		PurgeTimers(suspendTimer);
+		suspendFlag = false;
 		serviceWakeLock.release();
 				
 		Log.d(TAG,"Service Stopped.");
@@ -1128,6 +1141,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				adapter.remove("Suspension");
 				adapter.add("Break Suspension");
     			suspendFlag = true;
+    			//cancel random survey
     			CancelTask(rTask1);
     			CancelTask(rTask2);
     			CancelTask(rTask3);
@@ -1140,8 +1154,24 @@ GooglePlayServicesClient.OnConnectionFailedListener
     			PurgeTimers(t4);
     			PurgeTimers(t5);
     			PurgeTimers(t6);
+    			//end
+    			//add Timer Task to cancel break suspension
+    			Date StopSuspendDate = new Date();
+    			int SuspendH = intent.getIntExtra("H", 0);
+    			int SuspendM = intent.getIntExtra("M", 0);
+    			if (!(SuspendH == 0 && SuspendM == 0)){
+    				StopSuspendDate.setHours(StopSuspendDate.getHours()+SuspendH);
+    				StopSuspendDate.setMinutes(StopSuspendDate.getMinutes()+SuspendM);
+	    			suspendTimerTask = new StopSuspension();
+	    			suspendTimer.schedule(suspendTimerTask, StopSuspendDate);
+    			}
+    			Calendar nowT= Calendar.getInstance();
+				TransmitData transmitData=new TransmitData();
+				transmitData.execute("Event."+ID,nowT.getTime().toString()+", Start Suspension");
 			}
 			else if (action.equals(SensorService.INTENT_BREAK_SUSPENSION)){
+				CancelTask(suspendTimerTask);
+				PurgeTimers(suspendTimer);
 				adapter.remove("Break Suspension");
 				adapter.add("Suspension");
     			suspendFlag = false;
@@ -1149,6 +1179,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
     			StartMin = bedTime.getInt("RandomSurveyStartMin", 59);
     			triggerRandomSurvey(StartHour,StartMin);
 				Toast.makeText(getApplicationContext(),"Break SUSPENSION",Toast.LENGTH_LONG).show();
+				Calendar nowT= Calendar.getInstance();
+				TransmitData transmitData=new TransmitData();
+				transmitData.execute("Event."+ID,nowT.getTime().toString()+", Break Suspension");
 			}
 		}
 	};

@@ -710,8 +710,6 @@ public class MainActivity extends ListActivity {
 	        .setPositiveButton(android.R.string.yes, new android.content.DialogInterface.OnClickListener() {
 
 	            public void onClick(DialogInterface arg0, int arg1) {
-	    			Intent startScheduler = new Intent(SensorService.INTENT_SUSPENSION);
-					getApplicationContext().sendBroadcast(startScheduler);
 	    			arg0.cancel();
 	    			Intent i=new Intent(getApplicationContext(), SuspesionTimePicker.class);
 					startActivity(i);	            	
@@ -738,8 +736,8 @@ public class MainActivity extends ListActivity {
 	        .setPositiveButton(android.R.string.yes, new android.content.DialogInterface.OnClickListener() {
 
 	            public void onClick(DialogInterface arg0, int arg1) {
-	    			Intent startScheduler = new Intent(SensorService.INTENT_BREAK_SUSPENSION);
-					getApplicationContext().sendBroadcast(startScheduler);
+	    			Intent breakSuspension = new Intent(SensorService.INTENT_BREAK_SUSPENSION);
+					getApplicationContext().sendBroadcast(breakSuspension);
 	    			arg0.cancel();
 	            }
 	        })

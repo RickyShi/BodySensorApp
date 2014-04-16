@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import edu.missouri.bas.service.SensorService;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -51,9 +52,10 @@ public class SuspesionTimePicker extends Activity {
 					if (suspensionH==0 && suspensionM==0){
 						Toast.makeText(getApplicationContext(),"Suspension Time must be longer than 1 minutes!",Toast.LENGTH_LONG).show();
 					} else {
-					//TODO
-//						Intent i=new Intent(getApplicationContext(), MainActivity.class);
-//						startActivity(i);
+						Intent startSuspension = new Intent(SensorService.INTENT_SUSPENSION);
+						startSuspension.putExtra("H",suspensionH);
+						startSuspension.putExtra("M",suspensionM);
+						getApplicationContext().sendBroadcast(startSuspension);
 						finish();
 						Toast.makeText(getApplicationContext(),"Suspension time is: "+suspensionH+":"+suspensionM,Toast.LENGTH_LONG).show();
 					}
