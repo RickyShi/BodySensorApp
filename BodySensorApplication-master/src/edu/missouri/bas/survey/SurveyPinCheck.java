@@ -143,7 +143,7 @@ public class SurveyPinCheck extends Activity {
 	        TransmitData transmitData=new TransmitData();
 //			transmitData.execute("Trigger."+ID+"."+Calendar.getInstance().get(Calendar.MONTH)+"_"+Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
 //					Calendar.getInstance().getTime().toString()+",Morning Survey is automatically started\n");
-	        transmitData.execute("Event."+ID,Calendar.getInstance().getTime().toString()+",Morning Survey is automatically started\n");
+	        transmitData.execute("Event."+ID,Calendar.getInstance().getTime().toString()+",Morning Survey is automatically started");
 			Timer t=new Timer();
 			t.schedule(new  StartSound(),1000*5);			
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
