@@ -1095,7 +1095,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 					randomSeq = intent.getIntExtra("random_sequence", 0);
 					String rsID = String.valueOf(randomSeq);
 					Calendar rsT = Calendar.getInstance();
-					String rsDate = rsT.get(Calendar.DAY_OF_MONTH)+"/"+rsT.get(Calendar.MONTH)+"/"+rsT.get(Calendar.YEAR);
+					String rsDate = rsT.get(Calendar.DAY_OF_MONTH)+"/"+(rsT.get(Calendar.MONTH)+1)+"/"+rsT.get(Calendar.YEAR);
 					String uID = String.valueOf(ID);
 					CompletedSignal completedSignal = new CompletedSignal();
 					completedSignal.execute(uID,rsDate,rsID);
