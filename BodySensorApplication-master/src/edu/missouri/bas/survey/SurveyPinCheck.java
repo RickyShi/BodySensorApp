@@ -123,8 +123,14 @@ public class SurveyPinCheck extends Activity {
 		surveyFile = getIntent().getStringExtra("survey_file");
 		// Alarm when the following two kind of survey is triggered
 		if(surveyName.equalsIgnoreCase("RANDOM_ASSESSMENT") && surveyFile.equalsIgnoreCase("RandomAssessmentParcel.xml"))
-		{
+		{				
 			randomSeq = getIntent().getIntExtra("random_sequence", 0);
+			String rsID = String.valueOf(randomSeq);
+			Calendar rsT = Calendar.getInstance();
+			String rsDate = rsT.get(Calendar.DAY_OF_MONTH)+"/"+rsT.get(Calendar.MONTH)+"/"+rsT.get(Calendar.YEAR);
+			String uID = String.valueOf(ID);
+			TriggerSignal triggerSignal = new TriggerSignal();
+			triggerSignal.execute(uID,rsDate,rsID);
 			Timer t=new Timer();
 			t.schedule(new  StartSound(),1000*5);			
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -351,5 +357,50 @@ public class SurveyPinCheck extends Activity {
 				}
 			}
 			return false;
+	}
+	 private class TriggerSignal extends AsyncTask<String,Void, Boolean>
+		{
+
+			@Override
+			protected Boolean doInBackground(String... strings) {
+				// TODO Auto-generated method stub
+		         String UID=strings[0];
+		         String Date=strings[1];
+		         String RSID=strings[2];
+		         if(checkDataConnectivity())
+		 		{
+		         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/compliance.php");
+		         List<NameValuePair> params = new ArrayList<NameValuePair>();
+		         params.add(new BasicNameValuePair("category","trigger"));                            
+		         params.add(new BasicNameValuePair("UID",UID));
+		         params.add(new BasicNameValuePair("Date",Date));
+		         params.add(new BasicNameValuePair("RSID",RSID));
+		         try {
+		         	        	
+		             request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+		             HttpResponse response = new DefaultHttpClient().execute(request);
+		             if(response.getStatusLine().getStatusCode() == 200){
+		                 String result = EntityUtils.toString(response.getEntity());
+		                 Log.d("Sensor Data Point Info",result);                
+		                // Log.d("Wrist Sensor Data Point Info","Data Point Successfully Uploaded!");
+		             }
+		             return true;
+		         } 
+		         catch (Exception e) 
+		         {	             
+		             e.printStackTrace();
+		             return false;
+		         }
+		 	  }
+		     	
+		     else 
+		     {
+		     	Log.d("Sensor Data Point Info","No Network Connection:Data Point was not uploaded");
+		     	Toast.makeText(SurveyPinContext, errMSG, Toast.LENGTH_LONG).show();
+		     	return false;
+		      } 
+			    
+			}
+			
 		}
 }
