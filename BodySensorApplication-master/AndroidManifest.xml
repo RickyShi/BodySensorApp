@@ -38,7 +38,8 @@
         <activity
             android:name="edu.missouri.bas.MainActivity"
             android:label="@string/title_activity_main"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:launchMode = "singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

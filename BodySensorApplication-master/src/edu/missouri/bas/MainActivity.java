@@ -753,5 +753,18 @@ public class MainActivity extends ListActivity {
 	
 	return;
 	}
+	
+	public void onBackPressed(){
+		    new AlertDialog.Builder(this)		        
+		        .setTitle("The Back Button is disabled.")
+		        .setMessage("The back button will terminate the program.")
+		        .setCancelable(false)
+		        .setPositiveButton(android.R.string.yes, new android.content.DialogInterface.OnClickListener() {
+		            public void onClick(DialogInterface arg0, int arg1) {
+		            	arg0.cancel();
+		            }
+		        }).create().show();		
+		return;
+	}
 }
 
