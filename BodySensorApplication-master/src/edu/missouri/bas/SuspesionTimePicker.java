@@ -50,7 +50,7 @@ public class SuspesionTimePicker extends Activity {
 			public void onClick(View v) {
 				if (suspensionH < 2){
 					if (suspensionH==0 && suspensionM==0){
-						Toast.makeText(getApplicationContext(),"Suspension Time must be longer than 1 minutes!",Toast.LENGTH_LONG).show();
+						Toast.makeText(getApplicationContext(),"Suspension Time must be longer than 1 minute!",Toast.LENGTH_LONG).show();
 					} else {
 						Intent startSuspension = new Intent(SensorService.INTENT_SUSPENSION);
 						startSuspension.putExtra("H",suspensionH);
