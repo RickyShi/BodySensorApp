@@ -7,8 +7,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.RSAPublicKeySpec;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,7 +124,9 @@ public class MainActivity extends ListActivity {
 	Editor editor;
 	String ID;
 	String PWD;
-	
+	public static PublicKey pubk = null;
+
+	//action URL
 	
 	
     @Override
@@ -130,7 +137,12 @@ public class MainActivity extends ListActivity {
         StrictMode.setThreadPolicy(policy);
        
         Log.d(TAG2, "OnCreate~~~~~~~~~~~~~~~~~~~");
-        
+        try {
+			pubk = getPublicKey();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	String[] options = {"Start Service", "Stop Service", "Survey Menu",
 		"External Sensor Connections","Bed Report","Suspension"};
     	
@@ -336,7 +348,21 @@ public class MainActivity extends ListActivity {
         return builder.create();  
     }
     
-    
+	private PublicKey getPublicKey() throws Exception {
+		// TODO Auto-generated method stub
+        InputStream is = getResources().openRawResource(R.raw.publickey);
+		ObjectInputStream ois = new ObjectInputStream(is);
+
+		BigInteger m = (BigInteger)ois.readObject();
+		BigInteger e = (BigInteger)ois.readObject();
+	    RSAPublicKeySpec keySpec = new RSAPublicKeySpec(m, e);
+		
+	   
+	    KeyFactory fact = KeyFactory.getInstance("RSA", "BC");
+	    PublicKey pubKey = fact.generatePublic(keySpec);
+	    
+		return pubKey; 
+	}
 	
     private void uploadFiles(String urlServer,String Path) {
 		// TODO Auto-generated method stub

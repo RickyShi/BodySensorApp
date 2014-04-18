@@ -3,6 +3,13 @@ package edu.missouri.bas.bluetooth.equivital;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.math.BigInteger;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.RSAPublicKeySpec;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,6 +17,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -27,6 +39,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Base64;
 import android.util.Log;
 
 import com.equivital.sdk.ISemConnection;
@@ -39,6 +52,7 @@ import com.equivital.sdk.decoder.events.ISemDeviceAccelerometerEvents;
 import com.equivital.sdk.decoder.events.ISemDeviceSummaryEvents;
 import com.equivital.sdk.decoder.events.SemSummaryDataEventArgs;
 
+import edu.missouri.bas.MainActivity;
 import edu.missouri.bas.service.SensorService;
 
 
@@ -238,21 +252,49 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		*/
 		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorData;		
         dataPoints.add(dataToWrite+";");
+        
+        
+        //chen
+        File encStat = new File(BASE_PATH,"encStat.txt");
+        String endataToWrite = null;
+         try {
+        	 endataToWrite = encryption(dataToWrite);
+         } catch (Exception e) {
+         	// TODO Auto-generated catch block
+         	e.printStackTrace();
+         }
+        
         if(dataPoints.size()==57)
         {
         	    List<String> subList = dataPoints.subList(0,56);
  	            String data=subList.toString();
  	            String formattedData=data.replaceAll("[\\[\\]]","");
+ 	           
+ 	            //chen
+ 	            String enformattedData = null;
+ 	            try {
+ 	            	long st = Calendar.getInstance().getTimeInMillis();
+ 	            	enformattedData = encryption(formattedData);
+ 	            	long ed = Calendar.getInstance().getTimeInMillis();
+ 	            	writeToFile(encStat,String.valueOf(ed-st));
+ 	            } catch (Exception e) {
+ 	            	// TODO Auto-generated catch block
+ 	            	e.printStackTrace();
+ 	            }
+ 	            
+ 	            
  	            //sendDatatoServer("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
  	            TransmitData transmitData=new TransmitData();
- 	            transmitData.execute("chestsensor"+"."+phoneID+"."+deviceName+"."+dateObj,formattedData);
+ 	            //transmitData.execute("chestsensor"+"."+phoneID+"."+deviceName+"."+dateObj,formattedData);
+ 	            transmitData.execute("chestsensor"+"."+phoneID+"."+deviceName+"."+dateObj,enformattedData);
  	            //Log.d("Equivital","Chest Summary Data Point Sent");
  	            subList.clear();  
  	            subList=null;
  	    } 	    	
 		if(f != null){
 			try {
-				writeToFile(f, dataToWrite);
+				//writeToFile(f, dataToWrite);
+				writeToFileEnc(f, endataToWrite);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}				
@@ -274,6 +316,15 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		String dataToWrite = String.valueOf(cal.getTime())+","+chestSensorAccelerometerData;
 		//if (fileName.equals("chestAccelerometerAVG")){
 		AccDataPoints.add(dataToWrite+";");
+		
+		//chen
+		String endataToWrite = null;
+         try {
+        	 endataToWrite = encryption(dataToWrite);
+         } catch (Exception e) {
+         	// TODO Auto-generated catch block
+         	e.printStackTrace();
+         }
         
         if(AccDataPoints.size()==57)
         {
@@ -281,8 +332,20 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
  	            String data=subList.toString();
  	            String formattedData=data.replaceAll("[\\[\\]]","");
  	            //sendDatatoServer("chestsensor"+"."+phoneAddress+"."+deviceName+"."+dateObj,formattedData);
+ 	            
+ 	            //chen
+ 	            String enformattedData = null;
+ 	            try {
+ 	            	enformattedData = encryption(formattedData);
+ 	            } catch (Exception e) {
+ 	            	// TODO Auto-generated catch block
+ 	            	e.printStackTrace();
+ 	            }
+ 	            
+ 	            
  	            TransmitData transmitData=new TransmitData();
- 	            transmitData.execute(fileName+"."+phoneID+"."+deviceName+"."+dateObj,formattedData);
+ 	            //transmitData.execute(fileName+"."+phoneID+"."+deviceName+"."+dateObj,formattedData);
+ 	            transmitData.execute(fileName+"."+phoneID+"."+deviceName+"."+dateObj,enformattedData);
  	            Log.d("Equivital","AVG Accelerometer Data Point Sent");
  	            subList.clear();  
  	            subList=null;
@@ -322,7 +385,8 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
  	    */	
 		if(f != null){
 			try {
-				writeToFile(f, dataToWrite);
+				//writeToFile(f, dataToWrite);
+				writeToFileEnc(f, endataToWrite);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}				
@@ -397,6 +461,56 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		
 	}
 	
+	//Chen
+		private String encryption(String string) throws Exception {
+			// TODO Auto-generated method stub
+			
+			//generate symmetric key
+			KeyGenerator keygt = KeyGenerator.getInstance("AES");
+			keygt.init(128);
+			SecretKey symkey =keygt.generateKey(); 
+			
+			//get it encoded
+			byte[] aes_ba = symkey.getEncoded();
+			
+			//create cipher
+			SecretKeySpec skeySpec = new SecretKeySpec(aes_ba, "AES");  
+	        Cipher cipher = Cipher.getInstance("AES");  
+	        cipher.init(Cipher.ENCRYPT_MODE,skeySpec);
+			
+	        //encryption
+	        byte [] EncSymbyteArray =cipher.doFinal(string.getBytes());
+			
+	        //encrypt symKey with PublicKey
+	        Key pubKey = MainActivity.pubk;
+	        
+	        //RSA cipher
+	        Cipher cipherAsm = Cipher.getInstance("RSA", "BC");
+	        cipherAsm.init(Cipher.ENCRYPT_MODE, pubKey);
+	        
+	        //RSA encryption
+	        byte [] asymEncsymKey = cipherAsm.doFinal(aes_ba);
+	        
+//	        File f3 = new File(BASE_PATH,"enc.txt");
+//	        File f3key = new File(BASE_PATH,"enckey.txt");
+//	        File f3file = new File(BASE_PATH,"encfile.txt");
+//	        writeToFile2(f3,f3key,f3file, asymEncsymKey, EncSymbyteArray);
+	        
+	        //byte != new String
+	        //return new String(byteMerger(asymEncsymKey, EncSymbyteArray));
+	        return Base64.encodeToString(byteMerger(asymEncsymKey, EncSymbyteArray),Base64.DEFAULT);
+	        
+		}
+		
+		public static byte[] byteMerger(byte[] byte_1, byte[] byte_2){  
+	        byte[] byte_3 = new byte[byte_1.length+byte_2.length];  
+	        System.arraycopy(byte_1, 0, byte_3, 0, byte_1.length);  
+	        System.arraycopy(byte_2, 0, byte_3, byte_1.length, byte_2.length);  
+	        return byte_3;  
+	    }  
+		
+		
+	
 	//Ricky 2013/12/09
 	private class TransmitData extends AsyncTask<String,Void, Boolean>
 	{
@@ -408,7 +522,7 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	         String dataToSend=strings[1];
 	         if(checkDataConnectivity())
 	 		{
-	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
+	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFileDec.php");
 	         //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
 	         List<NameValuePair> params = new ArrayList<NameValuePair>();
 	         //file_name 
@@ -484,6 +598,13 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 	 protected void writeToFile(File f, String toWrite) throws IOException{
 			FileWriter fw = new FileWriter(f, true);
 			fw.write(toWrite+'\n');		
+	        fw.flush();
+			fw.close();
+		}
+	 
+	 protected void writeToFileEnc(File f, String toWrite) throws IOException{
+			FileWriter fw = new FileWriter(f, true);
+			fw.write(toWrite);		
 	        fw.flush();
 			fw.close();
 		}

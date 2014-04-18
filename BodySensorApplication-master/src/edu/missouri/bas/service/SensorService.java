@@ -1,8 +1,16 @@
 package edu.missouri.bas.service;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.math.BigInteger;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.RSAPublicKeySpec;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +23,11 @@ import java.util.Random;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -54,6 +67,7 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.os.Vibrator;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -1173,7 +1187,13 @@ GooglePlayServicesClient.OnConnectionFailedListener
     			}
     			Calendar nowT= Calendar.getInstance();
 				TransmitData transmitData=new TransmitData();
-				transmitData.execute("Event."+ID,nowT.getTime().toString()+", Start Suspension");
+				//danick
+				try {
+					transmitData.execute("Event."+ID,encryption(nowT.getTime().toString()+", Start Suspension"));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			else if (action.equals(SensorService.INTENT_BREAK_SUSPENSION)){
 				CancelTask(suspendTimerTask);
@@ -1187,7 +1207,13 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				Toast.makeText(getApplicationContext(),"Break SUSPENSION",Toast.LENGTH_LONG).show();
 				Calendar nowT= Calendar.getInstance();
 				TransmitData transmitData=new TransmitData();
-				transmitData.execute("Event."+ID,nowT.getTime().toString()+", Break Suspension");
+				//danick
+				try {
+					transmitData.execute("Event."+ID,encryption(nowT.getTime().toString()+", Break Suspension"));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	};
@@ -1235,13 +1261,25 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		toWrite = String.valueOf(cal.getTime())+","+
 			l.getLatitude()+","+l.getLongitude()+","+
 			l.getAccuracy()+","+l.getProvider()+","+getNameFromType(currentUserActivity);
+		
+		//danick
+		String toWriteArr = null;
+		try {
+			toWriteArr = encryption(toWrite);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		if(f != null){
 			try {
-				writeToFile(f, toWrite);
+				writeToFile(f, toWriteArr);
+				//writeToFile(f, toWrite);
 				//sendDatatoServer("locations."+bluetoothMacAddress+"."+dateObj,toWrite);
 				//Ricky
 				TransmitData transmitData=new TransmitData();
-				transmitData.execute("locations."+ID+"."+dateObj,toWrite);
+				transmitData.execute("locations."+ID+"."+dateObj,toWriteArr);
+				//transmitData.execute("locations."+ID+"."+dateObj,toWrite);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -1308,19 +1346,142 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		}
 		sb.append("\n");
 		
+		/************************************************************************
+		 * 
+		 * Chen 
+		 * 
+		 * Data encryption
+		 * Stringbuilder sb -> String ensb
+		 * 
+		 * 
+		 */
+		String ensb = null;
+		try {
+			ensb = encryption(sb.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
 		//sendDatatoServer(surveyName+"."+bluetoothMacAddress+"."+dateObj,sb.toString());
 		//Ricky 2013/12/09
 		TransmitData transmitData=new TransmitData();
-		transmitData.execute(surveyName+"."+ID+"."+dateObj,sb.toString());
-		writeToFile(f,sb.toString());
+		transmitData.execute(surveyName+"."+ID+"."+dateObj,ensb);
+		//transmitData.execute(surveyName+"."+ID+"."+dateObj,sb.toString());
+//		File f2 = new File(BASE_PATH,surveyName+"."+bluetoothMacAddress+"."+dateObj+"enc.txt");
+		writeToFileEnc(f,ensb);
+/*        File fb = new File(BASE_PATH,"2enc.txt");
+        writeToFile2b(fb,Base64.decode(ensb,Base64.DEFAULT));*/
+		//transmitData.execute(surveyName+"."+bluetoothMacAddress+"."+dateObj,sb.tostring());
+//		writeToFile(f,sb.toString());
 	}
 	
+	
+	//Chen
+	private String encryption(String string) throws Exception {
+		// TODO Auto-generated method stub
+		
+		//generate symmetric key
+		KeyGenerator keygt = KeyGenerator.getInstance("AES");
+		keygt.init(128);
+		SecretKey symkey =keygt.generateKey(); 
+		
+		//get it encoded
+		byte[] aes_ba = symkey.getEncoded();
+		
+		//create cipher
+		SecretKeySpec skeySpec = new SecretKeySpec(aes_ba, "AES");  
+        Cipher cipher = Cipher.getInstance("AES");  
+        cipher.init(Cipher.ENCRYPT_MODE,skeySpec);
+		
+        //encryption
+        byte [] EncSymbyteArray =cipher.doFinal(string.getBytes());
+		
+        //encrypt symKey with PublicKey
+        Key pubKey = getPublicKey();
+        
+        //RSA cipher
+        Cipher cipherAsm = Cipher.getInstance("RSA", "BC");
+        cipherAsm.init(Cipher.ENCRYPT_MODE, pubKey);
+        
+        //RSA encryption
+        byte [] asymEncsymKey = cipherAsm.doFinal(aes_ba);
+        
+//        File f3 = new File(BASE_PATH,"enc.txt");
+//        File f3key = new File(BASE_PATH,"enckey.txt");
+//        File f3file = new File(BASE_PATH,"encfile.txt");
+//        writeToFile2(f3,f3key,f3file, asymEncsymKey, EncSymbyteArray);
+        
+        //byte != new String
+        //return new String(byteMerger(asymEncsymKey, EncSymbyteArray));
+        return Base64.encodeToString(byteMerger(asymEncsymKey, EncSymbyteArray),Base64.DEFAULT);
+        
+	}
+	
+//	protected void writeToFile2(File f,File fk,File ff, byte[] keyToWrite , byte[] fileToWrite) throws IOException{
+//
+//        FileOutputStream output = new FileOutputStream(f);
+//        output.write(keyToWrite);
+//        output.write(fileToWrite);
+//        output.close();
+//        
+//        FileOutputStream output2 = new FileOutputStream(fk);
+//        output2.write(keyToWrite);
+//        output2.close();
+//        FileOutputStream output3 = new FileOutputStream(ff);
+//        output3.write(fileToWrite);
+//        output3.close();
+//
+//	}
+	
+	protected void writeToFile2b(File f,byte[] keyToWrite) throws IOException{
+
+        FileOutputStream output = new FileOutputStream(f);
+        output.write(keyToWrite);
+        output.close();
+
+
+	}
+
+	public static byte[] byteMerger(byte[] byte_1, byte[] byte_2){  
+        byte[] byte_3 = new byte[byte_1.length+byte_2.length];  
+        System.arraycopy(byte_1, 0, byte_3, 0, byte_1.length);  
+        System.arraycopy(byte_2, 0, byte_3, byte_1.length, byte_2.length);  
+        return byte_3;  
+    }  
+	
+	public  PublicKey getPublicKey() throws Exception {
+		// TODO Auto-generated method stub
+        InputStream is = getResources().openRawResource(R.raw.publickey);
+		ObjectInputStream ois = new ObjectInputStream(is);
+
+		BigInteger m = (BigInteger)ois.readObject();
+		BigInteger e = (BigInteger)ois.readObject();
+	    RSAPublicKeySpec keySpec = new RSAPublicKeySpec(m, e);
+		
+	   
+	    KeyFactory fact = KeyFactory.getInstance("RSA", "BC");
+	    PublicKey pubKey = fact.generatePublic(keySpec);
+	    
+		return pubKey; 
+	}
+
 	protected void writeToFile(File f, String toWrite) throws IOException{
 		FileWriter fw = new FileWriter(f, true);
 		fw.write(toWrite+'\n');		
         fw.flush();
 		fw.close();
 	}
+	
+	protected void writeToFileEnc(File f, String toWrite) throws IOException{
+		FileWriter fw = new FileWriter(f, true);
+		fw.write(toWrite);		
+        fw.flush();
+		fw.close();
+	}
+	
 	
 //------------------------------------------Chest Sensor Code Starts From Here ------------------------------------------------------
 	
@@ -1371,7 +1532,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	         String dataToSend=strings[1];
 	         if(checkDataConnectivity())
 	 		{
-	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
+	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFileDec.php");
 	         //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
 	         List<NameValuePair> params = new ArrayList<NameValuePair>();
 	         //file_name 
@@ -1534,7 +1695,14 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		TransmitData transmitData=new TransmitData();
 //		transmitData.execute("Trigger."+ID+"."+nowT.get(Calendar.MONTH)+"_"+nowT.get(Calendar.DAY_OF_MONTH),
 //				nowT.getTime().toString()+",Schduleing Morning Survey which will be called at "+tT.get(Calendar.HOUR_OF_DAY)+":"+tT.get(Calendar.MINUTE));
-		transmitData.execute("Event."+ID,nowT.getTime().toString()+",Schduling Morning Survey which will be called at "+tT.get(Calendar.HOUR_OF_DAY)+":"+tT.get(Calendar.MINUTE));
+		
+		//danick
+		try {
+			transmitData.execute("Event."+ID,encryption(nowT.getTime().toString()+",Schduling Morning Survey which will be called at "+tT.get(Calendar.HOUR_OF_DAY)+":"+tT.get(Calendar.MINUTE)));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     /**
      * @author Ricky
