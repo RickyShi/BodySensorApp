@@ -91,6 +91,7 @@ import edu.missouri.bas.service.modules.sensors.SensorControl;
 import edu.missouri.bas.survey.SurveyPinCheck;
 import edu.missouri.bas.survey.XMLSurveyActivity;
 
+
 public class SensorService extends Service implements
 GooglePlayServicesClient.ConnectionCallbacks,
 GooglePlayServicesClient.OnConnectionFailedListener
@@ -1113,8 +1114,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 					String uID = String.valueOf(ID);
 					CompletedSignal completedSignal = new CompletedSignal();
 					completedSignal.execute(uID,rsDate,rsID);
-				}
-				
+				}				
 				try {
 					writeSurveyToFile(surveyName, results, intent.getLongExtra(XMLSurveyActivity.INTENT_EXTRA_COMPLETION_TIME,0L));
 				} catch (IOException e) {

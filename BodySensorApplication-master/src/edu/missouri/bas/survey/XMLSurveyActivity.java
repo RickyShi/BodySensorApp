@@ -2,12 +2,21 @@ package edu.missouri.bas.survey;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.xml.sax.InputSource;
 
 import android.app.Activity;
@@ -15,21 +24,22 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
-import android.widget.ScrollView;
 import android.widget.Toast;
 import edu.missouri.bas.R;
+import edu.missouri.bas.activities.AdminManageActivity;
 import edu.missouri.bas.service.SensorService;
 import edu.missouri.bas.survey.category.RandomCategory;
 import edu.missouri.bas.survey.category.SurveyCategory;
@@ -69,7 +79,7 @@ public class XMLSurveyActivity extends Activity {
 	
 	private boolean modifyBackButtonFlag = false;
 	
-	
+	public static Context SurveyActivityContext;
 
 	//List of read categories
 	ArrayList<SurveyCategory> cats = null;
@@ -99,7 +109,10 @@ public class XMLSurveyActivity extends Activity {
   //Ricky 4/1/14
   	private int randomSeq;
   	
+  	private String ID;
+  	
     private static final String TAG = "XMLSurveyActivity";
+    String errMSG ="Please check your wifi or dataplan.\r\nThe phone is offline now.";
     /*
      * Putting a serializable in an intent seems to default to the class
      * that implements serializable, so LinkedHashMap or TreeMap are treated
@@ -179,6 +192,7 @@ public class XMLSurveyActivity extends Activity {
         SensorService.alarmTimer.schedule(SensorService.alarmTask3, aTime3);
         SensorService.alarmTimer.schedule(SensorService.alarmTask4, aTime4);
         
+        SurveyActivityContext = this;
         
         submitButton.setOnClickListener(new OnClickListener(){
 			
@@ -260,6 +274,11 @@ public class XMLSurveyActivity extends Activity {
 			if(vg != null)
 				setContentView(vg);
 		}
+		SharedPreferences shp = getSharedPreferences("PINLOGIN", Context.MODE_PRIVATE);
+	    ID = shp.getString(AdminManageActivity.ASID, "");
+		String startLog = Calendar.getInstance().getTime().toString()+", "+surveyName+" survey is started.";
+		TransmitData transmitData=new TransmitData();
+		transmitData.execute("EventSurvey."+ID,startLog);
     }
     
     
@@ -332,7 +351,7 @@ public class XMLSurveyActivity extends Activity {
     }
     
     protected void surveyComplete(){
-
+    	
     	//Fill answer map for when it is passed to service
     	for(SurveyCategory cat: cats){
     		for(SurveyQuestion question: cat.getQuestions()){
@@ -372,7 +391,9 @@ public class XMLSurveyActivity extends Activity {
     		SensorService.drinkUpFlag = false;
     	}
     	cancelAllTimerTask();
-    	
+    	String EndLog = Calendar.getInstance().getTime().toString()+", "+surveyName+" survey is completed.";
+		TransmitData completeSurveyData=new TransmitData();
+		completeSurveyData.execute("EventSurvey."+String.valueOf(ID),EndLog);
     	/* Finish, this call is asynchronous, so handle that when
     	 * views need to be changed...
     	 */
@@ -533,4 +554,65 @@ public class XMLSurveyActivity extends Activity {
  		
  		return;
  	}
+ 	
+ 	private class TransmitData extends AsyncTask<String,Void, Boolean>
+	{
+
+		@Override
+		protected Boolean doInBackground(String... strings) {
+			// TODO Auto-generated method stub
+			 String fileName=strings[0];
+	         String dataToSend=strings[1];
+	         if(checkDataConnectivity())
+	 		{
+	         HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
+	         //HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
+	         List<NameValuePair> params = new ArrayList<NameValuePair>();
+	         //file_name 
+	         params.add(new BasicNameValuePair("file_name",fileName));        
+	         //data                       
+	         params.add(new BasicNameValuePair("data",dataToSend));
+	         try {
+	         	        	
+	             request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+	             HttpResponse response = new DefaultHttpClient().execute(request);
+	             if(response.getStatusLine().getStatusCode() == 200){
+	                 String result = EntityUtils.toString(response.getEntity());
+	                 Log.d("Sensor Data Point Info",result);                
+	                // Log.d("Wrist Sensor Data Point Info","Data Point Successfully Uploaded!");
+	             }
+	             return true;
+	         } 
+	         catch (Exception e) 
+	         {	             
+	             e.printStackTrace();
+	             return false;
+	         }
+	 	  }
+	     	
+	     else 
+	     {
+	     	Log.d("Sensor Data Point Info","No Network Connection:Data Point was not uploaded");
+	     	Toast.makeText(SurveyActivityContext, errMSG, Toast.LENGTH_LONG).show();
+	     	return false;
+	      } 
+		    
+		}
+		
+	}
+	 public static boolean checkDataConnectivity() {
+	    	ConnectivityManager connectivity = (ConnectivityManager) SurveyActivityContext
+					.getSystemService(Context.CONNECTIVITY_SERVICE);
+			if (connectivity != null) {
+				NetworkInfo[] info = connectivity.getAllNetworkInfo();
+				if (info != null) {
+					for (int i = 0; i < info.length; i++) {
+						if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+	}
 }
