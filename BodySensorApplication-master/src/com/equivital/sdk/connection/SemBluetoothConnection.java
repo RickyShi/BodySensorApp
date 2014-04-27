@@ -46,8 +46,8 @@ public class SemBluetoothConnection implements ISemConnection
 
     // Member fields
     private final BluetoothAdapter mBluetoothAdapter;
-    private ConnectThread mConnectThread;
-    private ConnectedThread mConnectedThread;
+    private static ConnectThread mConnectThread;
+    private static ConnectedThread mConnectedThread;
     private static int mState;
     private String iConnectedBluetoothDeviceAddress = "";
     private String iConnectedBluetoothDeviceName = "";
@@ -392,11 +392,11 @@ public class SemBluetoothConnection implements ISemConnection
     /**
      * Stop all threads
      */
-    private synchronized void disconnect()
+    public synchronized static void disconnect()
     {
         if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
         if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
-        setState(STATE_NONE);    
+        setState(STATE_NONE);
         //reconnectDevice();
 		//fireConnectionClosedEvent();
     }
@@ -420,7 +420,7 @@ public class SemBluetoothConnection implements ISemConnection
     }
     
    
-    private synchronized void setState(int state)
+    private synchronized static void setState(int state)
     {
         mState = state; 
         /*if(mState==0 && equivitalAddress!=null)
@@ -468,10 +468,12 @@ public class SemBluetoothConnection implements ISemConnection
 
     public void reconnectDevice()
     {    	    	    		    		
-		timer1=new Timer();		
-		Reconnect mReconnectDevice=new Reconnect();
-		timer1.scheduleAtFixedRate(mReconnectDevice,1000,3000);   
-		setState(STATE_RECONNECTING);		
+		timer1=new Timer();
+		if (!SensorService.cancelBlueToothFlag){
+			Reconnect mReconnectDevice=new Reconnect();
+			timer1.scheduleAtFixedRate(mReconnectDevice,1000,3000);   
+			setState(STATE_RECONNECTING);
+		}
     }
 					
 		
@@ -480,11 +482,10 @@ public class SemBluetoothConnection implements ISemConnection
 		public void run() {
 			// TODO Auto-generated method stub
 			Log.d("SEM","Reconnection Started");
-			if(isConnected()!=true && Count<=10)
+			if(isConnected()!=true && Count<=10 && !SensorService.cancelBlueToothFlag)
 			{
-				     connect(equivitalAddress);
-				     Count++;
-			
+			    connect(equivitalAddress);
+			    Count++;
 			}
 			else
 			{
@@ -494,9 +495,11 @@ public class SemBluetoothConnection implements ISemConnection
 				if(isConnected()!=true)
 				{
 					fireConnectionClosedEvent();					
-			        setState(STATE_NONE);			      
-			        Intent i=new Intent(SensorService.ACTION_START_SOUND);
-			        SensorService.serviceContext.sendBroadcast(i);
+			        setState(STATE_NONE);	
+			        if (!SensorService.cancelBlueToothFlag){
+			        	Intent i=new Intent(SensorService.ACTION_START_SOUND);
+			        	SensorService.serviceContext.sendBroadcast(i);
+			        }
 				}
 			}
 			

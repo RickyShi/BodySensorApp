@@ -154,9 +154,10 @@ public class SensorConnections extends Activity {
 			public void onClick(View v) {
         		
 				if(btAdapter.isEnabled())
-				{			
-				Intent serverIntent = new Intent(getApplicationContext(),DeviceListActivity.class);
-	            startActivityForResult(serverIntent,SensorConnections.INTENT_CONNECT_CHEST);	            
+				{
+					SensorService.cancelBlueToothFlag = false;
+					Intent serverIntent = new Intent(getApplicationContext(),DeviceListActivity.class);
+		            startActivityForResult(serverIntent,SensorConnections.INTENT_CONNECT_CHEST);	            
 	            }
 				else
 				{
@@ -172,8 +173,7 @@ public class SensorConnections extends Activity {
 		btnCheckState.setOnClickListener(new View.OnClickListener(){
 
 			public void onClick(View v) {
-				getState();
-				
+				getState();			
 				
 			}
         });
@@ -183,6 +183,7 @@ public class SensorConnections extends Activity {
 	}
 	
 	protected void getState(){
+		SensorService.cancelBlueToothFlag = true;
 		Intent i = new Intent(SensorService.ACTION_GET_BLUETOOTH_STATE);
 		this.sendBroadcast(i);
 }

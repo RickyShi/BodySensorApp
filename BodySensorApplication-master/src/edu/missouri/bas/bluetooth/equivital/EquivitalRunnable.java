@@ -614,7 +614,9 @@ public class EquivitalRunnable implements Runnable, ISemDeviceSummaryEvents, ISe
 		 chestAccList.clear();
 		 //medianList.clear();
 		 //medianWindowQueue.clear();
-		 device.stop();
+		 device.stop(true);
+		 SemBluetoothConnection.disconnect();
+		 
 		 device.removeAccelerometerEventListener(this);
 	 }
 	

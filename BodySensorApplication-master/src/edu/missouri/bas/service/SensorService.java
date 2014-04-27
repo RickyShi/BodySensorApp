@@ -355,6 +355,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	int StartMin;
 	//boolean MornReportIsDone; 
 	public static boolean suspendFlag = false;
+	//4/27/2014 Ricky for bluetooth
+	public static boolean cancelBlueToothFlag = false;
 	public static  ArrayAdapter<String> adapter;
 	//Id and Password
 	//2014/2/25
@@ -748,6 +750,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		SensorService.this.registerReceiver(checkRequestReceiver,activityRecognizationRequest);
 		IntentFilter chestSensorData = new IntentFilter(ACTION_CONNECT_CHEST);
 		SensorService.this.registerReceiver(chestSensorReceiver,chestSensorData);
+		//4/27 refresh button intentFilter
+		IntentFilter blueToothRefresh=new IntentFilter(ACTION_GET_BLUETOOTH_STATE);
+		SensorService.this.registerReceiver(alarmReceiver, blueToothRefresh);
 		}
 	
 	
@@ -1213,6 +1218,11 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				}
+			}
+			else if (action.equals(SensorService.ACTION_GET_BLUETOOTH_STATE)){
+				if(equivitalThread != null){
+					equivitalThread.stop();
 				}
 			}
 		}
