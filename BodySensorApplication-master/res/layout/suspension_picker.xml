@@ -7,7 +7,7 @@
 <TextView  android:id="@+id/tvSuspension"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Enter suspension time:"
+            android:text="Enter suspension time:\r\n\r\nSuspension time should be set between 0h 1m and 2h 0m."
             android:textSize="20sp" />    
 <TimePicker
         android:id="@+id/tpSuspension"

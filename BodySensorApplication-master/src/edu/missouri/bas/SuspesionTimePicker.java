@@ -29,7 +29,7 @@ public class SuspesionTimePicker extends Activity {
 		setContentView(R.layout.suspension_picker);
 		TimePicker tpSuspension=(TimePicker)findViewById(R.id.tpSuspension);
 		tpSuspension.setIs24HourView(true);
-		tpSuspension.setCurrentHour(0);
+		tpSuspension.setCurrentHour(1);
 		tpSuspension.setCurrentMinute(0);
 		Button btnSuspension=(Button)findViewById(R.id.btnSuspension);
 		
@@ -38,8 +38,20 @@ public class SuspesionTimePicker extends Activity {
 			@Override
 			public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
 				// TODO Auto-generated method stub
+				if ((hourOfDay==2 && minute!=0) || hourOfDay>2){
+					view.setCurrentHour(2);
+					view.setCurrentMinute(0);
+					suspensionH=2;
+					suspensionM=0;	
+				} else if (hourOfDay==0 && minute==0){
+					view.setCurrentHour(0);
+					view.setCurrentMinute(1);
+					suspensionH=0;
+					suspensionM=1;
+				} else {
 				suspensionH=hourOfDay;
-				suspensionM=minute;				
+				suspensionM=minute;	
+				}
 			}
 		});
 		
@@ -48,7 +60,7 @@ public class SuspesionTimePicker extends Activity {
 		btnSuspension.setOnClickListener(new View.OnClickListener(){
 
 			public void onClick(View v) {
-				if (suspensionH < 2){
+				if (suspensionH < 2 || (suspensionH==2 && suspensionM==0)){
 					if (suspensionH==0 && suspensionM==0){
 						Toast.makeText(getApplicationContext(),"Suspension Time must be longer than 1 minute!",Toast.LENGTH_LONG).show();
 					} else {
@@ -57,7 +69,7 @@ public class SuspesionTimePicker extends Activity {
 						startSuspension.putExtra("M",suspensionM);
 						getApplicationContext().sendBroadcast(startSuspension);
 						finish();
-						Toast.makeText(getApplicationContext(),"Suspension time is: "+suspensionH+":"+suspensionM,Toast.LENGTH_LONG).show();
+						Toast.makeText(getApplicationContext(),"Suspension time is: "+suspensionH+"h "+suspensionM+"m",Toast.LENGTH_LONG).show();
 					}
 				} 
 				else {
