@@ -1567,41 +1567,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		}
 		
 	}
-	/*	
-	public static void sendDatatoServer(String FileName,String DataToSend)
-	{
-		if (checkDataConnectivity())
-    	{
 
-		//HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Crt/writeArrayToFile.php");
-		//new test URL	
-		HttpPost request = new HttpPost("http://dslsrv8.cs.missouri.edu/~rs79c/Server/Test/writeArrayToFile.php");
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        //file_name 
-        params.add(new BasicNameValuePair("file_name",FileName));
-        //data
-        //Modified to deal with the additional line for location data
-        //Ricky 2013/11/21
-        //params.add(new BasicNameValuePair("data",DataToSend+"\n"));
-        params.add(new BasicNameValuePair("data",DataToSend));
-
-        
-        try {
-            request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-            HttpResponse response = new DefaultHttpClient().execute(request);
-            if(response.getStatusLine().getStatusCode() == 200){
-                String result = EntityUtils.toString(response.getEntity());
-                //Toast.makeText(serviceContext,"Data Point Successfully Uploaded", Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            
-           Toast.makeText(serviceContext,"Error during HTTP POST REQUEST",Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-    	}
-    	else Toast.makeText(serviceContext, errMSG, Toast.LENGTH_LONG).show();
-    }
-	*/	
 	
 	 public static boolean checkDataConnectivity() {
 	    	ConnectivityManager connectivity = (ConnectivityManager) serviceContext
@@ -1895,6 +1861,12 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		CancelTask(rTask4);
 		CancelTask(rTask5);
 		CancelTask(rTask6);
+		//for drinking followup
+		CancelTask(alarmTask1);
+		CancelTask(alarmTask2);
+		CancelTask(alarmTask3);
+		CancelTask(alarmTask4);
+		CancelTask(drinkSurveyTask);
 		//CancelTask(midNightCheckTask);
 		//Ricky 3/14
 		PurgeTimers(t1);
@@ -1903,6 +1875,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		PurgeTimers(t4);
 		PurgeTimers(t5);
 		PurgeTimers(t6);
+		//4/26 t7 for drink follow_up
+		PurgeTimers(t7);
 		//Ricky 3/14
 		//PurgeTimers(midNightCheckTimer);
 		Log.d(TAG,"Service Partially Stopped.");
