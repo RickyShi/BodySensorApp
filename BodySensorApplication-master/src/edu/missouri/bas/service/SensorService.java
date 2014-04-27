@@ -1850,6 +1850,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		
 		if(equivitalThread != null){
 			equivitalThread.stop();
+			cancelBlueToothFlag = true;
 		}
 				
 		//If canceled, it will have some problems. Need to be handled later.
