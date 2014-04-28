@@ -169,8 +169,10 @@ public class MainActivity extends ListActivity {
 	    		case STOP:
 	    			if (SensorService.suspendFlag)
 	    				SuspensionHint();
-	    			else
+	    			else {
 	    				stopSService();
+	    				finish();
+	    			}
 	    			//uploadFiles(urlServer,chestsensorFilePath);	    			
 	    			//Toast.makeText(getApplicationContext(), "Successfully uploaded files.", Toast.LENGTH_LONG).show();
 	    			break;
