@@ -213,16 +213,18 @@ public class SurveyPinCheck extends Activity {
 			        	mText = (TextView)DialogView.findViewById(R.id.text_pin);
 			        	String pin = mEdit.getText().toString();
 			        	if (pin.equals(SensorService.getPWD())){
-			        	//Send the intent and trigger new Survey Activity....
-			        	dialog.cancel();
-		        		Intent launchSurvey = 
-								new Intent(getApplicationContext(), XMLSurveyActivity.class);
-						launchSurvey.putExtra("survey_file", surveyFile);
-						launchSurvey.putExtra("survey_name", surveyName);
-						if (surveyName.equalsIgnoreCase("RANDOM_ASSESSMENT"))
-							launchSurvey.putExtra("random_sequence", randomSeq);
-						startActivity(launchSurvey);
-						finish();
+				        	//Send the intent and trigger new Survey Activity....
+				        	if (mp!=null)
+				        		mp.stop();
+				        	dialog.cancel();
+			        		Intent launchSurvey = 
+									new Intent(getApplicationContext(), XMLSurveyActivity.class);
+							launchSurvey.putExtra("survey_file", surveyFile);
+							launchSurvey.putExtra("survey_name", surveyName);
+							if (surveyName.equalsIgnoreCase("RANDOM_ASSESSMENT"))
+								launchSurvey.putExtra("random_sequence", randomSeq);
+							startActivity(launchSurvey);
+							finish();
 			        	}
 			        	else {
 			        		//New AlertDialog to show instruction.
