@@ -151,6 +151,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	private PendingIntent morningReport;
 	// Ricky 3/5/14
 	private PendingIntent AccLightRestart;
+	// Ricky 4/29/14
+	private PendingIntent restartRandom;
 	private int iWakeHour;
 	private int iWakeMin;
 	//private static PendingIntent scheduleLocation;
@@ -219,6 +221,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	public static final String INTENT_EXTRA_BT_DEVICE_NAME = null;
 
 	public static final String INTENT_EXTRA_BT_DEVICE_ADDRESS = null;
+	//Ricky 4/29/2014
+	public static final String ACTION_RESTART_RANDOM_SURVEY = "ACTION_RESTART_RANDOM_SURVEY";
 
 	public static final int MESSAGE_BLUETOOTH_DATA = 0;
 
@@ -713,6 +717,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		IntentFilter followUpFilter = new IntentFilter(ACTION_DRINK_FOLLOWUP);
 		IntentFilter MorningFilter = new IntentFilter(ACTION_SCHEDULE_MORNING);
 		IntentFilter RestartMorningFilter = new IntentFilter(ACTION_SCHEDULE_MORNING_RESTART);
+		IntentFilter RestartRandomSurveyFilter = new IntentFilter(ACTION_RESTART_RANDOM_SURVEY);
 
 	/*	Intent scheduleLocationIntent = new Intent(SensorService.ACTION_SCHEDULE_LOCATION);
 		scheduleLocation = PendingIntent.getBroadcast(
@@ -753,6 +758,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		//4/27 refresh button intentFilter
 		IntentFilter blueToothRefresh=new IntentFilter(ACTION_GET_BLUETOOTH_STATE);
 		SensorService.this.registerReceiver(alarmReceiver, blueToothRefresh);
+		SensorService.this.registerReceiver(alarmReceiver, RestartRandomSurveyFilter);
 		}
 	
 	
@@ -970,54 +976,10 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				Location mCurrentLocation=mLocationClient.getLastLocation();
 				writeLocationToFile(mCurrentLocation);				
 			}
-		  	//Ricky 2/11/14
-			/*
-			else if(action.equals(SensorService.ACTION_SCHEDULE_SURVEY))
+			else if(action.equals(SensorService.ACTION_RESTART_RANDOM_SURVEY))
 			{
-				Log.d(TAG,"Received alarm event - schedule survey");								
-				int StartHour=intent.getIntExtra(START_HOUR,0);
-				int EndHour=intent.getIntExtra(END_HOUR,0);
-				int StartMin=intent.getIntExtra(START_MIN,0);
-				int EndMin=intent.getIntExtra(END_MIN,0);
-				int Interval=(((EndHour-StartHour)*60)+(EndMin-StartMin))/6;
-				int delay=Interval/2;
-				int Increment=Interval+delay;
-				int TriggerInterval=Interval-delay;
-				Log.d(TAG,String.valueOf(Interval));
-				
-				Date dt1=new Date();				
-				dt1.setHours(StartHour);
-				dt1.setMinutes(StartMin+delay);
-				Date dt2=new Date();
-				dt2.setHours(StartHour);
-				dt2.setMinutes(StartMin+Increment);				
-				Date dt3=new Date();
-				dt3.setHours(StartHour);
-				dt3.setMinutes(StartMin+Increment+Interval);
-				Date dt4=new Date();
-				dt4.setHours(StartHour);
-				dt4.setMinutes(StartMin+Increment+(Interval*2));
-				Date dt5=new Date();
-				dt5.setHours(StartHour);
-				dt5.setMinutes(StartMin+Increment+(Interval*3));
-				Date dt6=new Date();
-				dt6.setHours(StartHour);
-				dt6.setMinutes(StartMin+Increment+(Interval*4));
-				rTask1 = new ScheduleSurvey(TriggerInterval);
-				rTask2 = new ScheduleSurvey(TriggerInterval);
-				rTask3 = new ScheduleSurvey(TriggerInterval);
-				rTask4 = new ScheduleSurvey(TriggerInterval);
-				rTask5 = new ScheduleSurvey(TriggerInterval);
-				rTask6 = new ScheduleSurvey(TriggerInterval);				
-				t1.schedule(rTask1,dt1);	
-				t2.schedule(rTask2,dt2);
-				t3.schedule(rTask3,dt3);
-				t4.schedule(rTask4,dt4);
-				t5.schedule(rTask5,dt5);
-				t6.schedule(rTask6,dt6);
-				setStatus(true);
+				triggerRandomSurvey(StartHour,StartMin);
 			}
-			*/
 			else if(action.equals(SensorService.ACTION_SCHEDULE_MORNING))
 			{	
 				wakeHour = bedTime.getString(BED_HOUR_INFO, "none");
@@ -1031,6 +993,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				}
 				bAlarmManager.cancel(morningReport);
 				bAlarmManager.cancel(morningWakeUp);
+				bAlarmManager.cancel(restartRandom);
 				Calendar bRT = Calendar.getInstance();
 				setMorningSurveyAlarm(iWakeHour,iWakeMin);
 				if (bRT.get(Calendar.HOUR_OF_DAY)>=21){
@@ -1646,24 +1609,31 @@ GooglePlayServicesClient.OnConnectionFailedListener
     	 *	If current time is in [0,3] A.M, it means the user maybe overnight. 
     	 *	Keep alarm triggered at the same day.
     	 *	Otherwise[21:00,23:59] set trigger time to tomorrow.
-    	 *	2nd wakeUp App	
-    	 *	3rd set Morning Report/30 seconds delay
+    	 *	2nd finish MainActivity
+    	 *	3rd wakeUp App	
+    	 *	4th set Morning Report/30 seconds delay
     	 */
 		if (tT.get(Calendar.HOUR_OF_DAY)>=3) {
 			tT.set(Calendar.DAY_OF_MONTH, tT.get(Calendar.DAY_OF_MONTH)+1);
 		}
 		tT.set(Calendar.HOUR_OF_DAY, h);
 		tT.set(Calendar.MINUTE, i);
-		
+			
 		Intent mIntent = new Intent(SensorService.serviceContext, MainActivity.class);
 		morningWakeUp = PendingIntent.getActivity(SensorService.serviceContext, 0,
 				mIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis() ,86400000, morningWakeUp);
+		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()-1000*60 ,86400000, morningWakeUp);
 		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis(),morningWakeUp);
 		Intent mRIntent = new Intent(SensorService.serviceContext, SurveyPinCheck.class);
 		mRIntent.putExtra("survey_name", "MORNING_REPORT_ALARM");
 		mRIntent.putExtra("survey_file", "MorningReportParcel.xml");
 		morningReport = PendingIntent.getActivity(SensorService.serviceContext, 0, mRIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+		
+		//Ricky 4/29/2014 restart random survey
+		Intent fIntent = new Intent(SensorService.ACTION_RESTART_RANDOM_SURVEY);
+		restartRandom = PendingIntent.getBroadcast(serviceContext, 0, fIntent, 0);
+		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()-1000*20,86400000,restartRandom);
+		//end finish MainActivity
 		
 		//trigger morning report 30 seconds later than MainActivity is restarted by bAlarmManager 
 		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,morningReport);

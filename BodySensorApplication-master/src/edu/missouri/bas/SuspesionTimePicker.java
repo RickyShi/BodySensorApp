@@ -31,6 +31,8 @@ public class SuspesionTimePicker extends Activity {
 		tpSuspension.setIs24HourView(true);
 		tpSuspension.setCurrentHour(1);
 		tpSuspension.setCurrentMinute(0);
+		suspensionH = 1;
+		suspensionM = 0;
 		Button btnSuspension=(Button)findViewById(R.id.btnSuspension);
 		
 		tpSuspension.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
