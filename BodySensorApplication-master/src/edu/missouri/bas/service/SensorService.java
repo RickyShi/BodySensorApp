@@ -153,6 +153,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	private PendingIntent AccLightRestart;
 	// Ricky 4/29/14
 	private PendingIntent restartRandom;
+	// Ricky 5/01/14
+	private PendingIntent midPendingIntent;
 	private int iWakeHour;
 	private int iWakeMin;
 	//private static PendingIntent scheduleLocation;
@@ -223,7 +225,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	public static final String INTENT_EXTRA_BT_DEVICE_ADDRESS = null;
 	//Ricky 4/29/2014
 	public static final String ACTION_RESTART_RANDOM_SURVEY = "ACTION_RESTART_RANDOM_SURVEY";
-
+	//Ricky 5/01/2014
+	public static final String ACTION_START_MIDNIGHT_CHECK = "ACTION_START_MIDNIGHT_CHECK";
 	public static final int MESSAGE_BLUETOOTH_DATA = 0;
 
 	public static final int MESSAGE_LOCATION_DATA = 1;
@@ -554,15 +557,12 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			//}
 		}
 		
-		//Ricky 3/14 Midnight Timer schedule part
-		Date midNightT = new Date();
-		midNightT.setHours(23);
-		midNightT.setMinutes(58);
-		//for testing
-		//midNightT.setMinutes(midNightT.getMinutes()+1);
-		Log.d("wtest",wakeHour+":"+wakeMin);
-		midNightCheckTask = new midNightCheck();
-		midNightCheckTimer.schedule(midNightCheckTask, midNightT);
+		//Ricky 3/14 Midnight Timer schedule part		
+		Calendar cT = Calendar.getInstance();		
+		Intent startmidNightCheck=new Intent(SensorService.ACTION_START_MIDNIGHT_CHECK);
+		midPendingIntent = PendingIntent.getBroadcast(serviceContext, 0, startmidNightCheck, 0);
+		//1min after the program open, send midnight check boradcast
+		bAlarmManager.set(AlarmManager.RTC_WAKEUP,cT.getTimeInMillis()+1000*60,midPendingIntent);
     }
 	
 	
@@ -759,6 +759,9 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		IntentFilter blueToothRefresh=new IntentFilter(ACTION_GET_BLUETOOTH_STATE);
 		SensorService.this.registerReceiver(alarmReceiver, blueToothRefresh);
 		SensorService.this.registerReceiver(alarmReceiver, RestartRandomSurveyFilter);
+		//5/01/2014 midNight check prepare
+		IntentFilter midCheckFilter=new IntentFilter(ACTION_START_MIDNIGHT_CHECK);
+		SensorService.this.registerReceiver(alarmReceiver, midCheckFilter);
 		}
 	
 	
@@ -1187,6 +1190,18 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				if(equivitalThread != null){
 					equivitalThread.stop();
 				}
+			}
+			else if (action.equals(SensorService.ACTION_START_MIDNIGHT_CHECK)){
+				Date midNightT = new Date();
+				midNightT.setHours(23);
+				midNightT.setMinutes(58);
+				//for testing
+				//midNightT.setMinutes(midNightT.getMinutes()+1);
+				CancelTask(midNightCheckTask);
+				PurgeTimers(midNightCheckTimer);
+				Log.d("wtest",wakeHour+":"+wakeMin+" midnight check is secheduled");
+				midNightCheckTask = new midNightCheck();
+				midNightCheckTimer.schedule(midNightCheckTask, midNightT);				
 			}
 		}
 	};
