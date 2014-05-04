@@ -1139,6 +1139,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
     			CancelTask(rTask4);
     			CancelTask(rTask5);
     			CancelTask(rTask6);
+    			mAlarmManager.cancel(scheduleSurvey);
     			PurgeTimers(t1);
     			PurgeTimers(t2);
     			PurgeTimers(t3);
