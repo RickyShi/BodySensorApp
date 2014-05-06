@@ -533,7 +533,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		wakeMin = bedTime.getString(BED_MIN_INFO, "none");
 		bAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		if (wakeHour.equals("none")||wakeMin.equals("none")){
-			setMorningSurveyAlarm(11, 59);			
+			setMorningSurveyAlarm(11, 56);			
 		}
 		
 		//MornReportIsDone = bedTime.getBoolean("MornReportDone", false);
