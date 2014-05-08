@@ -1133,13 +1133,13 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				adapter.add("Break Suspension");
     			suspendFlag = true;
     			//cancel random survey
+    			mAlarmManager.cancel(scheduleSurvey);
     			CancelTask(rTask1);
     			CancelTask(rTask2);
     			CancelTask(rTask3);
     			CancelTask(rTask4);
     			CancelTask(rTask5);
     			CancelTask(rTask6);
-    			mAlarmManager.cancel(scheduleSurvey);
     			PurgeTimers(t1);
     			PurgeTimers(t2);
     			PurgeTimers(t3);
@@ -1714,6 +1714,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	private void triggerRandomSurvey(int startH, int startM){
     	//if (!getStatus()){
     		//first cancel the old setting before apply the new settings.
+    		mAlarmManager.cancel(scheduleSurvey);
     		CancelTask(rTask1);
     		CancelTask(rTask2);
     		CancelTask(rTask3);
