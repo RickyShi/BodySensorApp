@@ -1625,8 +1625,8 @@ GooglePlayServicesClient.OnConnectionFailedListener
     	 *	If current time is in [0,3] A.M, it means the user maybe overnight. 
     	 *	Keep alarm triggered at the same day.
     	 *	Otherwise[21:00,23:59] set trigger time to tomorrow.
-    	 *	2nd finish MainActivity
-    	 *	3rd wakeUp App	
+    	 *	2nd wakeUp App	
+    	 *	3rd random survey
     	 *	4th set Morning Report/30 seconds delay
     	 */
 		if (tT.get(Calendar.HOUR_OF_DAY)>=3) {
@@ -1644,16 +1644,22 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		mRIntent.putExtra("survey_name", "MORNING_REPORT_ALARM");
 		mRIntent.putExtra("survey_file", "MorningReportParcel.xml");
 		morningReport = PendingIntent.getActivity(SensorService.serviceContext, 0, mRIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-		
-		//Ricky 4/29/2014 restart random survey
-		Intent fIntent = new Intent(SensorService.ACTION_RESTART_RANDOM_SURVEY);
-		restartRandom = PendingIntent.getBroadcast(serviceContext, 0, fIntent, 0);
-		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()-1000*20,86400000,restartRandom);
-		//end finish MainActivity
-		
 		//trigger morning report 30 seconds later than MainActivity is restarted by bAlarmManager 
 		//bAlarmManager.set(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,morningReport);
 		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()+1000*30,86400000,morningReport);
+		
+		/**
+		 * @author Ricky
+		 * 4/29/2014  restart random survey
+		 * currently restart random survey when the app is started.
+		 * Maybe later could change it to made a decision at 12:00 P.M.
+		 * Maybe in the broadcast receiver to schedule a timer task to do that based on the flag whether morning survey is done. 
+		 */
+		Intent fIntent = new Intent(SensorService.ACTION_RESTART_RANDOM_SURVEY);
+		restartRandom = PendingIntent.getBroadcast(serviceContext, 0, fIntent, 0);
+		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,tT.getTimeInMillis()-1000*20,86400000,restartRandom);
+		//end restart random survey		
+		
 		TransmitData transmitData=new TransmitData();
 //		transmitData.execute("Trigger."+ID+"."+nowT.get(Calendar.MONTH)+"_"+nowT.get(Calendar.DAY_OF_MONTH),
 //				nowT.getTime().toString()+",Schduleing Morning Survey which will be called at "+tT.get(Calendar.HOUR_OF_DAY)+":"+tT.get(Calendar.MINUTE));
