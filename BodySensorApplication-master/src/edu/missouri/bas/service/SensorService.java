@@ -562,7 +562,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		Intent startmidNightCheck=new Intent(SensorService.ACTION_START_MIDNIGHT_CHECK);
 		midPendingIntent = PendingIntent.getBroadcast(serviceContext, 0, startmidNightCheck, 0);
 		//1min after the program open, send midnight check boradcast
-		bAlarmManager.set(AlarmManager.RTC_WAKEUP,cT.getTimeInMillis()+1000*60,midPendingIntent);
+		bAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP,cT.getTimeInMillis()+1000*60,86400000,midPendingIntent);
     }
 	
 	
