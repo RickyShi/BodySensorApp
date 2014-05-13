@@ -26,7 +26,7 @@
 			<text id="26">How much have you felt the following IN THE PAST 15 MINUTES? |EXCITED</text>
 			<text id="12">How much have you felt the following IN THE PAST 15 MINUTES? |ANGRY</text>
 			<text id="2">How much have you felt the following IN THE PAST 15 MINUTES?  |ASHAMED</text>			
-			<text id="27">How much have you felt the following IN THE PAST 15 MINUTES? |INSIPIRED</text>
+			<text id="27">How much have you felt the following IN THE PAST 15 MINUTES? |INSPIRED</text>
 			<text id="17">How much have you felt the following IN THE PAST 15 MINUTES? |BLUE</text>
 			<text id="9">How much have you felt the following IN THE PAST 15 MINUTES?  |UPSET</text>			
 			<text id="28">How much have you felt the following IN THE PAST 15 MINUTES? |INTERESTED</text>
@@ -37,8 +37,7 @@
 			<text id="3">How much have you felt the following IN THE PAST 15 MINUTES?  |DISTRESSED</text>
 			<text id="30">How much have you felt the following IN THE PAST 15 MINUTES? |STRONG</text>
 			<text id="11">How much have you felt the following IN THE PAST 15 MINUTES? |SHAKY</text>
-			<text id="20">How much have you felt the following IN THE PAST 15 MINUTES? |LONELY</text>
-                                                                                      
+			<text id="20">How much have you felt the following IN THE PAST 15 MINUTES? |LONELY</text>                                                                                      
 			<text id="32">How well does this describe you OVER THE LAST 15 MINUTES? |I felt and acted on a strong impulse</text>
 			<text id="33">How well does this describe you OVER THE LAST 15 MINUTES?	|I did something without really thinking it through</text>
 			<text id="34">How well does this describe you OVER THE LAST 15 MINUTES?	|I gave up easily</text>
