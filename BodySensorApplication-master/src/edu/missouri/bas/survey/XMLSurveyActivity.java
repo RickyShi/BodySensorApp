@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -153,6 +154,7 @@ public class XMLSurveyActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setVolumeControlStream(AudioManager.STREAM_ALARM);
         setContentView(R.layout.survey_layout);
         
         //Initialize map that will pass questions and answers to service
