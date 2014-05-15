@@ -977,7 +977,12 @@ GooglePlayServicesClient.OnConnectionFailedListener
 				//locationControl.startRecording();				
 				currentUserActivity=intent.getIntExtra("activity",9);
 				Location mCurrentLocation=mLocationClient.getLastLocation();
-				writeLocationToFile(mCurrentLocation);				
+				//filter out some bad location fixes
+				if(mCurrentLocation.hasAccuracy()){
+					if(mCurrentLocation.getAccuracy() <= 35){
+						writeLocationToFile(mCurrentLocation);
+					}
+				}
 			}
 			else if(action.equals(SensorService.ACTION_RESTART_RANDOM_SURVEY))
 			{
